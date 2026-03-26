@@ -1,39 +1,44 @@
 ﻿@using LumexUI.Common
 @inherits LayoutComponentBase
 
-<LumexNavbar Sticky="@true">
-    <LumexNavbarBrand>
-        <span class="font-bold text-xl">
-            Board<span class="font-normal">Games</span>
-        </span>
-    </LumexNavbarBrand>
 
-    <LumexNavbarContent>
-        <LumexNavbarItem>
-            <LumexLink Href="/examples/navbar/sticky#"
-                       Color="@ThemeColor.None">
-                Home
-            </LumexLink>
-        </LumexNavbarItem>
-        <LumexNavbarItem>
-            <LumexLink Href="/settings"
-                       Color="@ThemeColor.None">
-                Settings
-            </LumexLink>
-        </LumexNavbarItem>
-    </LumexNavbarContent>
+<div class="max-w-5xl mx-auto px-4">
 
-    <LumexNavbarContent Align="@Align.End">
-        <LumexNavbarItem>
-            <LumexButton Size="@Size.Small"
-                         Color="@ThemeColor.Primary"
-                         Variant="@Variant.Flat">
-                Log In
-            </LumexButton>
-        </LumexNavbarItem>
-    </LumexNavbarContent>
-</LumexNavbar>
+    <LumexNavbar Sticky="@true">
+        <LumexNavbarBrand>
+            <span class="font-bold text-xl">
+                Board<span class="font-normal">Games</span>
+            </span>
+        </LumexNavbarBrand>
 
-<div>
-    @Body
+        <LumexNavbarContent>
+            <LumexNavbarItem>
+                <LumexLink Href="/examples/navbar/sticky#"
+                            Color="@ThemeColor.None">
+                    Home
+                </LumexLink>
+            </LumexNavbarItem>
+            <LumexNavbarItem>
+                <LumexLink Href="/settings"
+                            Color="@ThemeColor.None">
+                    Settings
+                </LumexLink>
+            </LumexNavbarItem>
+        </LumexNavbarContent>
+
+        <LumexNavbarContent Align="@Align.End">
+            <LumexNavbarItem>
+                <LumexButton Size="@Size.Small"
+                                Color="@ThemeColor.Primary"
+                                Variant="@Variant.Flat">
+                    Log In
+                </LumexButton>
+            </LumexNavbarItem>
+        </LumexNavbarContent>
+    </LumexNavbar>
+
+
+    <main>
+        @Body
+    </main>
 </div>

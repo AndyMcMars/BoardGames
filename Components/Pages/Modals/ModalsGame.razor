@@ -1,0 +1,67 @@
+﻿@using LumexUI.Common
+
+@inject AppDbContext Db
+
+<LumexModal>
+    <LumexModalTrigger Variant="@Variant.Flat" Color="@ThemeColor.Primary">
+        + Add Game
+    </LumexModalTrigger>
+
+    <LumexModalContent Context="modal">
+
+        <LumexModalHeader>
+            Add New Game
+        </LumexModalHeader>
+
+        <LumexModalBody>
+
+            <LumexTextbox Label="Name"
+                          @bind-Value="_newGame.Name"
+                          Placeholder="Enter game name"
+                          Variant="@InputVariant.Outlined" />
+
+            <LumexTextbox Label="Image URL"
+                          @bind-Value="_newGame.Image"
+                          Placeholder="Optional image URL"
+                          Variant="@InputVariant.Outlined" />
+
+        </LumexModalBody>
+
+        <LumexModalFooter>
+
+            <LumexButton Color="@ThemeColor.Danger"
+                         Variant="@Variant.Flat"
+                         OnClick="@modal.CloseAsync">
+                Cancel
+            </LumexButton>
+
+            <LumexButton Color="@ThemeColor.Primary"
+                         Variant="@Variant.Solid"
+                         OnClick="async () => await SaveGame(modal)">
+                Save
+            </LumexButton>
+
+        </LumexModalFooter>
+
+    </LumexModalContent>
+</LumexModal>
+
+@code {
+
+    [Parameter]
+    public EventCallback OnGameCreated { get; set; }
+
+    private mdGame _newGame = new();
+
+    private async Task SaveGame(LumexModal modal)
+    {
+        Db.Games.Add(_newGame);
+        await Db.SaveChangesAsync();
+
+        _newGame = new mdGame();
+
+        await OnGameCreated.InvokeAsync();
+
+        await modal.CloseAsync(); // 🔥 THIS is the key fix
+    }
+}

@@ -1,0 +1,102 @@
+﻿@using LumexUI.Common
+@using LumexUI.Shared.Icons
+
+@inject AppDbContext Db
+
+<LumexModal>
+    <LumexModalTrigger Variant="@Variant.Flat" Color="@ThemeColor.Primary">
+        + Add Faction
+    </LumexModalTrigger>
+
+    <LumexModalContent Context="modal">
+
+        <LumexModalHeader>
+            Add New Faction
+        </LumexModalHeader>
+
+        <LumexModalBody>
+
+            <LumexSelect TValue="mdGame" Label="Select a Game" @bind-Value="_selectedGame" Required>
+                @foreach (var game in _games)
+                {
+                    <LumexSelectItem @key="@game" Value="game" TextValue="@game.Name">@game.Name</LumexSelectItem>
+                }
+            </LumexSelect>
+
+            <LumexTextbox Label="Name"
+                          @bind-Value="_newFaction.Name"
+                          Placeholder="Enter faction name"
+                          Variant="@InputVariant.Outlined" />
+
+            <LumexSelect TValue="string" Label="Select color" @bind-Value="_selectedColor">
+                <ChildContent>
+                    @foreach (var color in _colorChoice)
+                    {
+                        <LumexSelectItem @key="@color" Value="color.hex" TextValue="@color.Name">
+                            <LumexUser Name="@color.Name">
+                                <AvatarContent>
+                                    <div style="width:30px;height:30px;background:@color.hex;border-radius:50%;"/>
+                                </AvatarContent>
+                            </LumexUser>
+
+                        </LumexSelectItem>
+                    }
+                </ChildContent>
+            </LumexSelect>
+
+        </LumexModalBody>
+
+        <LumexModalFooter>
+
+            <LumexButton Color="@ThemeColor.Danger"
+                         Variant="@Variant.Flat"
+                         OnClick="@modal.CloseAsync">
+                Cancel
+            </LumexButton>
+
+            <LumexButton Color="@ThemeColor.Primary"
+                         Variant="@Variant.Solid"
+                         OnClick="async () => await SaveGame(modal)">
+                Save
+            </LumexButton>
+        </LumexModalFooter>
+
+    </LumexModalContent>
+</LumexModal>
+@code {
+    [Parameter]
+    public EventCallback OnGameCreated { get; set; }
+
+    private mdFaction _newFaction = new();
+    private mdGame? _selectedGame;
+    private string? _selectedColor;
+
+    private IQueryable<mdGame> _games => Db.Games;
+
+    private ColorChoice[] _colorChoice = [
+        new("red", "#F54927"),
+        new("orange", "#F5B027")
+
+    ];
+
+    private record ColorChoice(string Name, string hex);
+
+
+    private async Task SaveGame(LumexModal modal)
+    {
+        if (_selectedGame is null)
+            return;
+
+        _newFaction.GameId = _selectedGame.Id;
+        _newFaction.Color = _selectedColor ?? "#000000";
+
+        Db.Factions.Add(_newFaction);
+        await Db.SaveChangesAsync();
+
+        _newFaction = new mdFaction();
+
+        await OnGameCreated.InvokeAsync();
+
+        await modal.CloseAsync();
+    }
+}

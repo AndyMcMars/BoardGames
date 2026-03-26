@@ -1,0 +1,43 @@
+﻿@using LumexUI.Common
+@using Microsoft.EntityFrameworkCore
+
+@inject AppDbContext Db
+@inject NavigationManager Nav
+
+
+<LumexDataGrid Data="@_games" SelectionMode="@SelectionMode.Multiple" @bind-SelectedItems="_selectedGames">
+    <ToolbarContent>
+        <div class="max-w-sm">
+            <ModalsGame OnGameCreated="Reload" />
+            <LumexButton OnClick="DeleteSelected">Delete Selected</LumexButton>
+        </div>
+    </ToolbarContent>
+    <ChildContent>
+        <PropertyColumn Property="@(p => p.Image )">
+            <Content>
+                <img src="@context.Image" width="100" />
+            </Content>
+        </PropertyColumn>
+        <PropertyColumn Property="@(p => p.Name)" />
+    </ChildContent>
+</LumexDataGrid>
+
+@code {
+    private IQueryable<mdGame> _games => Db.Games;
+    private ICollection<mdGame> _selectedGames = [];
+
+    private void Reload()
+    {
+        StateHasChanged();
+    }
+
+
+    private async Task DeleteSelected()
+    {
+        Db.Games.RemoveRange(_selectedGames);
+        await Db.SaveChangesAsync();
+        Nav.NavigateTo(Nav.Uri, forceLoad: true);
+    }
+
+}
+

@@ -1,0 +1,44 @@
+﻿@using LumexUI.Common
+@using Microsoft.EntityFrameworkCore
+
+@inject AppDbContext Db
+@inject NavigationManager Nav
+
+
+<LumexDataGrid Data="@_factions" SelectionMode="@SelectionMode.Multiple" @bind-SelectedItems="_selectedFactions">
+    <ToolbarContent>
+        <div class="max-w-sm">
+            <ModalFaction />
+            <LumexButton OnClick="DeleteSelected">Delete Selected</LumexButton>
+        </div>
+    </ToolbarContent>
+    <ChildContent>
+        <PropertyColumn Property="@(p => p.Game.Name)" />
+        <PropertyColumn Property="@(p => p.Name)" />
+        <PropertyColumn Property="@(p => p.Color)">
+            <Content>
+                <div style="width:30px;height:30px;background:@context.Color;border-radius:50%;" />
+            </Content>
+        </PropertyColumn>
+    </ChildContent>
+</LumexDataGrid>
+
+@code {
+    private IQueryable<mdFaction> _factions => Db.Factions;
+    private ICollection<mdFaction> _selectedFactions = [];
+
+    private void Reload()
+    {
+        StateHasChanged();
+    }
+
+
+    private async Task DeleteSelected()
+    {
+        Db.Factions.RemoveRange(_selectedFactions);
+        await Db.SaveChangesAsync();
+        Nav.NavigateTo(Nav.Uri, forceLoad: true);
+    }
+
+}
+
