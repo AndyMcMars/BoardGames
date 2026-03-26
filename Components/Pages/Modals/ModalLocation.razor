@@ -1,0 +1,63 @@
+﻿@using LumexUI.Common
+
+@inject AppDbContext Db
+
+<LumexModal>
+    <LumexModalTrigger Variant="@Variant.Flat" Color="@ThemeColor.Primary">
+        + Add Location
+    </LumexModalTrigger>
+
+    <LumexModalContent Context="modal">
+
+        <LumexModalHeader>
+            Add Location
+        </LumexModalHeader>
+
+        <LumexModalBody>
+
+            <LumexTextbox Label="Name"
+                          @bind-Value="_newLocation.Description"
+                          Placeholder="Enter location name"
+                          Variant="@InputVariant.Outlined" />
+
+
+        </LumexModalBody>
+
+        <LumexModalFooter>
+
+            <LumexButton Color="@ThemeColor.Danger"
+                         Variant="@Variant.Flat"
+                         OnClick="@modal.CloseAsync">
+                Cancel
+            </LumexButton>
+
+            <LumexButton Color="@ThemeColor.Primary"
+                         Variant="@Variant.Solid"
+                         OnClick="async () => await SaveGame(modal)">
+                Save
+            </LumexButton>
+
+        </LumexModalFooter>
+
+    </LumexModalContent>
+</LumexModal>
+
+@code {
+
+    [Parameter]
+    public EventCallback OnGameCreated { get; set; }
+
+    private mdLocation _newLocation = new();
+
+    private async Task SaveGame(LumexModal modal)
+    {
+        Db.Locations.Add(_newLocation);
+        await Db.SaveChangesAsync();
+
+        _newLocation = new mdLocation();
+
+        await OnGameCreated.InvokeAsync();
+
+        await modal.CloseAsync();
+    }
+}

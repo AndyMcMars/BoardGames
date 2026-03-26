@@ -4,26 +4,22 @@
 
 <LumexModal>
     <LumexModalTrigger Variant="@Variant.Flat" Color="@ThemeColor.Primary">
-        + Add Game
+        + Add Player
     </LumexModalTrigger>
 
     <LumexModalContent Context="modal">
 
         <LumexModalHeader>
-            Add New Game
+            Add Player
         </LumexModalHeader>
 
         <LumexModalBody>
 
             <LumexTextbox Label="Name"
-                          @bind-Value="_newGame.Name"
+                          @bind-Value="_newPlayer.Name"
                           Placeholder="Enter game name"
                           Variant="@InputVariant.Outlined" />
 
-            <LumexTextbox Label="Image URL"
-                          @bind-Value="_newGame.Image"
-                          Placeholder="Optional image URL"
-                          Variant="@InputVariant.Outlined" />
 
         </LumexModalBody>
 
@@ -51,17 +47,17 @@
     [Parameter]
     public EventCallback OnGameCreated { get; set; }
 
-    private mdGame _newGame = new();
+    private mdPlayer _newPlayer = new();
 
     private async Task SaveGame(LumexModal modal)
     {
-        Db.Games.Add(_newGame);
+        Db.Players.Add(_newPlayer);
         await Db.SaveChangesAsync();
 
-        _newGame = new mdGame();
+        _newPlayer = new mdPlayer();
 
         await OnGameCreated.InvokeAsync();
 
-        await modal.CloseAsync(); // 🔥 THIS is the key fix
+        await modal.CloseAsync();
     }
 }

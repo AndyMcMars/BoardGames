@@ -28,7 +28,7 @@
                           Placeholder="Enter faction name"
                           Variant="@InputVariant.Outlined" />
 
-            <LumexSelect TValue="string" Label="Select color" @bind-Value="_selectedColor">
+            <LumexSelect TValue="string" Label="Select color" @bind-Value="_newFaction.Color">
                 <ChildContent>
                     @foreach (var color in _colorChoice)
                     {
@@ -69,14 +69,31 @@
 
     private mdFaction _newFaction = new();
     private mdGame? _selectedGame;
-    private string? _selectedColor;
 
     private IQueryable<mdGame> _games => Db.Games;
 
-    private ColorChoice[] _colorChoice = [
-        new("red", "#F54927"),
-        new("orange", "#F5B027")
+    private ColorChoice[] _colorChoice =
+    [
+        new("white", "#FFFFFF"),
+        new("black", "#2D3436"),
+        new("gray", "#7F8C8D"),
 
+        new("red", "#F54927"),
+        new("blue", "#3498DB"),
+        new("green", "#2ECC71"),
+
+        new("yellow", "#F1C40F"),
+        new("orange", "#F39C12"),
+
+        new("purple", "#9B59B6"),
+        new("pink", "#E91E63"),
+
+        new("teal", "#1ABC9C"),
+        new("navy", "#2C3E50"),
+
+        new("brown", "#8D6E63"),
+        new("violet", "#8E44AD"),
+        new("rose", "#FF5C8A")
     ];
 
     private record ColorChoice(string Name, string hex);
@@ -88,7 +105,7 @@
             return;
 
         _newFaction.GameId = _selectedGame.Id;
-        _newFaction.Color = _selectedColor ?? "#000000";
+        _newFaction.Color = _newFaction.Color ?? "#000000";
 
         Db.Factions.Add(_newFaction);
         await Db.SaveChangesAsync();

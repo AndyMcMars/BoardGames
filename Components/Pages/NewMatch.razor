@@ -1,0 +1,157 @@
+﻿@page "/new-match"
+@using Microsoft.EntityFrameworkCore;
+
+@inject AppDbContext Db
+
+@if (_newMatch.Game != null)
+{
+    <LumexCard Class="max-w-sm">
+        <LumexCardHeader Class="flex gap-4 items-start">
+    
+            <!-- Left: Image -->
+            <img src="@_newMatch.Game.Image" width="100" />
+
+            <!-- Right: Two rows -->
+            <div class="flex flex-col gap-3 w-full">
+                <LumexSelect TValue="mdGame"
+                             Label="Select a Game"
+                             @bind-Value="_newMatch.Game"
+                             Required>
+                    @foreach (var game in _games)
+                    {
+                        <LumexSelectItem @key="@game"
+                                         Value="game"
+                                         TextValue="@game.Name">
+                            @game.Name
+                        </LumexSelectItem>
+                    }
+                </LumexSelect>
+
+                <LumexDatebox TValue="DateTime?" Value="@_newMatch.Date" />
+            </div>
+
+        </LumexCardHeader>
+        <LumexDivider />
+        <LumexCardBody>
+            <div class="flex gap-4">
+                <LumexNumbox TValue="int?"
+                             Label="Duration in min"
+                             @bind-Value="@duration"
+                             class="flex-1" />
+
+                <LumexSelect TValue="mdLocation"
+                             Label="Select a Location"
+                             @bind-Value="_newMatch.Location"
+                             Required
+                             class="flex-1">
+                    @foreach (var location in _locations)
+                    {
+                        <LumexSelectItem @key="@location"
+                                         Value="location"
+                                         TextValue="@location.Description">
+                            @location.Description
+                        </LumexSelectItem>
+                    }
+                </LumexSelect>
+            </div>
+        </LumexCardBody>
+    </LumexCard>
+
+    <h3>Points</h3>
+
+
+    <LumexDataGrid Data="@_results.AsQueryable()"
+                   Classes="@(new() { Table = "w-full" })">
+        <ToolbarContent>
+            <LumexSelect Label="Select players"
+                         Class="max-w-xs"
+                         @bind-Values="@_selectedPlayers">
+
+                @foreach (var player in _players)
+                {
+                    <LumexSelectItem @key="@player" Value="@player" TextValue="@player.Name">
+                        @player.Name
+                    </LumexSelectItem>
+                }
+            </LumexSelect>
+        </ToolbarContent>
+        <ChildContent>
+            <PropertyColumn Property="@(p => p.Player.Name)" />
+            <EditColumn Property="@(p => p.Points)" />
+                <PropertyColumn Property="@(p => p.Faction)">
+                    <Content>
+                        <LumexSelect TValue="mdFaction" Label="Select a Faction" @bind-Value="context.Faction">
+                            @foreach (var faction in _factions)
+                            {
+                                <LumexSelectItem @key="@faction" Value="faction" TextValue="@faction.Name">@faction.Name</LumexSelectItem>
+                            }
+                        </LumexSelect>
+                    </Content>
+                </PropertyColumn>
+        </ChildContent>
+    </LumexDataGrid>
+
+    <LumexButton OnClick="Savematch">Save</LumexButton>
+
+
+}
+
+
+@code {
+
+    private mdMatch _newMatch = new();
+
+    private IQueryable<mdGame> _games => Db.Games;
+    private IQueryable<mdLocation> _locations => Db.Locations;
+    private IQueryable<mdPlayer> _players => Db.Players;
+    private IQueryable<mdFaction> _factions => Db.Factions.Where(g => g.Game == _newMatch.Game);
+    private ICollection<mdPlayer>? _selectedPlayers
+    {
+        get => _selectedPlayersBacking;
+        set
+        {
+            _selectedPlayersBacking = value;
+            UpdatePointsTable();
+        }
+    }
+
+    private ICollection<mdPlayer>? _selectedPlayersBacking;
+
+    private List<mdResult> _results = new();
+
+    private int? duration;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        _newMatch.Game = await Db.Games
+        .AsNoTracking()
+        .FirstOrDefaultAsync();
+
+        _newMatch.Date = DateTime.Now;
+    }
+
+    private void UpdatePointsTable()
+    {
+        if (_selectedPlayers == null)
+            return;
+
+        _results.Clear();
+
+        foreach (var player in _selectedPlayers)
+        {
+            _results.Add(new mdResult
+            {
+                PlayerId = player.Id,
+                Player = player,
+                Points = 0
+            });
+        }
+    }
+
+    private async Task Savematch()
+    {
+        Db.Matches.Add(_newMatch);
+        await Db.SaveChangesAsync();
+    }
+}

@@ -5,26 +5,21 @@
 @inject NavigationManager Nav
 
 
-<LumexDataGrid Data="@_games" SelectionMode="@SelectionMode.Multiple" @bind-SelectedItems="_selectedGames">
+<LumexDataGrid Data="@_locations" SelectionMode="@SelectionMode.Multiple" @bind-SelectedItems="_selectedLocations">
     <ToolbarContent>
         <div class="max-w-sm">
-            <ModalGame OnGameCreated="Reload" />
+            <ModalLocation />
             <LumexButton OnClick="DeleteSelected">Delete Selected</LumexButton>
         </div>
     </ToolbarContent>
     <ChildContent>
-        <PropertyColumn Property="@(p => p.Image )">
-            <Content>
-                <img src="@context.Image" width="100" />
-            </Content>
-        </PropertyColumn>
-        <PropertyColumn Property="@(p => p.Name)" />
+        <PropertyColumn Property="@(p => p.Description)" />
     </ChildContent>
 </LumexDataGrid>
 
 @code {
-    private IQueryable<mdGame> _games => Db.Games;
-    private ICollection<mdGame> _selectedGames = [];
+    private IQueryable<mdLocation> _locations => Db.Locations;
+    private ICollection<mdLocation> _selectedLocations = [];
 
     private void Reload()
     {
@@ -34,7 +29,7 @@
 
     private async Task DeleteSelected()
     {
-        Db.Games.RemoveRange(_selectedGames);
+        Db.Locations.RemoveRange(_selectedLocations);
         await Db.SaveChangesAsync();
         Nav.NavigateTo(Nav.Uri, forceLoad: true);
     }
