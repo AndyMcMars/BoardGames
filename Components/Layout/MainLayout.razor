@@ -1,9 +1,39 @@
-﻿@inherits LayoutComponentBase
+﻿@using LumexUI.Common
+@inherits LayoutComponentBase
 
-@Body
+<LumexNavbar Sticky="@true">
+    <LumexNavbarBrand>
+        <span class="font-bold text-xl">
+            Board<span class="font-normal">Games</span>
+        </span>
+    </LumexNavbarBrand>
 
-<div id="blazor-error-ui" data-nosnippet>
-    An unhandled error has occurred.
-    <a href="." class="reload">Reload</a>
-    <span class="dismiss">🗙</span>
+    <LumexNavbarContent>
+        <LumexNavbarItem>
+            <LumexLink Href="/examples/navbar/sticky#"
+                       Color="@ThemeColor.None">
+                Home
+            </LumexLink>
+        </LumexNavbarItem>
+        <LumexNavbarItem>
+            <LumexLink Href="/settings"
+                       Color="@ThemeColor.None">
+                Settings
+            </LumexLink>
+        </LumexNavbarItem>
+    </LumexNavbarContent>
+
+    <LumexNavbarContent Align="@Align.End">
+        <LumexNavbarItem>
+            <LumexButton Size="@Size.Small"
+                         Color="@ThemeColor.Primary"
+                         Variant="@Variant.Flat">
+                Log In
+            </LumexButton>
+        </LumexNavbarItem>
+    </LumexNavbarContent>
+</LumexNavbar>
+
+<div>
+    @Body
 </div>
