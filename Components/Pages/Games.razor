@@ -4,8 +4,11 @@
 @using LumexUI.Shared.Icons
 @using Microsoft.EntityFrameworkCore;
 
+@inject IStringLocalizer<SharedResource> Localizer
 @inject NavigationManager Nav
 @inject AppDbContext Db
+
+<h1>@Localizer["strGames"]</h1>
 
 <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:16px;">
 
