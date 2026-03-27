@@ -9,7 +9,7 @@
     <ToolbarContent>
         <div class="max-w-sm">
             <ModalFaction />
-            <LumexButton OnClick="DeleteSelected">Delete Selected</LumexButton>
+            <LumexButton OnClick="DeleteSelected" Disabled="_selectedFactions.Count < 1">Delete Selected</LumexButton>
         </div>
     </ToolbarContent>
     <ChildContent>

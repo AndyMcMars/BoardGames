@@ -1,3 +1,7 @@
-﻿public class SharedResource
+﻿
+namespace BoardGames.Resources
 {
+    public class SharedResource
+    {
+    }
 }

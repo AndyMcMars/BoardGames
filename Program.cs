@@ -28,9 +28,6 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddLumexServices();
 
-CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("it");
-CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("it");
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

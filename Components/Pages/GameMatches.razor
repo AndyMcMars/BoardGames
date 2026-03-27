@@ -7,7 +7,7 @@
 @inject NavigationManager Nav
 
 
-<LumexCard Class="max-w-sm">
+<LumexCard Class="mb-4">
     <LumexCardHeader Class="flex gap-4 items-start">
         <img src="@_game.Image" width="100" />
         <div class="flex flex-col gap-3 w-full">
@@ -27,7 +27,7 @@
         <TemplateColumn Title="Winner" Context="p" Sortable="true">
             @($"{p.Winner?.Player?.Name} ({p.Winner?.Points})" ?? "")
         </TemplateColumn>
-        <TemplateColumn Title="Edits" Context="p">
+        <TemplateColumn Title="Actions" Context="p">
             <LumexDropdown>
                 <LumexDropdownTrigger>
                     <LumexButton IconOnly Variant="@Variant.Light">

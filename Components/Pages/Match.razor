@@ -57,6 +57,22 @@
 
     // Display match results
     <LumexDataGrid T=mdResult Data="@_match.Results.AsQueryable()">
+        <TemplateColumn Title="Nr.">
+            @{
+                var index = _match.Results
+                    .OrderByDescending(r => r.Points)
+                    .ToList()
+                    .IndexOf(context) + 1;
+            }
+            @if (context.PlayerId == context.Match?.Winner?.PlayerId)
+            {
+                <CrownIcon class="text-yellow-500" />
+            }
+            else
+            {
+                <p>@index</p>
+            }
+        </TemplateColumn>
         <PropertyColumn Property="@(p => p.Player.Name)" />
         <PropertyColumn Property="@(p => p.Points)" Sortable="true"/>
     </LumexDataGrid>
@@ -64,11 +80,11 @@
     // Display match reviews
     <h2 class="mt-8 mb-4">Reviews</h2>
 
-    <ModalReview Match="@_match"/>
+    <ModalReview Match="@_match" OnReviewCreated="UpdateMatchData"/>
 
     @foreach (var review in _match.Reviews)
     {
-        <LumexCard Class="max-w-sm mt-4">
+        <LumexCard Class="max-w-sm mb-4">
             <LumexCardHeader>
                 <LumexUser Name="@review.Player.Name" Description="@($"{@review.Stars.ToString()} stars")">
                     <AvatarContent>
@@ -93,7 +109,16 @@
     [Parameter]
     public int match_id { get; set; }
 
-    private mdMatch? _match => Db.Matches
+    private mdMatch? _match;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await UpdateMatchData();
+    }
+
+    private async Task UpdateMatchData()
+    {
+        _match = await Db.Matches
                         .Where(m => m.Id == match_id)
                         .Include(m => m.Game)
                         .Include(m => m.Location)
@@ -101,5 +126,13 @@
                             .ThenInclude(r => r.Player)
                         .Include(m => m.Reviews)
                             .ThenInclude(r => r.Player)
-                        .FirstOrDefault();
+                        .FirstOrDefaultAsync();
+
+                        
+        _match?.Results = _match.Results
+            .OrderByDescending(r => r.Points)
+            .ToList();
+
+                        StateHasChanged();
+    }
 }
