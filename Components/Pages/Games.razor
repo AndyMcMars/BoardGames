@@ -1,6 +1,37 @@
-﻿@page "/games"
+﻿@page "/"
+@using BoardGames.Components.Pages.Icons
+@using LumexUI.Common
+@using LumexUI.Shared.Icons
+@using Microsoft.EntityFrameworkCore;
 
+@inject NavigationManager Nav
+@inject AppDbContext Db
+
+<div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:16px;">
+
+    @foreach (var game in _games)
+    {
+        <LumexCard>
+            <img src="@game.Image"
+                 width="300" />
+            <LumexCardFooter Blurred="@true">
+                <div class="flex justify-between w-full">
+                    <h2>@game.Name</h2>
+                    <LumexButton IconOnly OnClick="@(() => GoToMatches(game.Id))">
+                        <SwordsIcon/>
+                    </LumexButton>
+                </div>
+            </LumexCardFooter>
+        </LumexCard>
+    }
+</div>
 
 @code {
 
+    private IQueryable<mdGame> _games => Db.Games;
+
+    private void GoToMatches(int game_id)
+    {
+        Nav.NavigateTo($"/games/{game_id}");
+    }
 }

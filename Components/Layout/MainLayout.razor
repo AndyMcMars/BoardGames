@@ -1,33 +1,31 @@
 ﻿@using LumexUI.Common
 @inherits LayoutComponentBase
 
+<LumexToastProvider />
 
 <div class="max-w-5xl mx-auto px-4">
 
     <LumexNavbar Sticky="@true">
         <LumexNavbarBrand>
-            <span class="font-bold text-xl">
-                Board<span class="font-normal">Games</span>
-            </span>
+            <LumexLink Href="/"
+                       Color="@ThemeColor.None">
+                <span class="font-bold text-xl">
+                    Board<span class="font-normal">Games</span>
+                </span>
+            </LumexLink>
         </LumexNavbarBrand>
 
         <LumexNavbarContent>
             <LumexNavbarItem>
-                <LumexLink Href="/"
-                            Color="@ThemeColor.None">
-                    Home
+                <LumexLink Href="/new-match"
+                           Color="@ThemeColor.Primary">
+                    New Match
                 </LumexLink>
             </LumexNavbarItem>
             <LumexNavbarItem>
                 <LumexLink Href="/settings"
                             Color="@ThemeColor.None">
                     Settings
-                </LumexLink>
-            </LumexNavbarItem>
-            <LumexNavbarItem>
-                <LumexLink Href="/new-match"
-                           Color="@ThemeColor.Primary">
-                    New Match
                 </LumexLink>
             </LumexNavbarItem>
         </LumexNavbarContent>

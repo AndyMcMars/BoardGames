@@ -1,33 +1,43 @@
 ﻿@page "/new-match"
+@using Blazor.Sonner.Common
+@using LumexUI.Common
 @using Microsoft.EntityFrameworkCore;
 
 @inject AppDbContext Db
+@inject NavigationManager Nav
+@inject ToastService Toast
 
-@if (_newMatch.Game != null)
+@if (_newMatch.GameId != 0)
 {
     <LumexCard Class="max-w-sm">
         <LumexCardHeader Class="flex gap-4 items-start">
     
             <!-- Left: Image -->
-            <img src="@_newMatch.Game.Image" width="100" />
+            @{
+                var game = _games.FirstOrDefault(g => g.Id == _newMatch.GameId);
+            }
+            @if (game != null)
+            {
+                <img src="@game.Image" width="100" />
+            }
 
             <!-- Right: Two rows -->
             <div class="flex flex-col gap-3 w-full">
-                <LumexSelect TValue="mdGame"
+                <LumexSelect TValue="int"
                              Label="Select a Game"
-                             @bind-Value="_newMatch.Game"
+                             @bind-Value="_newMatch.GameId"
                              Required>
                     @foreach (var game in _games)
                     {
-                        <LumexSelectItem @key="@game"
-                                         Value="game"
+                        <LumexSelectItem @key="@game.Id"
+                                         Value="@game.Id"
                                          TextValue="@game.Name">
                             @game.Name
                         </LumexSelectItem>
                     }
                 </LumexSelect>
 
-                <LumexDatebox TValue="DateTime?" Value="@_newMatch.Date" />
+                <LumexDatebox @bind-Value="_newMatch.Date"/>
             </div>
 
         </LumexCardHeader>
@@ -39,15 +49,14 @@
                              @bind-Value="@duration"
                              class="flex-1" />
 
-                <LumexSelect TValue="mdLocation"
+                <LumexSelect TValue="int"
                              Label="Select a Location"
-                             @bind-Value="_newMatch.Location"
-                             Required
+                             @bind-Value="_newMatch.LocationId"
                              class="flex-1">
                     @foreach (var location in _locations)
                     {
-                        <LumexSelectItem @key="@location"
-                                         Value="location"
+                        <LumexSelectItem @key="@location.Id"
+                                         Value="@location.Id"
                                          TextValue="@location.Description">
                             @location.Description
                         </LumexSelectItem>
@@ -91,8 +100,12 @@
         </ChildContent>
     </LumexDataGrid>
 
-    <LumexButton OnClick="Savematch">Save</LumexButton>
-
+    <LumexButton OnClick="Savematch" Disabled="@(_results.Count() < 1)">Save</LumexButton>
+    <LumexButton Variant="@Variant.Flat"
+                 Color="@ThemeColor.Success"
+                 OnClick="@(() => Toast.Success( "Event has been created", _toasterId ))">
+        Success
+    </LumexButton>
 
 }
 
@@ -100,11 +113,11 @@
 @code {
 
     private mdMatch _newMatch = new();
-
+    private Action<ToastModel> _toasterId = t => t.ToasterId = "toaster-rich-colors";
     private IQueryable<mdGame> _games => Db.Games;
     private IQueryable<mdLocation> _locations => Db.Locations;
     private IQueryable<mdPlayer> _players => Db.Players;
-    private IQueryable<mdFaction> _factions => Db.Factions.Where(g => g.Game == _newMatch.Game);
+    private IQueryable<mdFaction> _factions => Db.Factions.Where(f => f.GameId == _newMatch.GameId);
     private ICollection<mdPlayer>? _selectedPlayers
     {
         get => _selectedPlayersBacking;
@@ -124,9 +137,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _newMatch.Game = await Db.Games
-        .AsNoTracking()
-        .FirstOrDefaultAsync();
+        _newMatch.GameId = await Db.Games
+                                .Select(g => g.Id)
+                                .FirstOrDefaultAsync();
 
         _newMatch.Date = DateTime.Now;
     }
@@ -151,7 +164,11 @@
 
     private async Task Savematch()
     {
+        _newMatch.Results = _results;
         Db.Matches.Add(_newMatch);
         await Db.SaveChangesAsync();
+
+        
+        Nav.NavigateTo($"/match/{_newMatch.Id}");
     }
 }

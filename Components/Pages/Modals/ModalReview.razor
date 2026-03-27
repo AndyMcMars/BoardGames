@@ -1,0 +1,81 @@
+﻿@using LumexUI.Common
+@using LumexUI.Shared.Icons
+
+@inject AppDbContext Db
+
+<LumexModal>
+    <LumexModalTrigger Variant="@Variant.Flat" Color="@ThemeColor.Primary">
+        + Add Review
+    </LumexModalTrigger>
+
+    <LumexModalContent Context="modal">
+
+        <LumexModalHeader>
+            Add New Review
+        </LumexModalHeader>
+
+        <LumexModalBody>
+            <LumexSelect TValue="int" Label="Player" @bind-Value="_newReview.PlayerId">
+                @foreach (var player in _players)
+                {
+                    <LumexSelectItem Value="@player.Id" TextValue="@player.Name">
+                        @player.Name
+                    </LumexSelectItem>
+                }
+            </LumexSelect>
+
+            <h2>Stars:</h2>
+            <LumexRadioGroup TValue="int" Orientation="@Orientation.Horizontal" Color="@ThemeColor.Warning" @bind-Value="_newReview.Stars">
+                <LumexRadio Value="1">1</LumexRadio>
+                <LumexRadio Value="2">2</LumexRadio>
+                <LumexRadio Value="3">3</LumexRadio>
+                <LumexRadio Value="4">4</LumexRadio>
+                <LumexRadio Value="5">5</LumexRadio>
+            </LumexRadioGroup>
+
+            <LumexTextbox Type="@InputType.Text" Label="Review" @bind-Value="_newReview.Comment" />
+        </LumexModalBody>
+
+        <LumexModalFooter>
+
+            <LumexButton Color="@ThemeColor.Danger"
+                         Variant="@Variant.Flat"
+                         OnClick="@modal.CloseAsync">
+                Cancel
+            </LumexButton>
+
+            <LumexButton Color="@ThemeColor.Primary"
+                         Variant="@Variant.Solid"
+                         OnClick="async () => await SaveReview(modal)">
+                Save
+            </LumexButton>
+        </LumexModalFooter>
+
+    </LumexModalContent>
+</LumexModal>
+@code {
+    [Parameter]
+    public EventCallback OnReviewCreated { get; set; }
+
+    [Parameter]
+    public mdMatch? Match { get; set; }
+
+    private mdReview _newReview = new();
+    private IQueryable<mdPlayer> _players => Db.Players;
+
+
+    private async Task SaveReview(LumexModal modal)
+    {
+        if (Match == null)
+            return;
+
+        _newReview.MatchId = Match.Id;
+
+        Db.Reviews.Add(_newReview);
+        await Db.SaveChangesAsync();
+
+        await OnReviewCreated.InvokeAsync();
+
+        await modal.CloseAsync();
+    }
+}

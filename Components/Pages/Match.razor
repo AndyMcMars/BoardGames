@@ -1,0 +1,105 @@
+﻿@page "/match/{match_id:int}"
+@using BoardGames.Components.Pages.Icons
+@using LumexUI.Shared.Icons
+@using Microsoft.EntityFrameworkCore;
+
+@inject AppDbContext Db
+
+
+@if(_match.Game != null)
+{
+    // Display match details
+    <LumexCard Class="mb-4">
+        <LumexCardHeader Class="flex gap-4 items-start">
+
+            <img src="@_match.Game.Image" width="200" />
+
+            <div class="flex flex-col gap-3 items-start w-full">
+                <LumexUser Name="Game" Description="@_match.Game.Name">
+                    <AvatarContent>
+                        <CalendarClockIcon />
+                    </AvatarContent>
+                </LumexUser>
+
+                <LumexUser Name="Stars" Description="@_match.Stars.ToString()">
+                    <AvatarContent>
+                        <CalendarClockIcon />
+                    </AvatarContent>
+                </LumexUser>
+
+                <LumexUser Name="Date" Description="@_match.Date.ToString("yyyyy-MM-dd")">
+                    <AvatarContent>
+                        <CalendarClockIcon />
+                    </AvatarContent>
+                </LumexUser>
+
+                <LumexUser Name="Duration" Description="@_match.Duration?.ToString()">
+                    <AvatarContent>
+                        <TimerIcon />
+                    </AvatarContent>
+                </LumexUser>
+                
+                <LumexUser Name="Location" Description="@_match.Location?.Description">
+                    <AvatarContent>
+                        <MapPinIcon />
+                    </AvatarContent>
+                </LumexUser>
+                
+                <LumexUser Name="Winner" Description="@_match.Winner?.Player.Name">
+                    <AvatarContent>
+                        <CrownIcon />
+                    </AvatarContent>
+                </LumexUser>
+            </div>
+
+        </LumexCardHeader>
+    </LumexCard>
+
+    // Display match results
+    <LumexDataGrid T=mdResult Data="@_match.Results.AsQueryable()">
+        <PropertyColumn Property="@(p => p.Player.Name)" />
+        <PropertyColumn Property="@(p => p.Points)" Sortable="true"/>
+    </LumexDataGrid>
+
+    // Display match reviews
+    <h2 class="mt-8 mb-4">Reviews</h2>
+
+    <ModalReview Match="@_match"/>
+
+    @foreach (var review in _match.Reviews)
+    {
+        <LumexCard Class="max-w-sm mt-4">
+            <LumexCardHeader>
+                <LumexUser Name="@review.Player.Name" Description="@($"{@review.Stars.ToString()} stars")">
+                    <AvatarContent>
+                        <UserIcon/>
+                    </AvatarContent>
+                </LumexUser>
+            </LumexCardHeader>
+            <LumexDivider />
+            <LumexCardBody>
+                @review.Comment
+            </LumexCardBody>
+        </LumexCard>
+    }
+
+}
+
+
+
+
+
+@code {
+    [Parameter]
+    public int match_id { get; set; }
+
+    private mdMatch? _match => Db.Matches
+                        .Where(m => m.Id == match_id)
+                        .Include(m => m.Game)
+                        .Include(m => m.Location)
+                        .Include(m => m.Results)
+                            .ThenInclude(r => r.Player)
+                        .Include(m => m.Reviews)
+                            .ThenInclude(r => r.Player)
+                        .FirstOrDefault();
+}

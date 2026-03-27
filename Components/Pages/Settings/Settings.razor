@@ -1,23 +1,56 @@
 ﻿@page "/settings"
+@using BoardGames.Components.Pages.Icons
+@using LumexUI.Shared.Icons
 
 <h3>Settings</h3>
-
-    <LumexTabs>
-        <LumexTab Title="Games">
-            <SettingsGames/>
+<div class="overflow-x-auto">
+    <LumexTabs Color="@LumexUI.Common.ThemeColor.Primary">
+        <LumexTab>
+            <TitleContent>
+                <div class="flex items-center gap-2">
+                    <DiceIcon Size="20" />
+                    <span>Games</span>
+                </div>
+            </TitleContent>
+            <ChildContent>
+                <SettingsGames />
+            </ChildContent>
         </LumexTab>
-        <LumexTab Title="Factions">
-            <SettingsFactions/>
+        <LumexTab>
+            <TitleContent>
+                <div class="flex items-center gap-2">
+                    <ArrowIcon Size="20" />
+                    <span>Factions</span>
+                </div>
+            </TitleContent>
+            <ChildContent>
+                <SettingsFactions />
+            </ChildContent>
         </LumexTab>
-        <LumexTab Title="Players">
-            <SettingsPlayers/>
+        <LumexTab>
+            <TitleContent>
+                <div class="flex items-center gap-2">
+                    <PawnIcon Size="20" />
+                    <span>Players</span>
+                </div>
+            </TitleContent>
+            <ChildContent>
+                <SettingsPlayers />
+            </ChildContent>
         </LumexTab>
-        <LumexTab Title="Locations">
-            <SettingsLocations />
+        <LumexTab>
+            <TitleContent>
+                <div class="flex items-center gap-2">
+                    <MapPinIcon Size="20" />
+                    <span>Locations</span>
+                </div>
+            </TitleContent>
+            <ChildContent>
+                <SettingsLocations />
+            </ChildContent>
         </LumexTab>
     </LumexTabs>
-
-
+</div>
 @code {
 
 }
