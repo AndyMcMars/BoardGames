@@ -3,18 +3,29 @@
 @using LumexUI.Common
 @using LumexUI.Shared.Icons
 @using Microsoft.EntityFrameworkCore;
+@using System.Globalization
 
 @inject IStringLocalizer<SharedResource> Localizer
 @inject NavigationManager Nav
 @inject AppDbContext Db
 
-<h1>@Localizer["strGames"]</h1>
+<h1 class="font-bold text-2xl">@Localizer["strGames"]</h1>
 
-<div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:16px;">
+<LumexTextbox Placeholder="Search by name..."
+                Behavior="@InputBehavior.OnInput"
+                @bind-Value="@_nameFilter">
+    <StartContent>
+        <SearchIcon Size="20" />
+    </StartContent>
+</LumexTextbox>
 
-    @foreach (var game in _games)
+<div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:16px;" class="mt-4">
+
+
+    @foreach (var game in 
+    FilteredGames)
     {
-        <LumexCard>
+        <LumexCard onclick="@(() => GoToMatches(game.Id))">
             <div style="width:100%; height:250px; overflow:hidden;">
                 <img src="@game.Image"
                      style="width:100%; height:100%; object-fit:cover; object-position: top;" />
@@ -22,9 +33,14 @@
             <LumexCardFooter Blurred="@true">
                 <div class="flex justify-between w-full">
                     <h2>@game.Name</h2>
-                    <LumexButton IconOnly OnClick="@(() => GoToMatches(game.Id))">
-                        <SwordsIcon/>
-                    </LumexButton>
+                    <LumexChip Variant="ChipVariant.Light">
+                        <StartContent>
+                            @_matches.Where(m=>m.GameId == game.Id).Count()
+                        </StartContent>
+                        <ChildContent>
+                            <SwordsIcon/>
+                        </ChildContent>
+                    </LumexChip>
                 </div>
             </LumexCardFooter>
         </LumexCard>
@@ -34,6 +50,24 @@
 @code {
 
     private IQueryable<mdGame> _games => Db.Games;
+    private IQueryable<mdMatch> _matches => Db.Matches;
+
+    private IQueryable<mdGame> FilteredGames
+    {
+        get
+        {
+            var result = _games;
+
+            if (!string.IsNullOrEmpty(_nameFilter))
+            {
+                result = result.Where(u => EF.Functions.Like(u.Name, $"%{_nameFilter}%"));
+            }
+
+            return result;
+        }
+    }
+
+    private string? _nameFilter;
 
     private void GoToMatches(int game_id)
     {

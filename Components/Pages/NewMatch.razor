@@ -100,11 +100,6 @@
     </LumexDataGrid>
 
     <LumexButton OnClick="Savematch" Disabled="@(_results.Count() < 1)">Save</LumexButton>
-    <LumexButton Variant="@Variant.Flat"
-                 Color="@ThemeColor.Success"
-                 OnClick="@(() => Toast.Success( "Event has been created", _toasterId ))">
-        Success
-    </LumexButton>
 
 }
 
@@ -164,6 +159,9 @@
     private async Task Savematch()
     {
         _newMatch.Results = _results;
+        _newMatch.Duration = duration.HasValue
+                                ? TimeSpan.FromMinutes(duration.Value)
+                                : null;
         Db.Matches.Add(_newMatch);
         await Db.SaveChangesAsync();
 

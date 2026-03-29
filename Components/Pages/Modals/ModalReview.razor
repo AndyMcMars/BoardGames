@@ -74,6 +74,9 @@
         Db.Reviews.Add(_newReview);
         await Db.SaveChangesAsync();
 
+        _newReview = new mdReview();
+        StateHasChanged();
+
         await OnReviewCreated.InvokeAsync();
 
         await modal.CloseAsync();

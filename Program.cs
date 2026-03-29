@@ -16,7 +16,7 @@ builder.Services.AddLocalization(options => options.ResourcesPath = "Resources")
 var supportedCultures = new[] { "en", "it" };
 
 var localizationOptions = new RequestLocalizationOptions()
-    .SetDefaultCulture("it")
+    .SetDefaultCulture("en")
     .AddSupportedCultures(supportedCultures)
     .AddSupportedUICultures(supportedCultures);
 

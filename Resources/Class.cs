@@ -1,5 +1,5 @@
 ﻿
-namespace BoardGames.Resources
+namespace BoardGames
 {
     public class SharedResource
     {

@@ -120,4 +120,7 @@
   <data name="strGames" xml:space="preserve">
     <value>Giochi</value>
   </data>
+  <data name="strPoints" xml:space="preserve">
+    <value>Punti</value>
+  </data>
 </root>

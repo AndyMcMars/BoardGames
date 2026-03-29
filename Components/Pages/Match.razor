@@ -4,6 +4,7 @@
 @using Microsoft.EntityFrameworkCore;
 
 @inject AppDbContext Db
+@inject IStringLocalizer<SharedResource> Localizer
 
 
 @if(_match.Game != null)
@@ -17,23 +18,23 @@
             <div class="flex flex-col gap-3 items-start w-full">
                 <LumexUser Name="Game" Description="@_match.Game.Name">
                     <AvatarContent>
-                        <CalendarClockIcon />
+                        <DiceIcon />
                     </AvatarContent>
                 </LumexUser>
 
                 <LumexUser Name="Stars" Description="@_match.Stars.ToString()">
                     <AvatarContent>
-                        <CalendarClockIcon />
+                        <StarIcon />
                     </AvatarContent>
                 </LumexUser>
 
-                <LumexUser Name="Date" Description="@_match.Date.ToString("yyyyy-MM-dd")">
+                <LumexUser Name="Date" Description="@_match.Date.ToString("dd-MM-yyyy")">
                     <AvatarContent>
                         <CalendarClockIcon />
                     </AvatarContent>
                 </LumexUser>
 
-                <LumexUser Name="Duration" Description="@_match.Duration?.ToString()">
+                <LumexUser Name="Duration" Description="@_match.Duration?.ToString(@"hh\:mm")">
                     <AvatarContent>
                         <TimerIcon />
                     </AvatarContent>
@@ -64,17 +65,11 @@
                     .ToList()
                     .IndexOf(context) + 1;
             }
-            @if (context.PlayerId == context.Match?.Winner?.PlayerId)
-            {
-                <CrownIcon class="text-yellow-500" />
-            }
-            else
-            {
-                <p>@index</p>
-            }
+            <p>@($"{@index}°")</p>
         </TemplateColumn>
-        <PropertyColumn Property="@(p => p.Player.Name)" />
-        <PropertyColumn Property="@(p => p.Points)" Sortable="true"/>
+        <PropertyColumn Property="@(p => p.Player.Name)" Title="Player" />
+        <PropertyColumn Property="@(p => p.Faction != null ? p.Faction.Name : "")" Title="Faction"/>
+        <PropertyColumn Property="@(p => p.Points)" Sortable="true" Title="@Localizer["strPoints"]"/>
     </LumexDataGrid>
 
     // Display match reviews
