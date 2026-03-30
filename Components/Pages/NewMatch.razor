@@ -67,7 +67,7 @@
         </LumexCardBody>
     </LumexCard>
 
-    <h3>Points</h3>
+    <div class="text-2xl mt-4 mb-4">Points</div>
 
     <LumexDataGrid Data="@_results.AsQueryable()" Layout="Layout.Fixed" Classes="_classes">
         <ToolbarContent>
@@ -87,11 +87,26 @@
             <EditColumn Property="@(p => p.Points)" />
             <PropertyColumn Property="@(p => p.Faction)">
                 <Content>
-                    <LumexSelect TValue="mdFaction" Label="Select a Faction" @bind-Value="context.Faction">
-                        @foreach (var faction in _factions)
-                        {
-                            <LumexSelectItem @key="@faction" Value="@faction" TextValue="@faction.Name">@faction.Name</LumexSelectItem>
-                        }
+                    <LumexSelect TValue="mdFaction" Label="@(context.Faction == null ? "Select a faction" : "")" @bind-Value="context.Faction" Context="faction" Variant="InputVariant.Flat">
+                        <ChildContent>
+                            @foreach (var faction in _factions)
+                            {
+                                <LumexSelectItem @key="@faction" Value="@faction" TextValue="@faction.Name">
+                                    <LumexUser Name="@faction.Name">
+                                        <AvatarContent>
+                                            <div style="width:30px;height:30px;background:@faction.Color;border-radius:50%;" />
+                                        </AvatarContent>
+                                    </LumexUser>
+                                </LumexSelectItem>
+                            }
+                        </ChildContent>
+                        <ValueContent>
+                            <LumexUser Name="@faction.Name">
+                                <AvatarContent>
+                                    <div style="width:15px;height:15px;background:@faction.Color;border-radius:50%;" />
+                                </AvatarContent>
+                            </LumexUser>
+                        </ValueContent>
                     </LumexSelect>
                 </Content>
             </PropertyColumn>
@@ -146,9 +161,13 @@
         if (_selectedPlayers == null)
             return;
 
-        _results.Clear();
+        var existingPlayerIds = _results.Select(r => r.PlayerId).ToHashSet();
+        var selectedPlayerIds = _selectedPlayers.Select(p => p.Id).ToHashSet();
 
-        foreach (var player in _selectedPlayers)
+        var playersToAdd = _selectedPlayers
+        .Where(p => !existingPlayerIds.Contains(p.Id));
+
+        foreach (var player in playersToAdd)
         {
             _results.Add(new mdResult
             {
@@ -157,6 +176,9 @@
                 Points = 0
             });
         }
+
+        _results.RemoveAll(r => !selectedPlayerIds.Contains(r.PlayerId));
+
     }
 
     private async Task Savematch()
