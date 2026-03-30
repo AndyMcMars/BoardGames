@@ -24,7 +24,7 @@
 
     @foreach (var game in FilteredGames)
     {
-        <LumexCard onclick="@(() => GoToMatches(game.Id))">
+        <LumexCard onclick="@(() => GoToMatches(game.Slug))">
             <div class="w-full aspect-square overflow-hidden">
                 <img src="@game.Image"
                      class="w-full h-full object-cover object-top" />
@@ -68,8 +68,8 @@
 
     private string? _nameFilter;
 
-    private void GoToMatches(int game_id)
+    private void GoToMatches(string game_slug)
     {
-        Nav.NavigateTo($"/games/{game_id}");
+        Nav.NavigateTo($"/games/{game_slug}");
     }
 }

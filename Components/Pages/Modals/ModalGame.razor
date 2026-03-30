@@ -1,4 +1,5 @@
 ﻿@using LumexUI.Common
+@using Microsoft.EntityFrameworkCore
 
 @inject AppDbContext Db
 
@@ -17,7 +18,9 @@
         <LumexModalBody>
 
             <LumexTextbox Label="Name"
-                          @bind-Value="_model.Name"
+                          Value="@_model.Name"
+                          ValueChanged="OnNameChanged"
+                          ValueExpression="@(() => _model.Name)"
                           Placeholder="Enter game name"
                           Variant="@InputVariant.Outlined" />
 
@@ -26,6 +29,8 @@
                           Placeholder="Optional image URL"
                           Variant="@InputVariant.Outlined" />
 
+            <LumexDivider />
+            <LumexAlert Color="@ThemeColor.Info" Title="Game slug:" Description="@_model.Slug"/>
         </LumexModalBody>
 
         <LumexModalFooter>
@@ -73,11 +78,33 @@
         }
     }
 
+    private void OnNameChanged(string value)
+    {
+        _model.Name = value;
+        _model.Slug = GenerateSlug(value);
+    }
+
+    private string GenerateSlug(string name)
+    {
+        return name
+                .ToLower()
+                .Trim()
+                .Replace(" ", "_");
+    }
 
     private async Task SaveGame(LumexModal modal)
     {
+        var slug = GenerateSlug(_model.Name);
+        var exists = await Db.Games.AnyAsync(g => g.Slug == slug && g.Id != _model.Id);
+
+        if (exists)
+        {
+            return;
+        }
+
         if (_model.Id == 0)
         {
+            _model.Slug = slug;
             Db.Games.Add(_model);
         }
         else

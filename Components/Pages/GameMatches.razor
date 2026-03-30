@@ -1,4 +1,4 @@
-﻿@page "/games/{game_id:int}"
+﻿@page "/games/{game_slug}"
 @using LumexUI.Common
 @using LumexUI.Shared.Icons
 @using Microsoft.EntityFrameworkCore;
@@ -11,34 +11,41 @@
     <LumexLink Href="/">@Localizer["strGames"]</LumexLink>
 </div>
 
-<LumexCard Class="mb-4">
-    <LumexCardHeader Class="flex gap-4 items-start">
-        <img src="@_game.Image" width="100" />
-        <div class="flex flex-col gap-3 w-full text-xl">
-           <h2>@_game.Name</h2>
-        </div>
-    </LumexCardHeader>
-    <LumexCardFooter>
-        <div class="flex justify-between w-full">
-            <LumexChip Variant="ChipVariant.Light">
-                <StartContent>
-                    @_matches.Count()
-                </StartContent>
-                <ChildContent>
-                    <SwordsIcon/>
-                </ChildContent>
-            </LumexChip>
-            <LumexChip Variant="ChipVariant.Light">
-                <StartContent>
-                    @totalDuration
-                </StartContent>
-                <ChildContent>
-                    <TimerIcon />
-                </ChildContent>
-            </LumexChip>
-        </div>
-    </LumexCardFooter>
-</LumexCard>
+@if (_game is null)
+{
+    <p>game not found</p>
+}
+else
+{
+    <LumexCard Class="mb-4">
+        <LumexCardHeader Class="flex gap-4 items-start">
+            <img src="@_game.Image" width="100" />
+            <div class="flex flex-col gap-3 w-full text-xl">
+               <h2>@_game.Name</h2>
+            </div>
+        </LumexCardHeader>
+        <LumexCardFooter>
+            <div class="flex justify-between w-full">
+                <LumexChip Variant="ChipVariant.Light">
+                    <StartContent>
+                        @_matches.Count()
+                    </StartContent>
+                    <ChildContent>
+                        <SwordsIcon/>
+                    </ChildContent>
+                </LumexChip>
+                <LumexChip Variant="ChipVariant.Light">
+                    <StartContent>
+                        @totalDuration
+                    </StartContent>
+                    <ChildContent>
+                        <TimerIcon />
+                    </ChildContent>
+                </LumexChip>
+            </div>
+        </LumexCardFooter>
+    </LumexCard>
+}
 
 
 @if(_matches.Count() > 0)
@@ -61,16 +68,20 @@ else
 
 
 @code {
-    [Parameter]
-    public int game_id { get; set; }
-    private mdGame _game => Db.Games.Where(g => g.Id == game_id).FirstOrDefault();
 
-    private IQueryable<mdMatch> _matches => Db.Matches
-                                            .Where(m => m.GameId == game_id)
-                                            .Include(m => m.Location)
-                                            .Include(m => m.Results)
-                                                .ThenInclude(r => r.Player)
-                                            .OrderByDescending(m => m.Date);
+    [Parameter] public string game_slug { get; set; }
+
+    private mdGame? _game;
+
+    private IQueryable<mdMatch> _matches =>
+        _game == null
+            ? Enumerable.Empty<mdMatch>().AsQueryable()
+            : Db.Matches
+                .Where(m => m.GameId == _game.Id)
+                .Include(m => m.Location)
+                .Include(m => m.Results)
+                    .ThenInclude(r => r.Player)
+                .OrderByDescending(m => m.Date);
 
     private TimeSpan totalDuration => TimeSpan.FromTicks(
         _matches
@@ -78,6 +89,12 @@ else
             .AsEnumerable()
             .Sum(m => m.Duration.Value.Ticks)
     );
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _game = await Db.Games
+            .FirstOrDefaultAsync(g => g.Slug == game_slug);
+    }
 
 
     private void GoToMatch(DataGridRowClickEventArgs<mdMatch> match)
