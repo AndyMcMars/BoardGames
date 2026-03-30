@@ -45,7 +45,7 @@
 @code {
 
     [Parameter]
-    public EventCallback OnGameCreated { get; set; }
+    public EventCallback OnCreated { get; set; }
 
     private mdLocation _newLocation = new();
 
@@ -56,7 +56,7 @@
 
         _newLocation = new mdLocation();
 
-        await OnGameCreated.InvokeAsync();
+        await OnCreated.InvokeAsync();
 
         await modal.CloseAsync();
     }

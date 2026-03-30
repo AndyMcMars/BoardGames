@@ -5,11 +5,11 @@
 @inject NavigationManager Nav
 
 
-<LumexDataGrid Data="@_factions" SelectionMode="@SelectionMode.Multiple" @bind-SelectedItems="_selectedFactions">
+<LumexDataGrid Data="@_factions" SelectionMode="@SelectionMode.Multiple" @bind-SelectedItems="_selectedFactions" @key="_refreshKey">
     <ToolbarContent>
         <div class="max-w-sm">
-            <ModalFaction />
-            <LumexButton OnClick="DeleteSelected" Disabled="_selectedFactions.Count < 1">Delete Selected</LumexButton>
+            <ModalFaction OnCreated="UpdateData"/>
+            <LumexButton OnClick="() => _showDeleteModal = true" Disabled="_selectedFactions.Count < 1">Delete Selected</LumexButton>
         </div>
     </ToolbarContent>
     <ChildContent>
@@ -23,21 +23,36 @@
     </ChildContent>
 </LumexDataGrid>
 
+@if (_showDeleteModal)
+{
+    <ModalDelete OnResult="@DeleteSelected" _open="_showDeleteModal" Header="Delete faction" Description="Are you sure you want to delete the selected faction?" />
+}
+
 @code {
     private IQueryable<mdFaction> _factions => Db.Factions;
     private ICollection<mdFaction> _selectedFactions = [];
-
-    private void Reload()
+    private int _refreshKey;
+    private bool _showDeleteModal = false;
+    
+    protected override async Task OnInitializedAsync()
     {
+        await UpdateData();
+    }
+
+    private async Task UpdateData()
+    {
+        _refreshKey++;
         StateHasChanged();
     }
 
-
-    private async Task DeleteSelected()
+    private async Task DeleteSelected(bool confirmed)
     {
+        _showDeleteModal = false;
+        if (!confirmed) return;
+
         Db.Factions.RemoveRange(_selectedFactions);
         await Db.SaveChangesAsync();
-        Nav.NavigateTo(Nav.Uri, forceLoad: true);
+        await UpdateData();
     }
 
 }

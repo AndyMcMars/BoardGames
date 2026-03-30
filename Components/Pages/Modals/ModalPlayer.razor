@@ -45,7 +45,7 @@
 @code {
 
     [Parameter]
-    public EventCallback OnGameCreated { get; set; }
+    public EventCallback OnCreated { get; set; }
 
     private mdPlayer _newPlayer = new();
 
@@ -56,7 +56,7 @@
 
         _newPlayer = new mdPlayer();
 
-        await OnGameCreated.InvokeAsync();
+        await OnCreated.InvokeAsync();
 
         await modal.CloseAsync();
     }

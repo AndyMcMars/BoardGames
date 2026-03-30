@@ -8,7 +8,7 @@
 <LumexDataGrid Data="@_games" SelectionMode="@SelectionMode.Multiple" @bind-SelectedItems="_selectedGames" @key="_refreshKey">
     <ToolbarContent>
         <div class="max-w-sm">
-            <ModalGame OnGameCreated="UpdateData" />
+            <ModalGame OnCreated="UpdateData" />
             <LumexButton OnClick="() => _showDeleteModal = true" Disabled="_selectedGames.Count < 1">Delete Selected</LumexButton>
         </div>
     </ToolbarContent>

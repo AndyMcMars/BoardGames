@@ -5,34 +5,50 @@
 @inject NavigationManager Nav
 
 
-<LumexDataGrid Data="@_players" SelectionMode="@SelectionMode.Multiple" @bind-SelectedItems="_selectedPlayers">
+<LumexDataGrid Data="@_players" SelectionMode="@SelectionMode.Multiple" @bind-SelectedItems="_selectedPlayers" @key="_refreshKey">
     <ToolbarContent>
         <div class="max-w-sm">
-            <ModalPlayer />
-            <LumexButton OnClick="DeleteSelected" Disabled="_selectedPlayers.Count < 1">Delete Selected</LumexButton>
+            <ModalPlayer OnCreated="UpdateData"/>
+            <LumexButton OnClick="() => _showDeleteModal = true" Disabled="_selectedPlayers.Count < 1">Delete Selected</LumexButton>
         </div>
     </ToolbarContent>
     <ChildContent>
         <PropertyColumn Property="@(p => p.Name)" />
-        <PropertyColumn Property="@(p => p.CreatedAt)" />
     </ChildContent>
 </LumexDataGrid>
+
+@if (_showDeleteModal)
+{
+    <ModalDelete OnResult="@DeleteSelected" _open="_showDeleteModal" Header="Delete player" Description="Are you sure you want to delete the selected player?" />
+}
+
 
 @code {
     private IQueryable<mdPlayer> _players => Db.Players;
     private ICollection<mdPlayer> _selectedPlayers = [];
+    private int _refreshKey;
+    private bool _showDeleteModal = false;
 
-    private void Reload()
+    protected override async Task OnInitializedAsync()
     {
+        await UpdateData();
+    }
+
+    private async Task UpdateData()
+    {
+        _refreshKey++;
         StateHasChanged();
     }
 
 
-    private async Task DeleteSelected()
+    private async Task DeleteSelected(bool confirmed)
     {
+        _showDeleteModal = false;
+        if (!confirmed) return;
+
         Db.Players.RemoveRange(_selectedPlayers);
         await Db.SaveChangesAsync();
-        Nav.NavigateTo(Nav.Uri, forceLoad: true);
+        await UpdateData();
     }
 
 }

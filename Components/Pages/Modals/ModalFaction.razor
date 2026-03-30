@@ -71,7 +71,7 @@
 </LumexModal>
 @code {
     [Parameter]
-    public EventCallback OnGameCreated { get; set; }
+    public EventCallback OnCreated { get; set; }
 
     private mdFaction _newFaction = new();
     private mdGame? _selectedGame;
@@ -119,7 +119,7 @@
 
         _newFaction = new mdFaction();
 
-        await OnGameCreated.InvokeAsync();
+        await OnCreated.InvokeAsync();
 
         await modal.CloseAsync();
     }
