@@ -1,7 +1,9 @@
 ﻿@using LumexUI.Common
+@using Blazor.Sonner.Services
 @using Microsoft.EntityFrameworkCore
 
 @inject AppDbContext Db
+@inject ToastService Toast
 
 <LumexModal>
     <LumexModalTrigger Variant="@Variant.Flat" Color="@ButtonColor">
@@ -86,6 +88,9 @@
 
     private string GenerateSlug(string name)
     {
+        if (string.IsNullOrWhiteSpace(name))
+            return string.Empty;
+
         return name
                 .ToLower()
                 .Trim()
@@ -99,6 +104,7 @@
 
         if (exists)
         {
+            Toast.Show("A game with this name already exists. Please choose a different name.");
             return;
         }
 
@@ -114,6 +120,7 @@
             if (existing != null)
             {
                 existing.Name = _model.Name;
+                existing.Slug = slug;
                 existing.Image = _model.Image;
             }
         }
