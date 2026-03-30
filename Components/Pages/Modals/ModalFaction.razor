@@ -138,7 +138,7 @@
 
     private async Task SaveGame(LumexModal modal)
     {
-        if (_selectedGame is null)
+        if (_selectedGame is null || _selectedColor is null || _model is null)
             return;
         
         if (_model.Id == 0)

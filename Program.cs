@@ -1,9 +1,7 @@
-using BoardGames;
 using BoardGames.Components;
 using LumexUI.Extensions;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
-using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,15 +11,18 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
-var supportedCultures = new[] { "en", "it" };
+var supportedCultures = new[] { "en", "it", "de" };
 
 var localizationOptions = new RequestLocalizationOptions()
     .SetDefaultCulture("en")
     .AddSupportedCultures(supportedCultures)
     .AddSupportedUICultures(supportedCultures);
 
-localizationOptions.RequestCultureProviders.Insert(0,
-    new CookieRequestCultureProvider());
+localizationOptions.RequestCultureProviders = new List<IRequestCultureProvider>
+{
+    new CookieRequestCultureProvider(),
+    new AcceptLanguageHeaderRequestCultureProvider()
+};
 
 var dataDir = Path.Combine(AppContext.BaseDirectory, "Data");
 Directory.CreateDirectory(dataDir);

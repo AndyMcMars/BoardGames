@@ -1,5 +1,6 @@
-﻿<!DOCTYPE html>
-<html lang="en" class="dark">
+﻿
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
     <meta charset="utf-8" />
@@ -14,8 +15,14 @@
 <body>
     <Routes @rendermode="InteractiveServer" />
     <ReconnectModal />
+    <script>
+        const isDark = localStorage.getItem("darkMode") === "true";
+        if (isDark) document.documentElement.classList.add("dark");
+    </script>
     <script src="_content/LumexUI/js/LumexUI.js" type="module"></script>
     <script src="@Assets["_framework/blazor.web.js"]"></script>
+    <script src="theme.js"></script>
 </body>
 
 </html>
+

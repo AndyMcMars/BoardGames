@@ -11,8 +11,8 @@
 <div class="flex justify-between">
     <div class="flex items-center gap-2 mb-4">
         <LumexLink Href="/">@Localizer["strGames"]</LumexLink>
-        <p>/</p>
-        <LumexLink Href="@($"/games/{game_slug}")">@_match?.Game?.Name</LumexLink>
+        <p>></p>
+        <LumexLink Href="@($"/{game_slug}")">@_match?.Game?.Name</LumexLink>
     </div>
     <LumexDropdown Classes="@_classes">
         <LumexDropdownTrigger>
@@ -45,7 +45,7 @@
 @if(_match?.Game != null)
 {
     // Display match details
-    <LumexCard Class="mb-4">
+    <LumexCard Class="mb-4 max-w-sm">
         <LumexCardHeader Class="flex gap-4 items-start">
 
             <img src="@_match.Game.Image" width="200" />
@@ -57,43 +57,59 @@
                     </AvatarContent>
                 </LumexUser>
 
-                <LumexUser Name="Stars" Description="@_match.Stars.ToString()">
-                    <AvatarContent>
-                        <StarIcon />
-                    </AvatarContent>
-                </LumexUser>
-
                 <LumexUser Name="Date" Description="@_match.Date.ToString("dd-MM-yyyy")">
                     <AvatarContent>
                         <CalendarClockIcon />
                     </AvatarContent>
                 </LumexUser>
 
-                <LumexUser Name="Duration" Description="@_match.Duration?.ToString(@"hh\:mm")">
-                    <AvatarContent>
-                        <TimerIcon />
-                    </AvatarContent>
-                </LumexUser>
-                
                 <LumexUser Name="Location" Description="@_match.Location?.Description">
                     <AvatarContent>
                         <MapPinIcon />
                     </AvatarContent>
                 </LumexUser>
+
+                <LumexUser Name="Duration" Description="@_match.Duration?.ToString(@"h\h\ mm\m")">
+                    <AvatarContent>
+                        <TimerIcon />
+                    </AvatarContent>
+                </LumexUser>
                 
+            </div>
+
+        </LumexCardHeader>
+        <LumexDivider />
+        <LumexCardFooter>
+            <div class="flex h-10 justify-evenly gap-4 w-full">
                 <LumexUser Name="Winner" Description="@_match.Winner?.Player.Name">
                     <AvatarContent>
                         <CrownIcon />
                     </AvatarContent>
                 </LumexUser>
-            </div>
 
-        </LumexCardHeader>
+                <LumexDivider Orientation="Orientation.Vertical"/>
+                
+                <LumexUser Name="Players" Description="@_match.Results.Count.ToString()">
+                    <AvatarContent>
+                        <UsersIcon />
+                    </AvatarContent>
+                </LumexUser>
+                
+                <LumexDivider Orientation="Orientation.Vertical" />
+
+                <LumexUser Name="Stars" Description="@_match.Stars.ToString()">
+                    <AvatarContent>
+                        <StarIcon />
+                    </AvatarContent>
+                </LumexUser>
+
+            </div>
+        </LumexCardFooter>
     </LumexCard>
 
     // Display match results
-    <LumexDataGrid T=mdResult Data="@_match.Results.AsQueryable()">
-        <TemplateColumn Title="Nr.">
+    <LumexDataGrid T=mdResult Data="@_match.Results.AsQueryable()" Class="max-w-xl">
+        <TemplateColumn Title="Nr." Class="w-10">
             @{
                 var index = _match.Results
                     .OrderByDescending(r => r.Points)
@@ -103,8 +119,16 @@
             <p>@($"{@index}°")</p>
         </TemplateColumn>
         <PropertyColumn Property="@(p => p.Player.Name)" Title="Player" />
-        <PropertyColumn Property="@(p => p.Faction != null ? p.Faction.Name : "")" Title="Faction"/>
-        <PropertyColumn Property="@(p => p.Points)" Sortable="true" Title="@Localizer["strPoints"]"/>
+        <PropertyColumn Property="@(p => p.Faction != null ? p.Faction.Name : "")" Title="Faction">
+            <Content>
+                <LumexUser Name="@context?.Faction?.Name">
+                    <AvatarContent>
+                        <div style="width:15px;height:15px;background:@context?.Faction?.Color;border-radius:50%;" />
+                    </AvatarContent>
+                </LumexUser>
+            </Content>
+        </PropertyColumn>
+        <PropertyColumn Property="@(p => p.Points)" Sortable="true" Title="@Localizer["strPoints"]" Class="w-10"/>
     </LumexDataGrid>
 
     // Display match reviews

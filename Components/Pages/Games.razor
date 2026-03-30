@@ -9,9 +9,10 @@
 @inject NavigationManager Nav
 @inject AppDbContext Db
 
-<h1 class="font-bold text-2xl">@Localizer["strGames"]</h1>
+<p class="font-bold text-2xl mb-4" tabindex="-1">@Localizer["strGames"]</p>
 
 <LumexTextbox Placeholder="Search by name..."
+              Class="max-w-sm"
                 Behavior="@InputBehavior.OnInput"
                 @bind-Value="@_nameFilter">
     <StartContent>
@@ -19,12 +20,11 @@
     </StartContent>
 </LumexTextbox>
 
-<div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:16px;" class="mt-4">
-
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-4 justify-items-center">
 
     @foreach (var game in FilteredGames)
     {
-        <LumexCard onclick="@(() => GoToMatches(game.Slug))">
+        <LumexCard onclick="@(() => GoToMatches(game.Slug))" Class="w-full max-w-sm">
             <div class="w-full aspect-square overflow-hidden">
                 <img src="@game.Image"
                      class="w-full h-full object-cover object-top" />
