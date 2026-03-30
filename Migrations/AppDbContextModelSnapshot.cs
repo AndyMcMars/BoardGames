@@ -37,7 +37,7 @@ namespace BoardGames.Migrations
 
                     b.HasIndex("GameId");
 
-                    b.ToTable("Factions");
+                    b.ToTable("Factions", (string)null);
                 });
 
             modelBuilder.Entity("mdGame", b =>
@@ -55,7 +55,7 @@ namespace BoardGames.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Games");
+                    b.ToTable("Games", (string)null);
                 });
 
             modelBuilder.Entity("mdLocation", b =>
@@ -69,7 +69,7 @@ namespace BoardGames.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Locations");
+                    b.ToTable("Locations", (string)null);
                 });
 
             modelBuilder.Entity("mdMatch", b =>
@@ -101,7 +101,7 @@ namespace BoardGames.Migrations
 
                     b.HasIndex("TournamentId");
 
-                    b.ToTable("Matches");
+                    b.ToTable("Matches", (string)null);
                 });
 
             modelBuilder.Entity("mdPlayer", b =>
@@ -118,7 +118,7 @@ namespace BoardGames.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Players");
+                    b.ToTable("Players", (string)null);
                 });
 
             modelBuilder.Entity("mdResult", b =>
@@ -147,7 +147,7 @@ namespace BoardGames.Migrations
 
                     b.HasIndex("PlayerId");
 
-                    b.ToTable("Results");
+                    b.ToTable("Results", (string)null);
                 });
 
             modelBuilder.Entity("mdReview", b =>
@@ -174,7 +174,7 @@ namespace BoardGames.Migrations
 
                     b.HasIndex("PlayerId");
 
-                    b.ToTable("Reviews");
+                    b.ToTable("Reviews", (string)null);
                 });
 
             modelBuilder.Entity("mdTournament", b =>
@@ -194,7 +194,7 @@ namespace BoardGames.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tournaments");
+                    b.ToTable("Tournaments", (string)null);
                 });
 
             modelBuilder.Entity("mdFaction", b =>

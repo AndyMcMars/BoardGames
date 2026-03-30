@@ -52,6 +52,7 @@
                 <LumexSelect TValue="int"
                              Label="Select a Location"
                              @bind-Value="_newMatch.LocationId"
+                             Required
                              class="flex-1">
                     @foreach (var location in _locations)
                     {
@@ -68,9 +69,7 @@
 
     <h3>Points</h3>
 
-
-    <LumexDataGrid Data="@_results.AsQueryable()"
-                   Classes="@(new() { Table = "w-full" })">
+    <LumexDataGrid Data="@_results.AsQueryable()" Layout="Layout.Fixed" Classes="_classes">
         <ToolbarContent>
             <LumexSelect Label="Select players"
                          @bind-Values="@_selectedPlayers">
@@ -84,22 +83,22 @@
             </LumexSelect>
         </ToolbarContent>
         <ChildContent>
-            <PropertyColumn Property="@(p => p.Player.Name)" />
+            <PropertyColumn Property="@(p => p.Player.Name)"/>
             <EditColumn Property="@(p => p.Points)" />
-                <PropertyColumn Property="@(p => p.Faction)">
-                    <Content>
-                        <LumexSelect TValue="mdFaction" Label="Select a Faction" @bind-Value="context.Faction">
-                            @foreach (var faction in _factions)
-                            {
-                                <LumexSelectItem @key="@faction" Value="faction" TextValue="@faction.Name">@faction.Name</LumexSelectItem>
-                            }
-                        </LumexSelect>
-                    </Content>
-                </PropertyColumn>
+            <PropertyColumn Property="@(p => p.Faction)">
+                <Content>
+                    <LumexSelect TValue="mdFaction" Label="Select a Faction" @bind-Value="context.Faction">
+                        @foreach (var faction in _factions)
+                        {
+                            <LumexSelectItem @key="@faction" Value="@faction" TextValue="@faction.Name">@faction.Name</LumexSelectItem>
+                        }
+                    </LumexSelect>
+                </Content>
+            </PropertyColumn>
         </ChildContent>
     </LumexDataGrid>
 
-    <LumexButton OnClick="Savematch" Disabled="@(_results.Count() < 1)">Save</LumexButton>
+    <LumexButton OnClick="Savematch" Disabled="@(_results.Count() < 1)" Color="@ThemeColor.Success" Class="mt-4">Save</LumexButton>
 
 }
 
@@ -107,7 +106,6 @@
 @code {
 
     private mdMatch _newMatch = new();
-    private Action<ToastModel> _toasterId = t => t.ToasterId = "toaster-rich-colors";
     private IQueryable<mdGame> _games => Db.Games;
     private IQueryable<mdLocation> _locations => Db.Locations;
     private IQueryable<mdPlayer> _players => Db.Players;
@@ -127,7 +125,12 @@
     private List<mdResult> _results = new();
 
     private int? duration;
-
+    private Action<ToastModel> _toasterId = t => t.ToasterId = "toaster-rich-colors";
+    
+    private DataGridSlots _classes = new()
+    {
+        Thead = "[&_th]:nth-1:w-20 [&_th]:nth-3:w-80"
+    };
 
     protected override async Task OnInitializedAsync()
     {
@@ -158,11 +161,34 @@
 
     private async Task Savematch()
     {
+        if (_newMatch.GameId == 0)
+        {
+            Toast.Warning("Please select a game.");
+            return;
+        }
+        if (_newMatch.LocationId == 0)
+        {
+            Toast.Error("Please select a location.");
+            return;
+        }
+
+        foreach (var r in _results)
+        {
+            if (r.Faction != null)
+            {
+                r.FactionId = r.Faction.Id;
+            }
+        }
+
+
         _newMatch.Results = _results;
         _newMatch.Duration = duration.HasValue
                                 ? TimeSpan.FromMinutes(duration.Value)
                                 : null;
         Db.Matches.Add(_newMatch);
+
+
+
         await Db.SaveChangesAsync();
 
         

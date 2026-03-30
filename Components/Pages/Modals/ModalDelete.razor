@@ -1,0 +1,54 @@
+﻿@using LumexUI.Common
+@using LumexUI.Shared.Icons
+
+@inject AppDbContext Db
+
+<LumexModal Open="_open">
+
+    <LumexModalContent>
+
+        <LumexModalHeader>
+            @Header
+        </LumexModalHeader>
+
+        <LumexModalBody>
+            <p>@Description</p>
+        </LumexModalBody>
+
+        <LumexModalFooter>
+
+            <LumexButton Color="@ThemeColor.Danger"
+                         Variant="@Variant.Flat"
+                         OnClick="OnCloseClicked">
+                Cancel
+            </LumexButton>
+
+            <LumexButton Color="@ThemeColor.Primary"
+                         Variant="@Variant.Solid"
+                         OnClick="ConfirmDelete">
+                Yes
+            </LumexButton>
+        </LumexModalFooter>
+
+    </LumexModalContent>
+</LumexModal>
+
+
+@code {
+    [Parameter] public bool _open { get; set; }
+
+    [Parameter] public string? Header { get; set; }
+
+    [Parameter] public string? Description { get; set; }
+
+    [Parameter] public EventCallback<bool> OnResult { get; set; }
+
+    private async Task ConfirmDelete()
+    {
+        await OnResult.InvokeAsync(true);
+    }
+    private async Task OnCloseClicked()
+    {
+        await OnResult.InvokeAsync(false);
+    }
+}

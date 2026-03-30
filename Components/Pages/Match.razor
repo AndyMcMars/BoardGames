@@ -2,12 +2,47 @@
 @using BoardGames.Components.Pages.Icons
 @using LumexUI.Shared.Icons
 @using Microsoft.EntityFrameworkCore;
+@using LumexUI.Common;
 
 @inject AppDbContext Db
 @inject IStringLocalizer<SharedResource> Localizer
+@inject NavigationManager Nav
+
+<div class="flex justify-between">
+    <div class="flex items-center gap-2 mb-4">
+        <LumexLink Href="/">@Localizer["strGames"]</LumexLink>
+        <p>/</p>
+        <LumexLink Href="@($"/games/{_match?.GameId}")">@_match?.Game?.Name</LumexLink>
+    </div>
+    <LumexDropdown Classes="@_classes">
+        <LumexDropdownTrigger>
+            <LumexButton IconOnly Variant="Variant.Flat" Size="Size.Small">
+                <EllipsisVerticalIcon/>
+            </LumexButton>
+        </LumexDropdownTrigger>
+        <LumexDropdownMenu>
+            <LumexDropdownItem ShowDivider>
+                <StartContent>
+                    <ShareIcon />
+                </StartContent>
+                <ChildContent>Share</ChildContent>
+            </LumexDropdownItem>
+            <LumexDropdownItem Color="@ThemeColor.Danger" Class="text-danger" OnClick="() => _showDeleteModal = true">
+                <StartContent>
+                    <Trash2Icon/>
+                </StartContent>
+                <ChildContent>Delete</ChildContent>
+            </LumexDropdownItem>
+        </LumexDropdownMenu>
+    </LumexDropdown>
+
+    @if (_showDeleteModal){
+        <ModalDelete OnResult="@DeleteMatch" _open="_showDeleteModal" Header="Delete match" Description="Are you sure you want to delete the current match?"/>
+    }
 
 
-@if(_match.Game != null)
+</div>
+@if(_match?.Game != null)
 {
     // Display match details
     <LumexCard Class="mb-4">
@@ -106,6 +141,14 @@
 
     private mdMatch? _match;
 
+    private PopoverSlots _classes = new()
+    {
+        Content = "p-0 border border-divider bg-background",
+        Arrow = "bg-default-200"
+    };
+
+    private bool _showDeleteModal = false;
+
     protected override async Task OnInitializedAsync()
     {
         await UpdateMatchData();
@@ -118,6 +161,8 @@
                         .Include(m => m.Game)
                         .Include(m => m.Location)
                         .Include(m => m.Results)
+                            .ThenInclude(r => r.Faction)
+                        .Include(m => m.Results)
                             .ThenInclude(r => r.Player)
                         .Include(m => m.Reviews)
                             .ThenInclude(r => r.Player)
@@ -129,5 +174,25 @@
             .ToList();
 
                         StateHasChanged();
+    }
+
+    private async Task DeleteMatch(bool confirmed) 
+    { 
+        _showDeleteModal = false;
+        if (!confirmed) return;
+
+        var match = await Db.Matches.FindAsync(match_id); 
+        if (match != null) 
+        { 
+            Db.Matches.Remove(match); 
+            await Db.SaveChangesAsync(); 
+        } 
+        
+        Nav.NavigateTo($"/games/{match?.GameId}"); 
+    }
+
+    private void CloseDeleteModal()
+    {
+        _showDeleteModal = false;
     }
 }

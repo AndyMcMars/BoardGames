@@ -28,20 +28,26 @@
                           Placeholder="Enter faction name"
                           Variant="@InputVariant.Outlined" />
 
-            <LumexSelect TValue="string" Label="Select color" @bind-Value="_newFaction.Color">
+            <LumexSelect TValue="ColorChoice" Label="Select color" @bind-Value="_selectedColor">
                 <ChildContent>
                     @foreach (var color in _colorChoice)
                     {
-                        <LumexSelectItem @key="@color" Value="color.hex" TextValue="@color.Name">
+                        <LumexSelectItem @key="@color" Value="color" TextValue="@color.Name">
                             <LumexUser Name="@color.Name">
                                 <AvatarContent>
                                     <div style="width:30px;height:30px;background:@color.hex;border-radius:50%;"/>
                                 </AvatarContent>
                             </LumexUser>
-
                         </LumexSelectItem>
                     }
                 </ChildContent>
+                <ValueContent>
+                    <LumexUser Name="@context.Name">
+                        <AvatarContent>
+                            <div style="width:15px;height:15px;background:@context.hex;border-radius:50%;" />
+                        </AvatarContent>
+                    </LumexUser>
+                </ValueContent>
             </LumexSelect>
 
         </LumexModalBody>
@@ -69,6 +75,7 @@
 
     private mdFaction _newFaction = new();
     private mdGame? _selectedGame;
+    private ColorChoice? _selectedColor;
 
     private IQueryable<mdGame> _games => Db.Games;
 
@@ -105,7 +112,7 @@
             return;
 
         _newFaction.GameId = _selectedGame.Id;
-        _newFaction.Color = _newFaction.Color ?? "#000000";
+        _newFaction.Color = _selectedColor?.hex ?? "#000000";
 
         Db.Factions.Add(_newFaction);
         await Db.SaveChangesAsync();

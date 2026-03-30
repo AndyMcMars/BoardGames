@@ -5,46 +5,58 @@
 
 @inject AppDbContext Db
 @inject NavigationManager Nav
+@inject IStringLocalizer<SharedResource> Localizer
 
+<div class="flex items-center gap-2 mb-4">
+    <LumexLink Href="/">@Localizer["strGames"]</LumexLink>
+</div>
 
 <LumexCard Class="mb-4">
     <LumexCardHeader Class="flex gap-4 items-start">
         <img src="@_game.Image" width="100" />
-        <div class="flex flex-col gap-3 w-full">
+        <div class="flex flex-col gap-3 w-full text-xl">
            <h2>@_game.Name</h2>
         </div>
     </LumexCardHeader>
+    <LumexCardFooter>
+        <div class="flex justify-between w-full">
+            <LumexChip Variant="ChipVariant.Light">
+                <StartContent>
+                    @_matches.Count()
+                </StartContent>
+                <ChildContent>
+                    <SwordsIcon/>
+                </ChildContent>
+            </LumexChip>
+            <LumexChip Variant="ChipVariant.Light">
+                <StartContent>
+                    @totalDuration
+                </StartContent>
+                <ChildContent>
+                    <TimerIcon />
+                </ChildContent>
+            </LumexChip>
+        </div>
+    </LumexCardFooter>
 </LumexCard>
 
 
 @if(_matches.Count() > 0)
 {
-    <LumexDataGrid Data="@_matches" T=mdMatch Layout="Layout.Fixed">
-        <PropertyColumn Property="@(p => p.Date)" Format="yyyy-MM-dd" Sortable="true" />
+    <LumexDataGrid Data="@_matches" T=mdMatch Layout="Layout.Fixed" OnRowClick="@GoToMatch">
+        <PropertyColumn Property="@(p => p.Date)" Format="dd-MM-yyyy" Sortable="true" />
         <TemplateColumn Title="Players" Context="p" Sortable="true">
             @(p.Results.Count())
         </TemplateColumn>
         <TemplateColumn Title="Winner" Context="p" Sortable="true">
             @($"{p.Winner?.Player?.Name} ({p.Winner?.Points})" ?? "")
         </TemplateColumn>
-        <TemplateColumn Title="Actions" Context="p">
-            <LumexDropdown>
-                <LumexDropdownTrigger>
-                    <LumexButton IconOnly Variant="@Variant.Light">
-                        <EllipsisVerticalIcon/>
-                    </LumexButton>
-                </LumexDropdownTrigger>
-                <LumexDropdownMenu>
-                    <LumexDropdownItem OnClick="@(() => GoToMatchId(p.Id))">View</LumexDropdownItem>
-                    <LumexDropdownItem OnClick="@(() => DeleteMatch(p.Id))" Color="@ThemeColor.Danger" Class="text-danger">Delete</LumexDropdownItem>
-                </LumexDropdownMenu>
-            </LumexDropdown>
-        </TemplateColumn>
     </LumexDataGrid>
 }
 else
 {
-    <h2>No matches.</h2>
+    <LumexAlert Title="No match found!"
+                Description="@($"There are currently no matches for {_game.Name}")" />
 }
 
 
@@ -57,28 +69,19 @@ else
                                             .Where(m => m.GameId == game_id)
                                             .Include(m => m.Location)
                                             .Include(m => m.Results)
-                                                .ThenInclude(r => r.Player);
+                                                .ThenInclude(r => r.Player)
+                                            .OrderByDescending(m => m.Date);
+
+    private TimeSpan totalDuration => TimeSpan.FromTicks(
+        _matches
+            .Where(m => m.Duration.HasValue)
+            .AsEnumerable()
+            .Sum(m => m.Duration.Value.Ticks)
+    );
+
 
     private void GoToMatch(DataGridRowClickEventArgs<mdMatch> match)
     {
         Nav.NavigateTo($"/match/{match.Item.Id}");
-    }
-
-    private void GoToMatchId(int match_id)
-    {
-        Nav.NavigateTo($"/match/{match_id}");
-    }
-
-
-    private async void DeleteMatch(int match_id)
-    {
-        var delete_match = Db.Matches.Where(m => m.Id == match_id).FirstOrDefault();
-
-        if (delete_match != null)
-        {
-            Db.Matches.Remove(delete_match);
-            await Db.SaveChangesAsync();
-
-        }
     }
 }

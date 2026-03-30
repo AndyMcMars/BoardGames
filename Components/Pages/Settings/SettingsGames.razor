@@ -9,23 +9,30 @@
     <ToolbarContent>
         <div class="max-w-sm">
             <ModalGame OnGameCreated="UpdateData" />
-            <LumexButton OnClick="DeleteSelected" Disabled="_selectedGames.Count < 1">Delete Selected</LumexButton>
+            <LumexButton OnClick="() => _showDeleteModal = true" Disabled="_selectedGames.Count < 1">Delete Selected</LumexButton>
         </div>
     </ToolbarContent>
     <ChildContent>
         <PropertyColumn Property="@(p => p.Image )">
             <Content>
-                <img src="@context.Image" width="100" />
+                <img src="@context.Image" class="w-[100px] h-[100px] object-cover object-top" />
             </Content>
         </PropertyColumn>
         <PropertyColumn Property="@(p => p.Name)" />
     </ChildContent>
 </LumexDataGrid>
 
+
+@if (_showDeleteModal)
+{
+    <ModalDelete OnResult="@DeleteSelected" _open="_showDeleteModal" Header="Delete game" Description="Are you sure you want to delete the selected game?" />
+}
+
 @code {
     private IQueryable<mdGame> _games => Db.Games;
     private ICollection<mdGame> _selectedGames = [];
     private int _refreshKey;
+    private bool _showDeleteModal = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -39,8 +46,11 @@
     }
 
 
-    private async Task DeleteSelected()
+    private async Task DeleteSelected(bool confirmed)
     {
+        _showDeleteModal = false;
+        if (!confirmed) return;
+
         Db.Games.RemoveRange(_selectedGames);
         await Db.SaveChangesAsync();
         await UpdateData();

@@ -22,13 +22,12 @@
 <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:16px;" class="mt-4">
 
 
-    @foreach (var game in 
-    FilteredGames)
+    @foreach (var game in FilteredGames)
     {
         <LumexCard onclick="@(() => GoToMatches(game.Id))">
-            <div style="width:100%; height:250px; overflow:hidden;">
+            <div class="w-full aspect-square overflow-hidden">
                 <img src="@game.Image"
-                     style="width:100%; height:100%; object-fit:cover; object-position: top;" />
+                     class="w-full h-full object-cover object-top" />
             </div>
             <LumexCardFooter Blurred="@true">
                 <div class="flex justify-between w-full">
