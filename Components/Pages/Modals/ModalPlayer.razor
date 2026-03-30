@@ -1,10 +1,12 @@
 ﻿@using LumexUI.Common
+@using LumexUI.Shared.Icons
 
 @inject AppDbContext Db
 
 <LumexModal>
-    <LumexModalTrigger Variant="@Variant.Flat" Color="@ThemeColor.Primary">
-        + Add Player
+    <LumexModalTrigger Variant="@Variant.Flat" Color="@ButtonColor">
+        <UserIcon/>
+        @ButtonText
     </LumexModalTrigger>
 
     <LumexModalContent Context="modal">
@@ -16,8 +18,8 @@
         <LumexModalBody>
 
             <LumexTextbox Label="Name"
-                          @bind-Value="_newPlayer.Name"
-                          Placeholder="Enter game name"
+                          @bind-Value="_model.Name"
+                          Placeholder="Enter Player name"
                           Variant="@InputVariant.Outlined" />
 
 
@@ -33,7 +35,7 @@
 
             <LumexButton Color="@ThemeColor.Primary"
                          Variant="@Variant.Solid"
-                         OnClick="async () => await SaveGame(modal)">
+                         OnClick="async () => await SavePlayer(modal)">
                 Save
             </LumexButton>
 
@@ -44,19 +46,52 @@
 
 @code {
 
-    [Parameter]
-    public EventCallback OnCreated { get; set; }
+    [Parameter] public EventCallback OnSaved { get; set; }
+    [Parameter] public mdPlayer? Player { get; set; }
+    [Parameter] public string? ButtonText { get; set; }
+    [Parameter] public ThemeColor ButtonColor { get; set; }
+    
+    private mdPlayer? _model;
+    
 
-    private mdPlayer _newPlayer = new();
-
-    private async Task SaveGame(LumexModal modal)
+    protected override void OnParametersSet()
     {
-        Db.Players.Add(_newPlayer);
+        if (Player is null)
+        {
+            _model = new mdPlayer();
+        }
+        else
+        {
+            _model = new mdPlayer
+            {
+                Id = Player.Id,
+                Name = Player.Name
+            };
+        }
+    }
+
+
+    private async Task SavePlayer(LumexModal modal)
+    {
+
+        if (_model.Id == 0)
+        {
+            Db.Players.Add(_model);
+        }
+        else
+        {
+            var existing = await Db.Players.FindAsync(_model.Id);
+
+            if (existing != null)
+            {
+                existing.Name = _model.Name;
+            }
+        }
+
+
         await Db.SaveChangesAsync();
 
-        _newPlayer = new mdPlayer();
-
-        await OnCreated.InvokeAsync();
+        await OnSaved.InvokeAsync();
 
         await modal.CloseAsync();
     }
