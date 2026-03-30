@@ -25,7 +25,7 @@
             </LumexSelect>
 
             <h2>Stars:</h2>
-            <LumexRadioGroup TValue="int" Orientation="@Orientation.Horizontal" Color="@ThemeColor.Warning" @bind-Value="_newReview.Stars">
+            <LumexRadioGroup TValue="int" Orientation="@Orientation.Horizontal" Color="@ThemeColor.Warning" @bind-Value="_newReview.Stars" Required>
                 <LumexRadio Value="1">1</LumexRadio>
                 <LumexRadio Value="2">2</LumexRadio>
                 <LumexRadio Value="3">3</LumexRadio>
@@ -63,6 +63,13 @@
     private mdReview _newReview = new();
     private IQueryable<mdPlayer> _players => Db.Players;
 
+    protected override void OnParametersSet()
+    {
+        if (Match == null)
+            return;
+
+        _newReview = new mdReview { MatchId = Match.Id, Stars = 3 };
+	}
 
     private async Task SaveReview(LumexModal modal)
     {
