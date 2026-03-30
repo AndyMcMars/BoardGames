@@ -3,8 +3,9 @@
 @inject AppDbContext Db
 
 <LumexModal>
-    <LumexModalTrigger Variant="@Variant.Flat" Color="@ThemeColor.Primary">
-        + Add Location
+    <LumexModalTrigger Variant="@Variant.Flat" Color="@ButtonColor">
+        <MapPinIcon />
+        @ButtonText
     </LumexModalTrigger>
 
     <LumexModalContent Context="modal">
@@ -16,7 +17,7 @@
         <LumexModalBody>
 
             <LumexTextbox Label="Name"
-                          @bind-Value="_newLocation.Description"
+                          @bind-Value="_model.Description"
                           Placeholder="Enter location name"
                           Variant="@InputVariant.Outlined" />
 
@@ -33,7 +34,7 @@
 
             <LumexButton Color="@ThemeColor.Primary"
                          Variant="@Variant.Solid"
-                         OnClick="async () => await SaveGame(modal)">
+                         OnClick="async () => await SaveLocation(modal)">
                 Save
             </LumexButton>
 
@@ -44,19 +45,49 @@
 
 @code {
 
-    [Parameter]
-    public EventCallback OnCreated { get; set; }
-
-    private mdLocation _newLocation = new();
-
-    private async Task SaveGame(LumexModal modal)
+    [Parameter] public EventCallback OnSaved { get; set; }
+    [Parameter] public mdLocation? Location { get; set; }
+    [Parameter] public string? ButtonText { get; set; }
+    [Parameter] public ThemeColor ButtonColor { get; set; }
+    
+    private mdLocation? _model;
+    
+    protected override void OnParametersSet()
     {
-        Db.Locations.Add(_newLocation);
+        if (Location is null)
+        {
+            _model = new mdLocation();
+        }
+        else
+        {
+            _model = new mdLocation
+            {
+                Id = Location.Id,
+                Description = Location.Description
+            };
+        }
+    }
+
+    private async Task SaveLocation(LumexModal modal)
+    {
+
+        if (_model.Id == 0)
+        {
+            Db.Locations.Add(_model);
+        }
+        else
+        {
+            var existing = await Db.Locations.FindAsync(_model.Id);
+
+            if (existing != null)
+            {
+                existing.Description = _model.Description;
+            }
+        }
+
         await Db.SaveChangesAsync();
 
-        _newLocation = new mdLocation();
-
-        await OnCreated.InvokeAsync();
+        await OnSaved.InvokeAsync();
 
         await modal.CloseAsync();
     }

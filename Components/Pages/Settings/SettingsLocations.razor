@@ -1,4 +1,5 @@
 ﻿@using LumexUI.Common
+@using LumexUI.Shared.Icons
 @using Microsoft.EntityFrameworkCore
 
 @inject AppDbContext Db
@@ -7,9 +8,12 @@
 
 <LumexDataGrid Data="@_locations" SelectionMode="@SelectionMode.Multiple" @bind-SelectedItems="_selectedLocations" @key="_refreshKey">
     <ToolbarContent>
-        <div class="max-w-sm">
-            <ModalLocation OnCreated="UpdateData"/>
-            <LumexButton OnClick="() => _showDeleteModal = true" Disabled="_selectedLocations.Count < 1">Delete Selected</LumexButton>
+        <div class="flex justify-between">
+            <ModalLocation ButtonText="@(_selectedLocations.Count == 1 ? "Edit Location" : "Add Location")" Location="@(_selectedLocations.Count == 1 ? _selectedLocations.FirstOrDefault() : null)" OnSaved="UpdateData" ButtonColor="@(_selectedLocations.Count == 1 ? ThemeColor.Warning : ThemeColor.Success)" />
+            <LumexButton OnClick="() => _showDeleteModal = true" Disabled="_selectedLocations.Count < 1" Color="@(_selectedLocations.Count < 1 ? ThemeColor.Default : ThemeColor.Danger)">
+                <Trash2Icon />
+                Delete Location
+            </LumexButton>
         </div>
     </ToolbarContent>
     <ChildContent>
@@ -38,8 +42,6 @@
         _refreshKey++;
         StateHasChanged();
     }
-
-
 
     private async Task DeleteSelected(bool confirmed)
     {
