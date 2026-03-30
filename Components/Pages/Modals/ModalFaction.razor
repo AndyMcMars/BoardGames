@@ -4,8 +4,9 @@
 @inject AppDbContext Db
 
 <LumexModal>
-    <LumexModalTrigger Variant="@Variant.Flat" Color="@ThemeColor.Primary">
-        + Add Faction
+    <LumexModalTrigger Variant="@Variant.Flat" Color="@ButtonColor">
+        <SwordsIcon />
+        @ButtonText
     </LumexModalTrigger>
 
     <LumexModalContent Context="modal">
@@ -24,7 +25,7 @@
             </LumexSelect>
 
             <LumexTextbox Label="Name"
-                          @bind-Value="_newFaction.Name"
+                          @bind-Value="_model.Name"
                           Placeholder="Enter faction name"
                           Variant="@InputVariant.Outlined" />
 
@@ -70,10 +71,14 @@
     </LumexModalContent>
 </LumexModal>
 @code {
-    [Parameter]
-    public EventCallback OnCreated { get; set; }
+    [Parameter] public EventCallback OnCreated { get; set; }
+    [Parameter] public EventCallback OnSaved { get; set; }
+    [Parameter] public mdFaction? Faction { get; set; }
+    [Parameter] public string? ButtonText { get; set; }
+    [Parameter] public ThemeColor ButtonColor { get; set; }
 
-    private mdFaction _newFaction = new();
+    private mdFaction? _model;
+
     private mdGame? _selectedGame;
     private ColorChoice? _selectedColor;
 
@@ -105,21 +110,61 @@
 
     private record ColorChoice(string Name, string hex);
 
+    
+    protected override void OnParametersSet()
+    {
+        if (Faction is null)
+        {
+            _model = new mdFaction();
+            _selectedGame = null;
+            _selectedColor = null;
+        }
+        else
+        {
+
+
+            _model = new mdFaction
+            {
+                Id = Faction.Id,
+                Name = Faction.Name,
+                Color = Faction.Color,
+                GameId = Faction.GameId
+            };
+
+            _selectedGame = _games.FirstOrDefault(g => g.Id == Faction.GameId);
+            _selectedColor = _colorChoice.FirstOrDefault(c => c.hex == Faction.Color);
+        }
+    }
 
     private async Task SaveGame(LumexModal modal)
     {
         if (_selectedGame is null)
             return;
+        
+        if (_model.Id == 0)
+        {
+            _model.GameId = _selectedGame.Id;
+            _model.Color = _selectedColor?.hex ?? "#000000";
+            Db.Factions.Add(_model);
+        }
+        else
+        {
+            var existing = await Db.Factions.FindAsync(_model.Id);
 
-        _newFaction.GameId = _selectedGame.Id;
-        _newFaction.Color = _selectedColor?.hex ?? "#000000";
+            if (existing != null)
+            {
+                existing.Name = _model.Name;
+                existing.GameId = _selectedGame.Id;
+                existing.Color = _selectedColor.hex;
+            }
+        }
 
-        Db.Factions.Add(_newFaction);
+
         await Db.SaveChangesAsync();
 
-        _newFaction = new mdFaction();
+        _model = null;
 
-        await OnCreated.InvokeAsync();
+        await OnSaved.InvokeAsync();
 
         await modal.CloseAsync();
     }

@@ -9,7 +9,7 @@
 <LumexDataGrid Data="@_games" SelectionMode="@SelectionMode.Multiple" @bind-SelectedItems="_selectedGames" @key="_refreshKey">
     <ToolbarContent>
         <div class="flex justify-between">
-            <ModalGame OnCreated="UpdateData" ButtonText="@(_selectedGames.Count == 1 ? "Edit Game" : "Add Game")" Game="_selectedGames.FirstOrDefault()" OnSaved="UpdateData" ButtonColor="@(_selectedGames.Count == 1 ? ThemeColor.Warning : ThemeColor.Success)" />
+            <ModalGame ButtonText="@(_selectedGames.Count == 1 ? "Edit Game" : "Add Game")" Game="_selectedGames.FirstOrDefault()" OnSaved="UpdateData" ButtonColor="@(_selectedGames.Count == 1 ? ThemeColor.Warning : ThemeColor.Success)" />
             <LumexButton OnClick="() => _showDeleteModal = true" Disabled="_selectedGames.Count < 1" Color="@(_selectedGames.Count < 1 ? ThemeColor.Default : ThemeColor.Danger)">
                 <Trash2Icon/>
                 Delete Game
