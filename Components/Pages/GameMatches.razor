@@ -1,4 +1,4 @@
-﻿@page "/games/{game_slug}"
+﻿@page "/{game_slug}"
 @using LumexUI.Common
 @using LumexUI.Shared.Icons
 @using Microsoft.EntityFrameworkCore;
@@ -45,26 +45,29 @@ else
             </div>
         </LumexCardFooter>
     </LumexCard>
-}
 
 
-@if(_matches.Count() > 0)
-{
-    <LumexDataGrid Data="@_matches" T=mdMatch Layout="Layout.Fixed" OnRowClick="@GoToMatch">
-        <PropertyColumn Property="@(p => p.Date)" Format="dd-MM-yyyy" Sortable="true" />
-        <TemplateColumn Title="Players" Context="p" Sortable="true">
-            @(p.Results.Count())
-        </TemplateColumn>
-        <TemplateColumn Title="Winner" Context="p" Sortable="true">
-            @($"{p.Winner?.Player?.Name} ({p.Winner?.Points})" ?? "")
-        </TemplateColumn>
-    </LumexDataGrid>
+
+    @if(_matches.Count() > 0)
+    {
+        <LumexDataGrid Data="@_matches" T=mdMatch Layout="Layout.Fixed" OnRowClick="@GoToMatch">
+            <PropertyColumn Property="@(p => p.Date)" Format="dd-MM-yyyy" Sortable="true" />
+            <TemplateColumn Title="Players" Context="p" Sortable="true">
+                @(p.Results.Count())
+            </TemplateColumn>
+            <TemplateColumn Title="Winner" Context="p" Sortable="true">
+                @($"{p.Winner?.Player?.Name} ({p.Winner?.Points})" ?? "")
+            </TemplateColumn>
+        </LumexDataGrid>
+    }
+    else
+    {
+        <LumexAlert Title="No match found!"
+                    Description="@($"There are currently no matches for {_game.Name}")" />
+    }
+
 }
-else
-{
-    <LumexAlert Title="No match found!"
-                Description="@($"There are currently no matches for {_game.Name}")" />
-}
+
 
 
 @code {
@@ -99,6 +102,6 @@ else
 
     private void GoToMatch(DataGridRowClickEventArgs<mdMatch> match)
     {
-        Nav.NavigateTo($"/match/{match.Item.Id}");
+        Nav.NavigateTo($"/{game_slug}/{match.Item.PublicId}");
     }
 }

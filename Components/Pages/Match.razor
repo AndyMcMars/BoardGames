@@ -1,4 +1,4 @@
-﻿@page "/match/{match_id:int}"
+﻿@page "/{game_slug}/{match_public_id}"
 @using BoardGames.Components.Pages.Icons
 @using LumexUI.Shared.Icons
 @using Microsoft.EntityFrameworkCore;
@@ -12,7 +12,7 @@
     <div class="flex items-center gap-2 mb-4">
         <LumexLink Href="/">@Localizer["strGames"]</LumexLink>
         <p>/</p>
-        <LumexLink Href="@($"/games/{_match?.GameId}")">@_match?.Game?.Name</LumexLink>
+        <LumexLink Href="@($"/games/{game_slug}")">@_match?.Game?.Name</LumexLink>
     </div>
     <LumexDropdown Classes="@_classes">
         <LumexDropdownTrigger>
@@ -136,8 +136,8 @@
 
 
 @code {
-    [Parameter]
-    public int match_id { get; set; }
+    [Parameter] public string match_public_id { get; set; }
+    [Parameter] public string game_slug { get; set; }
 
     private mdMatch? _match;
 
@@ -149,7 +149,7 @@
 
     private bool _showDeleteModal = false;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
         await UpdateMatchData();
     }
@@ -157,23 +157,23 @@
     private async Task UpdateMatchData()
     {
         _match = await Db.Matches
-                        .Where(m => m.Id == match_id)
-                        .Include(m => m.Game)
-                        .Include(m => m.Location)
-                        .Include(m => m.Results)
-                            .ThenInclude(r => r.Faction)
-                        .Include(m => m.Results)
-                            .ThenInclude(r => r.Player)
-                        .Include(m => m.Reviews)
-                            .ThenInclude(r => r.Player)
-                        .FirstOrDefaultAsync();
+            .Where(m => m.PublicId == match_public_id)
+            .Include(m => m.Game)
+            .Include(m => m.Location)
+            .Include(m => m.Results)
+                .ThenInclude(r => r.Faction)
+            .Include(m => m.Results)
+                .ThenInclude(r => r.Player)
+            .Include(m => m.Reviews)
+                .ThenInclude(r => r.Player)
+            .FirstOrDefaultAsync();
 
-                        
-        _match?.Results = _match.Results
-            .OrderByDescending(r => r.Points)
-            .ToList();
-
-                        StateHasChanged();
+        if (_match != null)
+        {
+            _match.Results = _match.Results
+                .OrderByDescending(r => r.Points)
+                .ToList();
+        }
     }
 
     private async Task DeleteMatch(bool confirmed) 
@@ -181,12 +181,14 @@
         _showDeleteModal = false;
         if (!confirmed) return;
 
-        var match = await Db.Matches.FindAsync(match_id); 
-        if (match != null) 
-        { 
-            Db.Matches.Remove(match); 
-            await Db.SaveChangesAsync(); 
-        } 
+        var match = await Db.Matches.FirstOrDefaultAsync(m => m.PublicId == match_public_id);
+        if (match != null)
+        {
+            Db.Matches.Remove(match);
+            await Db.SaveChangesAsync();
+
+            Nav.NavigateTo($"/games/{_match?.Game.Slug}");
+        }
         
         Nav.NavigateTo($"/games/{match?.GameId}"); 
     }

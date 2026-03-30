@@ -3,6 +3,7 @@
 public class mdMatch
 {
     public int Id { get; set; }
+    public string PublicId { get; set; } = null!;
 
     public int? TournamentId { get; set; }
     public mdTournament? Tournament { get; set; }

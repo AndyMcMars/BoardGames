@@ -147,6 +147,30 @@
         Thead = "[&_th]:nth-1:w-20 [&_th]:nth-3:w-80"
     };
 
+    private static readonly Random _random = new();
+
+    public static string GeneratePublicId()
+    {
+        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+        return new string(Enumerable.Range(0, 8)
+            .Select(_ => chars[_random.Next(chars.Length)])
+            .ToArray());
+    }
+
+    public async Task<string> GenerateUniqueId()
+    {
+        string id;
+
+        do
+        {
+            id = GeneratePublicId();
+        }
+        while (await Db.Matches.AnyAsync(m => m.PublicId == id));
+
+        return id;
+    }
+
     protected override async Task OnInitializedAsync()
     {
         _newMatch.GameId = await Db.Games
@@ -202,11 +226,12 @@
             }
         }
 
-
+        _newMatch.PublicId = await GenerateUniqueId();
         _newMatch.Results = _results;
         _newMatch.Duration = duration.HasValue
                                 ? TimeSpan.FromMinutes(duration.Value)
                                 : null;
+
         Db.Matches.Add(_newMatch);
 
 
@@ -214,6 +239,6 @@
         await Db.SaveChangesAsync();
 
         
-        Nav.NavigateTo($"/match/{_newMatch.Id}");
+        Nav.NavigateTo($"/game/{_newMatch.Game.Slug}/{_newMatch.PublicId}");
     }
 }
