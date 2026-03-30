@@ -23,8 +23,13 @@ var localizationOptions = new RequestLocalizationOptions()
 localizationOptions.RequestCultureProviders.Insert(0,
     new CookieRequestCultureProvider());
 
+var dataDir = Path.Combine(AppContext.BaseDirectory, "Data");
+Directory.CreateDirectory(dataDir);
+
+var dbPath = Path.Combine(dataDir, "app.db");
+
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite("Data Source=app.db"));
+    options.UseSqlite($"Data Source={dbPath}"));
 
 builder.Services.AddLumexServices();
 
