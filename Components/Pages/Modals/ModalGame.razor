@@ -3,8 +3,9 @@
 @inject AppDbContext Db
 
 <LumexModal>
-    <LumexModalTrigger Variant="@Variant.Flat" Color="@ThemeColor.Primary">
-        + Add Game
+    <LumexModalTrigger Variant="@Variant.Flat" Color="@ButtonColor">
+        <DiceIcon/>
+        @ButtonText
     </LumexModalTrigger>
 
     <LumexModalContent Context="modal">
@@ -16,12 +17,12 @@
         <LumexModalBody>
 
             <LumexTextbox Label="Name"
-                          @bind-Value="_newGame.Name"
+                          @bind-Value="_model.Name"
                           Placeholder="Enter game name"
                           Variant="@InputVariant.Outlined" />
 
             <LumexTextbox Label="Image URL"
-                          @bind-Value="_newGame.Image"
+                          @bind-Value="_model.Image"
                           Placeholder="Optional image URL"
                           Variant="@InputVariant.Outlined" />
 
@@ -48,19 +49,52 @@
 
 @code {
 
-    [Parameter]
-    public EventCallback OnCreated { get; set; }
+    [Parameter] public EventCallback OnCreated { get; set; }
+    [Parameter] public EventCallback OnSaved { get; set; }
+    [Parameter] public mdGame? Game { get; set; }
+    [Parameter] public string? ButtonText { get; set; }
+    [Parameter] public ThemeColor ButtonColor { get; set; }
 
-    private mdGame _newGame = new();
+    private mdGame _model;
+
+    protected override void OnParametersSet()
+    {
+        if (Game is null)
+        {
+            _model = new mdGame();
+        }
+        else
+        {
+            _model = new mdGame
+            {
+                Id = Game.Id,
+                Name = Game.Name,
+                Image = Game.Image
+            };
+        }
+    }
+
 
     private async Task SaveGame(LumexModal modal)
     {
-        Db.Games.Add(_newGame);
+        if (_model.Id == 0)
+        {
+            Db.Games.Add(_model);
+        }
+        else
+        {
+            var existing = await Db.Games.FindAsync(_model.Id);
+
+            if (existing != null)
+            {
+                existing.Name = _model.Name;
+                existing.Image = _model.Image;
+            }
+        }
+
         await Db.SaveChangesAsync();
 
-        _newGame = new mdGame();
-
-        await OnCreated.InvokeAsync();
+        await OnSaved.InvokeAsync();
 
         await modal.CloseAsync();
     }
