@@ -798,12 +798,6 @@
   .w-14 {
     width: calc(var(--spacing) * 14);
   }
-  .w-20 {
-    width: calc(var(--spacing) * 20);
-  }
-  .w-48 {
-    width: calc(var(--spacing) * 48);
-  }
   .w-\[25\%\] {
     width: 25%;
   }
@@ -4991,11 +4985,6 @@
       opacity: 100%;
     }
   }
-  .nth-1\:w-10 {
-    &:nth-child(1) {
-      width: calc(var(--spacing) * 10);
-    }
-  }
   .motion-reduce\:transition-none {
     @media (prefers-reduced-motion: reduce) {
       transition-property: none;
@@ -5464,13 +5453,6 @@
       }
     }
   }
-  .\[\&_th\]\:nth-1\:w-10 {
-    & th {
-      &:nth-child(1) {
-        width: calc(var(--spacing) * 10);
-      }
-    }
-  }
   .\[\&_th\]\:nth-1\:w-20 {
     & th {
       &:nth-child(1) {
@@ -5478,31 +5460,10 @@
       }
     }
   }
-  .\[\&_th\]\:nth-1\:w-100 {
-    & th {
-      &:nth-child(1) {
-        width: calc(var(--spacing) * 100);
-      }
-    }
-  }
-  .\[\&_th\]\:nth-2\:w-50 {
-    & th {
-      &:nth-child(2) {
-        width: calc(var(--spacing) * 50);
-      }
-    }
-  }
   .\[\&_th\]\:nth-3\:w-80 {
     & th {
       &:nth-child(3) {
         width: calc(var(--spacing) * 80);
-      }
-    }
-  }
-  .\[\&_th\]\:nth-3\:w-100 {
-    & th {
-      &:nth-child(3) {
-        width: calc(var(--spacing) * 100);
       }
     }
   }
