@@ -17,8 +17,8 @@
         </div>
     </ToolbarContent>
     <ChildContent>
-        <PropertyColumn Property="@(p => p.Game.Name)" />
-        <PropertyColumn Property="@(p => p.Name)" />
+        <PropertyColumn Property="@(p => p.Game.Name)" Title="Game"/>
+        <PropertyColumn Property="@(p => p.Name)" Title="Faction"/>
         <PropertyColumn Property="@(p => p.Color)">
             <Content>
                 <div style="width:30px;height:30px;background:@context.Color;border-radius:50%;" />
@@ -33,7 +33,7 @@
 }
 
 @code {
-    private IQueryable<mdFaction> _factions => Db.Factions;
+    private IQueryable<mdFaction> _factions => Db.Factions.OrderBy(f => f.Game.Name);
     private ICollection<mdFaction> _selectedFactions = [];
     private int _refreshKey;
     private bool _showDeleteModal = false;
@@ -55,9 +55,9 @@
         _showDeleteModal = false;
         if (!confirmed) return;
         
-        _selectedFactions = [];
         Db.Factions.RemoveRange(_selectedFactions);
         await Db.SaveChangesAsync();
+        _selectedFactions = [];
         await UpdateData();
     }
 

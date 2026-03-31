@@ -20,10 +20,10 @@
         <LumexModalBody>
 
             <LumexTextbox Label="Name"
+                          DebounceDelay="250"
+                          Behavior="InputBehavior.OnInput"
                           Required
-                          Value="@_model.Name"
-                          ValueChanged="OnNameChanged"
-                          ValueExpression="@(() => _model.Name)"
+                          @bind-Value="@Name"
                           Placeholder="Enter game name"
                           Variant="@InputVariant.Outlined" />
 
@@ -31,6 +31,7 @@
                           @bind-Value="_model.Image"
                           Placeholder="Optional image URL"
                           Variant="@InputVariant.Outlined" />
+
 
             @if (@_model.Slug != null && _alertContent is null)
             {
@@ -71,7 +72,19 @@
     [Parameter] public string? ButtonText { get; set; }
     [Parameter] public ThemeColor ButtonColor { get; set; }
 
-    private mdGame _model;
+    private mdGame _model = new();
+
+    private string Name
+    {
+        get => _model.Name;
+        set
+        {
+            _model.Name = value;
+            _model.Slug = GenerateSlug(value);
+            _alertContent = null;
+        }
+    }
+
     private string? _alertContent;
 
     protected override void OnParametersSet()
@@ -97,11 +110,10 @@
         _alertContent = null;
     }
 
-    private void OnNameChanged(string value)
+    private void OnNameChanged()
     {
         _alertContent = null;
-        _model.Name = value;
-        _model.Slug = GenerateSlug(value);
+        _model.Slug = GenerateSlug(_model.Name);
     }
 
     private string GenerateSlug(string name)

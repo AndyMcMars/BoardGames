@@ -49,9 +49,9 @@
         _showDeleteModal = false;
         if (!confirmed) return;
 
-        _selectedLocations = [];
         Db.Locations.RemoveRange(_selectedLocations);
         await Db.SaveChangesAsync();
+        _selectedLocations = [];
         await UpdateData();
     }
 

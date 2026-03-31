@@ -51,9 +51,9 @@
         _showDeleteModal = false;
         if (!confirmed) return;
         
-        _selectedPlayers = [];
         Db.Players.RemoveRange(_selectedPlayers);
         await Db.SaveChangesAsync();
+        _selectedPlayers = [];
         await UpdateData();
     }
 
