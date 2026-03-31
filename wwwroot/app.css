@@ -89,6 +89,7 @@
     --container-sm: 24rem;
     --container-md: 28rem;
     --container-lg: 32rem;
+    --container-xl: 36rem;
     --container-5xl: 64rem;
     --text-xl: 1.25rem;
     --text-xl--line-height: calc(1.75 / 1.25);
@@ -601,6 +602,9 @@
   .flex {
     display: flex;
   }
+  .grid {
+    display: grid;
+  }
   .hidden {
     display: none;
   }
@@ -798,12 +802,6 @@
   .w-14 {
     width: calc(var(--spacing) * 14);
   }
-  .w-20 {
-    width: calc(var(--spacing) * 20);
-  }
-  .w-48 {
-    width: calc(var(--spacing) * 48);
-  }
   .w-\[25\%\] {
     width: 25%;
   }
@@ -857,6 +855,9 @@
   }
   .max-w-sm {
     max-width: var(--container-sm);
+  }
+  .max-w-xl {
+    max-width: var(--container-xl);
   }
   .min-w-3 {
     min-width: calc(var(--spacing) * 3);
@@ -1024,6 +1025,9 @@
   .appearance-none {
     appearance: none;
   }
+  .grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
   .grid-cols-4 {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
@@ -1057,8 +1061,14 @@
   .justify-end {
     justify-content: flex-end;
   }
+  .justify-evenly {
+    justify-content: space-evenly;
+  }
   .justify-start {
     justify-content: flex-start;
+  }
+  .justify-items-center {
+    justify-items: center;
   }
   .\!gap-0 {
     gap: calc(var(--spacing) * 0) !important;
@@ -4991,11 +5001,6 @@
       opacity: 100%;
     }
   }
-  .nth-1\:w-10 {
-    &:nth-child(1) {
-      width: calc(var(--spacing) * 10);
-    }
-  }
   .motion-reduce\:transition-none {
     @media (prefers-reduced-motion: reduce) {
       transition-property: none;
@@ -5046,6 +5051,11 @@
       --tw-translate-x: calc(calc(1 / 2 * 100%) * -1);
       --tw-translate-y: calc(calc(1 / 2 * 100%) * -1);
       translate: var(--tw-translate-x) var(--tw-translate-y);
+    }
+  }
+  .lg\:grid-cols-4 {
+    @media (width >= 64rem) {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
     }
   }
   .rtl\:space-x-reverse {
@@ -5464,13 +5474,6 @@
       }
     }
   }
-  .\[\&_th\]\:nth-1\:w-10 {
-    & th {
-      &:nth-child(1) {
-        width: calc(var(--spacing) * 10);
-      }
-    }
-  }
   .\[\&_th\]\:nth-1\:w-20 {
     & th {
       &:nth-child(1) {
@@ -5478,31 +5481,10 @@
       }
     }
   }
-  .\[\&_th\]\:nth-1\:w-100 {
-    & th {
-      &:nth-child(1) {
-        width: calc(var(--spacing) * 100);
-      }
-    }
-  }
-  .\[\&_th\]\:nth-2\:w-50 {
-    & th {
-      &:nth-child(2) {
-        width: calc(var(--spacing) * 50);
-      }
-    }
-  }
   .\[\&_th\]\:nth-3\:w-80 {
     & th {
       &:nth-child(3) {
         width: calc(var(--spacing) * 80);
-      }
-    }
-  }
-  .\[\&_th\]\:nth-3\:w-100 {
-    & th {
-      &:nth-child(3) {
-        width: calc(var(--spacing) * 100);
       }
     }
   }

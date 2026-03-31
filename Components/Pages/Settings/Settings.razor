@@ -1,7 +1,34 @@
 ﻿@page "/settings"
 @using BoardGames.Components.Pages.Icons
+@using LumexUI.Common
 @using LumexUI.Shared.Icons
 
+@inject IJSRuntime JS
+
+<p class="text-xl mb-4">@Localizer["settings"]</p>
+<div class="flex flex-col max-w-sm gap-4">
+    <LumexSelect TValue="string" Label="language" Value="@selectedCulture" ValueChanged="OnCultureChanged">
+        <LumexSelectItem Value="@("en")">English</LumexSelectItem>
+        <LumexSelectItem Value="@("it")">Italiano</LumexSelectItem>
+        <LumexSelectItem Value="@("de")">Deutsch</LumexSelectItem>
+    </LumexSelect>
+
+    <LumexSwitch Color="@ThemeColor.Primary"
+                 Value="@isDark"
+			     ValueChanged="OnDarkModeChanged">
+        <StartContent>
+            <SunIcon />
+        </StartContent>
+        <ChildContent>
+            Dark Mode
+        </ChildContent>
+        <EndContent>
+            <MoonIcon />
+        </EndContent>
+    </LumexSwitch>
+</div>
+
+<p class="text-xl mb-4 mt-4">Entities</p>
 <div class="overflow-x-auto">
     <LumexTabs Color="@LumexUI.Common.ThemeColor.Primary" Variant="LumexUI.Common.TabVariant.Underlined">
         <LumexTab>
@@ -38,6 +65,30 @@
         </LumexTab>
     </LumexTabs>
 </div>
-@code {
 
+
+@code {
+    bool isDark;
+    string selectedCulture;
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        isDark = await JS.InvokeAsync<bool>("theme.getDark");
+        selectedCulture = await JS.InvokeAsync<string>("culture.get");
+        StateHasChanged();
+    }
+
+    async Task OnDarkModeChanged(bool value)
+    {
+        isDark = value;
+        await JS.InvokeVoidAsync("theme.setDark", isDark);
+    }
+
+    async Task OnCultureChanged(string value)
+    {
+        selectedCulture = value;
+        await JS.InvokeVoidAsync("culture.set", value);
+    }
 }
