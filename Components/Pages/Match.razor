@@ -7,6 +7,16 @@
 @inject AppDbContext Db
 @inject IStringLocalizer<SharedResource> Localizer
 @inject NavigationManager Nav
+@inject IJSRuntime JS
+
+<HeadContent>
+    <title>@_match?.Game?.Name</title>
+
+    <meta property="og:title" content="@_match?.Game?.Name" />
+    <meta property="og:description" content="Match on @_match?.Date.ToString("dd-MM-yyyy") - Winner: @_match?.Winner?.Player.Name - @_match?.Winner?.Faction?.Name (@_match?.Winner?.Points points)" />
+    <meta property="og:image" content="@_match?.Game?.Image" />
+    <meta property="og:url" content="@Nav.Uri" />
+</HeadContent>
 
 <div class="flex justify-between">
     <div class="flex items-center gap-2 mb-4">
@@ -21,7 +31,7 @@
             </LumexButton>
         </LumexDropdownTrigger>
         <LumexDropdownMenu>
-            <LumexDropdownItem ShowDivider>
+            <LumexDropdownItem ShowDivider OnClick="Share">
                 <StartContent>
                     <ShareIcon />
                 </StartContent>
@@ -315,5 +325,17 @@
     private void CloseDeleteModal()
     {
         _showDeleteModal = false;
+    }
+
+    private async Task Share()
+    {
+        var url = Nav.Uri;
+
+        await JS.InvokeVoidAsync("navigator.share", new
+        {
+            title = "Match",
+            text = "Check out this match",
+            url
+        });
     }
 }
