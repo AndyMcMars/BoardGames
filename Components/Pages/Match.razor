@@ -13,7 +13,7 @@
     <title>@_match?.Game?.Name</title>
 
     <meta property="og:title" content="@_match?.Game?.Name" />
-    <meta property="og:description" content="Match on @_match?.Date.ToString("dd-MM-yyyy") - Winner: @_match?.Winner?.Player.Name - @_match?.Winner?.Faction?.Name (@_match?.Winner?.Points points)" />
+    <meta property="og:description" content="1°: @_match?.Winner?.Player.Name - @_match?.Winner?.Faction?.Name (@_match?.Winner?.Points points)" />
     <meta property="og:image" content="@_match?.Game?.Image" />
     <meta property="og:url" content="@Nav.Uri" />
 </HeadContent>
@@ -334,7 +334,7 @@
         await JS.InvokeVoidAsync("navigator.share", new
         {
             title = "Match",
-            text = "Check out this match",
+            text = "Summary of the match:",
             url
         });
     }
