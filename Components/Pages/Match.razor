@@ -40,6 +40,15 @@
         <ModalDelete OnResult="@DeleteMatch" _open="_showDeleteModal" Header="Delete match" Description="Are you sure you want to delete the current match?"/>
     }
 
+    @if (_showDeleteReviewModal)
+    {
+        <ModalDelete OnResult="@DeleteReview" _open="_showDeleteReviewModal" Header="Delete review" Description="Are you sure you want to delete the review?" />
+    }
+    
+    @if (_showEditReviewModal)
+    {
+        <ModalEditReview OnResult="EditReview" Review="@_selectedReview" _open="_showEditReviewModal"/>
+    }
 
 </div>
 @if(_match?.Game != null)
@@ -132,25 +141,47 @@
     </LumexDataGrid>
 
     // Display match reviews
-    <h2 class="mt-8 mb-4">Reviews</h2>
+    <div class="mt-8 mb-4 flex gap-6 align-middle h-10 max-w-sm">
+        <p class="text-xl m-auto font-bold">Reviews</p>
+        <LumexDivider Orientation="Orientation.Vertical" Class="mx-auto"/>
+        <div class="w-1/3">
+            <ModalReview Match="@_match" OnSaved="UpdateMatchData" ButtonText="Add Review"/>
+        </div>
+    </div>
 
-    <ModalReview Match="@_match" OnReviewCreated="UpdateMatchData"/>
-
-    @foreach (var review in _match.Reviews)
+    @if(_match.Reviews.Count > 0)
+    {        
+        @foreach (var review in _match.Reviews)
+        {
+            <LumexCard Class="max-w-sm mb-4">
+                <LumexCardHeader Class="justify-between">
+                    <LumexUser Name="@review.Player.Name" Description="@($"{@review.Stars.ToString()} stars")">
+                        <AvatarContent>
+                            <UserIcon/>
+                        </AvatarContent>
+                    </LumexUser>
+                    <LumexDropdown>
+                        <LumexDropdownTrigger>
+                            <LumexButton IconOnly Variant="@Variant.Light">
+                                <EllipsisVerticalIcon />
+                            </LumexButton>
+                        </LumexDropdownTrigger>
+                        <LumexDropdownMenu>
+                            <LumexDropdownItem OnClick="() => OpenEditReviewModal(review)">Edit</LumexDropdownItem>
+                            <LumexDropdownItem Color="ThemeColor.Danger" Class="text-danger" OnClick="() => OpenDeleteReviewModal(review)">Delete</LumexDropdownItem>
+                        </LumexDropdownMenu>
+                    </LumexDropdown>
+                </LumexCardHeader>
+                <LumexDivider />
+                <LumexCardBody>
+                    @review.Comment
+                </LumexCardBody>
+            </LumexCard>
+        }
+    }
+    else
     {
-        <LumexCard Class="max-w-sm mb-4">
-            <LumexCardHeader>
-                <LumexUser Name="@review.Player.Name" Description="@($"{@review.Stars.ToString()} stars")">
-                    <AvatarContent>
-                        <UserIcon/>
-                    </AvatarContent>
-                </LumexUser>
-            </LumexCardHeader>
-            <LumexDivider />
-            <LumexCardBody>
-                @review.Comment
-            </LumexCardBody>
-        </LumexCard>
+        <LumexAlert Variant="@AlertVariant.Outlined" Class="mt-8" Title="There are no reviews to show." Description="Press the Add Review button to add your personal review of this match!"/>
     }
 
 }
@@ -172,10 +203,25 @@
     };
 
     private bool _showDeleteModal = false;
+    private bool _showDeleteReviewModal = false;
+    private bool _showEditReviewModal = false;
+    private mdReview? _selectedReview;
 
     protected override async Task OnParametersSetAsync()
     {
         await UpdateMatchData();
+    }
+
+    private void OpenDeleteReviewModal(mdReview review)
+    {
+        _selectedReview = review;
+        _showDeleteReviewModal = true;
+    }
+
+    private void OpenEditReviewModal(mdReview review)
+    {
+        _selectedReview = review;
+        _showEditReviewModal = true;
     }
 
     private async Task UpdateMatchData()
@@ -200,6 +246,55 @@
         }
     }
 
+
+    private async Task EditReview(bool confirmed)
+    {
+        _showEditReviewModal = false;
+
+        if (!confirmed || _selectedReview is null)
+            return;
+
+        var existing = await Db.Reviews.FindAsync(_selectedReview.Id);
+
+        if (existing != null)
+        {
+            existing.Stars = _selectedReview.Stars;
+            existing.Comment = _selectedReview.Comment;
+            await Db.SaveChangesAsync();
+            await UpdateMatchData();
+   
+        }
+
+    }
+
+    private async Task DeleteReview(bool confirmed)
+    {
+        _showDeleteReviewModal = false;
+
+        if (!confirmed || _selectedReview is null)
+            return;
+
+        var review = await Db.Reviews.FirstOrDefaultAsync(r => r.Id == _selectedReview.Id);
+
+        if (review != null)
+        {
+            Db.Reviews.Remove(review);
+            await Db.SaveChangesAsync();
+        }
+
+        await UpdateMatchData();
+    }
+    
+
+    private async Task OnReviewSaved()
+    {
+        _showEditReviewModal = false;
+        _selectedReview = null;
+
+        await UpdateMatchData();
+    }
+
+
     private async Task DeleteMatch(bool confirmed) 
     { 
         _showDeleteModal = false;
@@ -211,10 +306,10 @@
             Db.Matches.Remove(match);
             await Db.SaveChangesAsync();
 
-            Nav.NavigateTo($"/games/{_match?.Game.Slug}");
+            Nav.NavigateTo($"/{_match?.Game.Slug}");
         }
         
-        Nav.NavigateTo($"/games/{match?.GameId}"); 
+        Nav.NavigateTo($"/{match?.GameId}"); 
     }
 
     private void CloseDeleteModal()

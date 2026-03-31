@@ -481,6 +481,9 @@
   .top-\[var\(--navbar-height\)\] {
     top: var(--navbar-height);
   }
+  .right-0 {
+    right: calc(var(--spacing) * 0);
+  }
   .right-\[10\%\] {
     right: 10%;
   }
@@ -492,6 +495,9 @@
   }
   .bottom-\[10\%\] {
     bottom: 10%;
+  }
+  .left-0 {
+    left: calc(var(--spacing) * 0);
   }
   .left-1\/2 {
     left: calc(1 / 2 * 100%);
@@ -549,6 +555,9 @@
   }
   .m-0 {
     margin: calc(var(--spacing) * 0);
+  }
+  .m-auto {
+    margin: auto;
   }
   .mx-auto {
     margin-inline: auto;
@@ -768,6 +777,9 @@
   }
   .w-1\.5 {
     width: calc(var(--spacing) * 1.5);
+  }
+  .w-1\/3 {
+    width: calc(1 / 3 * 100%);
   }
   .w-2 {
     width: calc(var(--spacing) * 2);
@@ -1680,6 +1692,9 @@
   }
   .align-middle {
     vertical-align: middle;
+  }
+  .align-top {
+    vertical-align: top;
   }
   .font-mono {
     font-family: var(--font-mono);

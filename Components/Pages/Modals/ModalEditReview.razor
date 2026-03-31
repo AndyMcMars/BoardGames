@@ -3,20 +3,14 @@
 
 @inject AppDbContext Db
 
-<LumexModal>
-    <LumexModalTrigger Variant="@Variant.Flat" Color="@ButtonColor" Class="mb-4">
-        <StarIcon />
-        @ButtonText
-    </LumexModalTrigger>
-
-    <LumexModalContent Context="modal">
-
+<LumexModal Open="_open">
+    <LumexModalContent>
         <LumexModalHeader>
-            Add New Review
+            Edit Review
         </LumexModalHeader>
 
         <LumexModalBody>
-            <LumexSelect TValue="int" Label="Player" @bind-Value="_model.PlayerId">
+            <LumexSelect TValue="int" Label="Player" @bind-Value="_model.PlayerId" Disabled>
                 @foreach (var player in _players)
                 {
                     <LumexSelectItem Value="@player.Id" TextValue="@player.Name">
@@ -41,13 +35,13 @@
 
             <LumexButton Color="@ThemeColor.Danger"
                          Variant="@Variant.Flat"
-                         OnClick="@modal.CloseAsync">
+                         OnClick="@OnCloseClicked">
                 Cancel
             </LumexButton>
 
             <LumexButton Color="@ThemeColor.Primary"
                          Variant="@Variant.Solid"
-                         OnClick="async () => await SaveReview(modal)">
+                         OnClick="SaveReview">
                 Save
             </LumexButton>
         </LumexModalFooter>
@@ -55,52 +49,37 @@
     </LumexModalContent>
 </LumexModal>
 @code {
-    [Parameter] public EventCallback OnSaved { get; set; }
-    [Parameter] public mdReview? Review { get; set; }
-    [Parameter] public string? ButtonText { get; set; }
-    [Parameter] public ThemeColor ButtonColor { get; set; }
+    [Parameter] public bool _open { get; set; }
+    [Parameter] public EventCallback<bool> OnResult { get; set; }
 
-    [Parameter]public mdMatch? Match { get; set; }
+    [Parameter] public mdReview? Review { get; set; }
 
     private mdReview _model = new();
     private IQueryable<mdPlayer> _players => Db.Players;
 
     protected override void OnParametersSet()
     {
-        if (Match == null)
-            return;
-
         if(Review is null)
         {
-            _model = new mdReview { MatchId = Match.Id, Stars = 3 };
-        }
-        else
+            _model = new mdReview();
+            return;
+        };
+
+        _model = new mdReview
         {
-            _model = new mdReview
-            {
-                Id = Review.Id,
-                MatchId = Review.MatchId,
-                PlayerId = Review.PlayerId,
-                Stars = Review.Stars,
-                Comment = Review.Comment
-            };
-        }
+            Id = Review.Id,
+            MatchId = Review.MatchId,
+            PlayerId = Review.PlayerId,
+            Stars = Review.Stars,
+            Comment = Review.Comment
+        };
+        
     }
 
-    private async Task SaveReview(LumexModal modal)
+
+    private async Task SaveReview()
     {
 
-        if (Match == null)
-            return;
-
-        if (_model.Id == 0)
-        {
-            _model.MatchId = Match.Id;
-            Db.Reviews.Add(_model);
-            
-        }
-        else
-        {
             var review = await Db.Reviews.FindAsync(_model.Id);
 
             if (review == null)
@@ -109,13 +88,16 @@
             review.PlayerId = _model.PlayerId;
             review.Stars = _model.Stars;
             review.Comment = _model.Comment;
-        }
+        
 
         await Db.SaveChangesAsync();
 
-
-        await OnSaved.InvokeAsync();
-
-        await modal.CloseAsync();
+        await OnResult.InvokeAsync(true);
     }
+    
+    private async Task OnCloseClicked()
+    {
+        await OnResult.InvokeAsync(false);
+    }
+}
 }
