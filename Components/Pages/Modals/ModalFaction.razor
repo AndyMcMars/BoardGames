@@ -4,7 +4,7 @@
 @inject AppDbContext Db
 
 <LumexModal>
-    <LumexModalTrigger Variant="@Variant.Flat" Color="@ButtonColor">
+    <LumexModalTrigger Variant="@Variant.Flat" Color="@ButtonColor" OnClick="OnOpen" >
         <SwordsIcon />
         @ButtonText
     </LumexModalTrigger>
@@ -95,7 +95,7 @@
     private mdGame? _selectedGame;
     private ColorChoice? _selectedColor;
 
-    private string? _alertContent;
+    private string? _alertContent = null;
 
     private IQueryable<mdGame> _games => Db.Games;
 
@@ -128,6 +128,7 @@
 
     protected override void OnParametersSet()
     {
+
         if (Faction is null)
         {
             _model = new mdFaction();
@@ -151,8 +152,14 @@
         }
     }
 
+    private void OnOpen()
+    {
+        _alertContent = null;
+    }
+
     private async Task SaveGame(LumexModal modal, bool close)
     {
+        _alertContent = null;
 
         if (_selectedGame is null)
         {

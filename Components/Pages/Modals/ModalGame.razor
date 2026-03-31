@@ -6,7 +6,7 @@
 @inject ToastService Toast
 
 <LumexModal>
-    <LumexModalTrigger Variant="@Variant.Flat" Color="@ButtonColor">
+    <LumexModalTrigger Variant="@Variant.Flat" Color="@ButtonColor" OnClick="OnOpen">
         <DiceIcon/>
         @ButtonText
     </LumexModalTrigger>
@@ -89,6 +89,12 @@
                 Image = Game.Image
             };
         }
+    }
+
+
+    private void OnOpen()
+    {
+        _alertContent = null;
     }
 
     private void OnNameChanged(string value)

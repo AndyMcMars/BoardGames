@@ -4,7 +4,7 @@
 @inject AppDbContext Db
 
 <LumexModal>
-    <LumexModalTrigger Variant="@Variant.Flat" Color="@ButtonColor">
+    <LumexModalTrigger Variant="@Variant.Flat" Color="@ButtonColor" OnClick="OnOpen">
         <UserIcon/>
         @ButtonText
     </LumexModalTrigger>
@@ -74,6 +74,11 @@
                 Name = Player.Name
             };
         }
+    }
+
+    private void OnOpen()
+    {
+        _alertContent = null;
     }
 
 

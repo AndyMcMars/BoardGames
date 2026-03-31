@@ -3,7 +3,7 @@
 @inject AppDbContext Db
 
 <LumexModal>
-    <LumexModalTrigger Variant="@Variant.Flat" Color="@ButtonColor">
+    <LumexModalTrigger Variant="@Variant.Flat" Color="@ButtonColor" OnClick="OnOpen">
         <MapPinIcon />
         @ButtonText
     </LumexModalTrigger>
@@ -74,6 +74,11 @@
                 Description = Location.Description
             };
         }
+    }
+
+    private void OnOpen()
+    {
+        _alertContent = null;
     }
 
     private async Task SaveLocation(LumexModal modal)
