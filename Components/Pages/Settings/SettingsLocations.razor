@@ -40,6 +40,7 @@
     private async Task UpdateData()
     {
         _refreshKey++;
+        _selectedLocations = [];
         StateHasChanged();
     }
 
@@ -48,6 +49,7 @@
         _showDeleteModal = false;
         if (!confirmed) return;
 
+        _selectedLocations = [];
         Db.Locations.RemoveRange(_selectedLocations);
         await Db.SaveChangesAsync();
         await UpdateData();

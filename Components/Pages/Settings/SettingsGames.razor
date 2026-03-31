@@ -46,6 +46,7 @@
     private async Task UpdateData()
     {
         _refreshKey++;
+        _selectedGames = [];
         StateHasChanged();
     }
 
@@ -54,7 +55,8 @@
     {
         _showDeleteModal = false;
         if (!confirmed) return;
-
+        
+        _selectedGames = [];
         Db.Games.RemoveRange(_selectedGames);
         await Db.SaveChangesAsync();
         await UpdateData();

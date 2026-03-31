@@ -25,6 +25,7 @@
             </LumexSelect>
 
             <LumexTextbox Label="Name"
+                          Required
                           @bind-Value="_model.Name"
                           Placeholder="Enter faction name"
                           Variant="@InputVariant.Outlined" />
@@ -51,7 +52,13 @@
                 </ValueContent>
             </LumexSelect>
 
+            @if(_alertContent is not null)
+            {
+                <LumexAlert Color="ThemeColor.Danger" Title="@_alertContent" />
+            }
+
         </LumexModalBody>
+
 
         <LumexModalFooter>
 
@@ -63,8 +70,14 @@
 
             <LumexButton Color="@ThemeColor.Primary"
                          Variant="@Variant.Solid"
-                         OnClick="async () => await SaveGame(modal)">
-                Save
+                         OnClick="async () => await SaveGame(modal, false)">
+                Save and Next
+            </LumexButton>
+
+            <LumexButton Color="@ThemeColor.Primary"
+                         Variant="@Variant.Solid"
+                         OnClick="async () => await SaveGame(modal, true)">
+                Save and Close
             </LumexButton>
         </LumexModalFooter>
 
@@ -77,10 +90,12 @@
     [Parameter] public string? ButtonText { get; set; }
     [Parameter] public ThemeColor ButtonColor { get; set; }
 
-    private mdFaction? _model;
+    private mdFaction _model = new();
 
     private mdGame? _selectedGame;
     private ColorChoice? _selectedColor;
+
+    private string? _alertContent;
 
     private IQueryable<mdGame> _games => Db.Games;
 
@@ -110,7 +125,7 @@
 
     private record ColorChoice(string Name, string hex);
 
-    
+
     protected override void OnParametersSet()
     {
         if (Faction is null)
@@ -136,11 +151,21 @@
         }
     }
 
-    private async Task SaveGame(LumexModal modal)
+    private async Task SaveGame(LumexModal modal, bool close)
     {
-        if (_selectedGame is null || _selectedColor is null || _model is null)
+
+        if (_selectedGame is null)
+        {
+            _alertContent = "Please select a game.";
             return;
-        
+        }
+
+        if (_model.Name is null || _model.Name == string.Empty)
+        {
+            _alertContent = "Please select a name.";
+            return;
+        }
+
         if (_model.Id == 0)
         {
             _model.GameId = _selectedGame.Id;
@@ -162,10 +187,17 @@
 
         await Db.SaveChangesAsync();
 
-        _model = null;
 
-        await OnSaved.InvokeAsync();
-
-        await modal.CloseAsync();
+        if (close){
+            await OnSaved.InvokeAsync();
+            _model = null;
+            await modal.CloseAsync();
+        }
+        else
+        {
+            _model = new mdFaction();
+            _selectedColor = null;
+            _model.GameId = _selectedGame.Id;
+        }
     }
 }

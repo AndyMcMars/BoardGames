@@ -54,7 +54,8 @@
     {
         _showDeleteModal = false;
         if (!confirmed) return;
-
+        
+        _selectedFactions = [];
         Db.Factions.RemoveRange(_selectedFactions);
         await Db.SaveChangesAsync();
         await UpdateData();

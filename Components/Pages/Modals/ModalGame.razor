@@ -20,6 +20,7 @@
         <LumexModalBody>
 
             <LumexTextbox Label="Name"
+                          Required
                           Value="@_model.Name"
                           ValueChanged="OnNameChanged"
                           ValueExpression="@(() => _model.Name)"
@@ -31,9 +32,18 @@
                           Placeholder="Optional image URL"
                           Variant="@InputVariant.Outlined" />
 
-            <LumexDivider />
-            <LumexAlert Color="@ThemeColor.Info" Title="Game slug:" Description="@_model.Slug"/>
+            @if (@_model.Slug != null && _alertContent is null)
+            {
+                <LumexDivider />
+                <LumexAlert Color="@ThemeColor.Info" Title="Game slug:" Description="@_model.Slug"/>
+            }
+
+            @if (_alertContent is not null)
+            {
+                <LumexAlert Color="ThemeColor.Danger" Title="@_alertContent" />
+            }
         </LumexModalBody>
+
 
         <LumexModalFooter>
 
@@ -62,6 +72,7 @@
     [Parameter] public ThemeColor ButtonColor { get; set; }
 
     private mdGame _model;
+    private string? _alertContent;
 
     protected override void OnParametersSet()
     {
@@ -82,6 +93,7 @@
 
     private void OnNameChanged(string value)
     {
+        _alertContent = null;
         _model.Name = value;
         _model.Slug = GenerateSlug(value);
     }
@@ -99,12 +111,19 @@
 
     private async Task SaveGame(LumexModal modal)
     {
+        _alertContent = null;
         var slug = GenerateSlug(_model.Name);
         var exists = await Db.Games.AnyAsync(g => g.Slug == slug && g.Id != _model.Id);
 
         if (exists)
         {
-            Toast.Show("A game with this name already exists. Please choose a different name.");
+            _alertContent = "A game with this name already exists, please choose another one.";
+            return;
+        }
+
+        if(_model.Name is null || _model.Name == "")
+        {
+            _alertContent = "Please give a name.";
             return;
         }
 

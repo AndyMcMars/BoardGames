@@ -17,9 +17,16 @@
         <LumexModalBody>
 
             <LumexTextbox Label="Name"
+                          Required
                           @bind-Value="_model.Description"
                           Placeholder="Enter location name"
                           Variant="@InputVariant.Outlined" />
+                          
+
+            @if (_alertContent is not null)
+            {
+                <LumexAlert Color="ThemeColor.Danger" Title="@_alertContent" />
+            }
 
 
         </LumexModalBody>
@@ -50,7 +57,8 @@
     [Parameter] public string? ButtonText { get; set; }
     [Parameter] public ThemeColor ButtonColor { get; set; }
     
-    private mdLocation? _model;
+    private mdLocation _model = new();
+    private string? _alertContent;
     
     protected override void OnParametersSet()
     {
@@ -70,6 +78,12 @@
 
     private async Task SaveLocation(LumexModal modal)
     {
+        
+        if (_model.Description is null || _model.Description == "")
+        {
+            _alertContent = "Please give a Name.";
+            return;
+        }
 
         if (_model.Id == 0)
         {
