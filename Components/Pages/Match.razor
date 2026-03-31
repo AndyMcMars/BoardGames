@@ -12,7 +12,7 @@
     <div class="flex items-center gap-2 mb-4">
         <LumexLink Href="/">@Localizer["strGames"]</LumexLink>
         <p>/</p>
-        <LumexLink Href="@($"/games/{game_slug}")">@_match?.Game?.Name</LumexLink>
+        <LumexLink Href="@($"/{game_slug}")">@_match?.Game?.Name</LumexLink>
     </div>
     <LumexDropdown Classes="@_classes">
         <LumexDropdownTrigger>
@@ -186,11 +186,9 @@
         {
             Db.Matches.Remove(match);
             await Db.SaveChangesAsync();
-
-            Nav.NavigateTo($"/games/{_match?.Game.Slug}");
         }
         
-        Nav.NavigateTo($"/games/{match?.GameId}"); 
+        Nav.NavigateTo($"/{game_slug}");
     }
 
     private void CloseDeleteModal()

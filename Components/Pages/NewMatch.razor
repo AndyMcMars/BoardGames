@@ -239,6 +239,6 @@
         await Db.SaveChangesAsync();
 
         
-        Nav.NavigateTo($"/game/{_newMatch.Game.Slug}/{_newMatch.PublicId}");
+        Nav.NavigateTo($"/{_newMatch.Game.Slug}/{_newMatch.PublicId}");
     }
 }
