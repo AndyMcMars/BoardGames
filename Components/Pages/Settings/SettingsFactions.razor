@@ -9,17 +9,17 @@
 <LumexDataGrid Data="@_factions" SelectionMode="@SelectionMode.Multiple" @bind-SelectedItems="_selectedFactions" @key="_refreshKey">
     <ToolbarContent>
         <div class="flex justify-between">
-            <ModalFaction OnSaved="UpdateData" ButtonText="@(_selectedFactions.Count == 1 ? "Edit Faction" : "Add Faction")" Faction="@(_selectedFactions.Count == 1 ? _selectedFactions.FirstOrDefault() : null)" ButtonColor="@(_selectedFactions.Count == 1 ? ThemeColor.Warning : ThemeColor.Success)" />
+            <ModalFaction OnSaved="UpdateData" ButtonText="@(_selectedFactions.Count == 1 ? @SharedResource.SettingsFactions_EditFaction : @SharedResource.SettingsFactions_AddFaction)" Faction="@(_selectedFactions.Count == 1 ? _selectedFactions.FirstOrDefault() : null)" ButtonColor="@(_selectedFactions.Count == 1 ? ThemeColor.Warning : ThemeColor.Success)" />
             <LumexButton OnClick="() => _showDeleteModal = true" Disabled="_selectedFactions.Count < 1" Color="@(_selectedFactions.Count < 1 ? ThemeColor.Default : ThemeColor.Danger)">
                 <Trash2Icon />
-                Delete Faction
+                @SharedResource.SettingsFactions_DeleteFaction
             </LumexButton>
         </div>
     </ToolbarContent>
     <ChildContent>
-        <PropertyColumn Property="@(p => p.Game.Name)" Title="Game"/>
-        <PropertyColumn Property="@(p => p.Name)" Title="Faction"/>
-        <PropertyColumn Property="@(p => p.Color)">
+        <PropertyColumn Property="@(p => p.Game.Name)" Title="@SharedResource.SettingsFactions_Game"/>
+        <PropertyColumn Property="@(p => p.Name)" Title="@SharedResource.SettingsFactions_Faction"/>
+        <PropertyColumn Property="@(p => p.Color)" Title="@SharedResource.SettingsFactions_Color">
             <Content>
                 <div style="width:30px;height:30px;background:@context.Color;border-radius:50%;" />
             </Content>
@@ -29,7 +29,7 @@
 
 @if (_showDeleteModal)
 {
-    <ModalDelete OnResult="@DeleteSelected" _open="_showDeleteModal" Header="Delete faction" Description="Are you sure you want to delete the selected faction?" />
+    <ModalDelete OnResult="@DeleteSelected" _open="_showDeleteModal" Header="@SharedResource.SettingsFactions_DeleteFactionMsg" Description="@SharedResource.SettingsFactions_AreYouSureYouWantToDeleteTheSelectedFaction" />
 }
 
 @code {

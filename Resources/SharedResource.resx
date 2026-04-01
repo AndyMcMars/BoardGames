@@ -1,96 +1,76 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
-    Microsoft ResX Schema 
-    
-    Version 2.0
-    
-    The primary goals of this format is to allow a simple XML format 
-    that is mostly human readable. The generation and parsing of the 
-    various data types are done through the TypeConverter classes 
-    associated with the data types.
-    
-    Example:
-    
-    ... ado.net/XML headers & schema ...
-    <resheader name="resmimetype">text/microsoft-resx</resheader>
-    <resheader name="version">2.0</resheader>
-    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
-    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
-    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-        <value>[base64 mime encoded serialized .NET Framework object]</value>
-    </data>
-    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
-        <comment>This is a comment</comment>
-    </data>
-                
-    There are any number of "resheader" rows that contain simple 
-    name/value pairs.
-    
-    Each data row contains a name, and value. The row also contains a 
-    type or mimetype. Type corresponds to a .NET class that support 
-    text/value conversion through the TypeConverter architecture. 
-    Classes that don't support this are serialized and stored with the 
-    mimetype set.
-    
-    The mimetype is used for serialized objects, and tells the 
-    ResXResourceReader how to depersist the object. This is currently not 
-    extensible. For a given mimetype the value must be set accordingly:
-    
-    Note - application/x-microsoft.net.object.binary.base64 is the format 
-    that the ResXResourceWriter will generate, however the reader can 
-    read any of the formats listed below.
-    
-    mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with 
-            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
-            : and then encoded with base64 encoding.
-    
-    mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with 
-            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-            : and then encoded with base64 encoding.
+		Microsoft ResX Schema
 
-    mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array 
-            : using a System.ComponentModel.TypeConverter
-            : and then encoded with base64 encoding.
-    -->
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format 
+		that is mostly human readable. The generation and parsing of the 
+		various data types are done through the TypeConverter classes 
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple 
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a 
+		type or mimetype. Type corresponds to a .NET class that support 
+		text/value conversion through the TypeConverter architecture. 
+		Classes that don't support this are serialized and stored with the 
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the 
+		ResXResourceReader how to depersist the object. This is currently not 
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format 
+		that the ResXResourceWriter will generate, however the reader can 
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with 
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with 
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array 
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
         <xsd:choice maxOccurs="unbounded">
-          <xsd:element name="metadata">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" />
-              </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string" />
-              <xsd:attribute name="type" type="xsd:string" />
-              <xsd:attribute name="mimetype" type="xsd:string" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="assembly">
-            <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string" />
-              <xsd:attribute name="name" type="xsd:string" />
-            </xsd:complexType>
-          </xsd:element>
           <xsd:element name="data">
             <xsd:complexType>
               <xsd:sequence>
                 <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
                 <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
               <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
               <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-              <xsd:attribute ref="xml:space" />
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="resheader">
@@ -109,21 +89,183 @@
     <value>text/microsoft-resx</value>
   </resheader>
   <resheader name="version">
-    <value>2.0</value>
+    <value>1.3</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="settings" xml:space="preserve">
+  <data name="Settings_DarkMode" xml:space="preserve">
+    <value>Dark Mode</value>
+  </data>
+  <data name="Settings_Language" xml:space="preserve">
+    <value>language</value>
+  </data>
+  <data name="Settings_Settings" xml:space="preserve">
     <value>Settings</value>
   </data>
-  <data name="strGames" xml:space="preserve">
+  <data name="Settings_Entities" xml:space="preserve">
+    <value>Entities</value>
+  </data>
+  <data name="Settings_Games" xml:space="preserve">
     <value>Games</value>
   </data>
-  <data name="strPoints" xml:space="preserve">
+  <data name="Settings_Factions" xml:space="preserve">
+    <value>Factions</value>
+  </data>
+  <data name="Settings_Players" xml:space="preserve">
+    <value>Players</value>
+  </data>
+  <data name="Settings_Locations" xml:space="preserve">
+    <value>Locations</value>
+  </data>
+  <data name="SettingsFactions_EditFaction" xml:space="preserve">
+    <value>Edit Faction</value>
+  </data>
+  <data name="SettingsFactions_AddFaction" xml:space="preserve">
+    <value>Add Faction</value>
+  </data>
+  <data name="SettingsFactions_DeleteFaction" xml:space="preserve">
+    <value>Delete Faction</value>
+  </data>
+  <data name="SettingsFactions_Game" xml:space="preserve">
+    <value>Game</value>
+  </data>
+  <data name="SettingsFactions_Faction" xml:space="preserve">
+    <value>Faction</value>
+  </data>
+  <data name="SettingsFactions_Color" xml:space="preserve">
+    <value>Color</value>
+  </data>
+  <data name="SettingsFactions_DeleteFactionMsg" xml:space="preserve">
+    <value>Delete faction</value>
+  </data>
+  <data name="SettingsFactions_AreYouSureYouWantToDeleteTheSelectedFaction" xml:space="preserve">
+    <value>Are you sure you want to delete the selected faction?</value>
+  </data>
+  <data name="SettingsGames_EditGame" xml:space="preserve">
+    <value>Edit Game</value>
+  </data>
+  <data name="SettingsGames_AddGame" xml:space="preserve">
+    <value>Add Game</value>
+  </data>
+  <data name="SettingsGames_DeleteGame" xml:space="preserve">
+    <value>Delete Game</value>
+  </data>
+  <data name="SettingsGames_Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="SettingsGames_DeleteGameMsg" xml:space="preserve">
+    <value>Delete game</value>
+  </data>
+  <data name="SettingsGames_AreYouSureYouWantToDeleteTheSelectedGame" xml:space="preserve">
+    <value>Are you sure you want to delete the selected game?</value>
+  </data>
+  <data name="SettingsLocations_EditLocation" xml:space="preserve">
+    <value>Edit Location</value>
+  </data>
+  <data name="SettingsLocations_AddLocation" xml:space="preserve">
+    <value>Add Location</value>
+  </data>
+  <data name="SettingsLocations_DeleteLocation" xml:space="preserve">
+    <value>Delete Location</value>
+  </data>
+  <data name="SettingsLocations_DeleteLocationMsg" xml:space="preserve">
+    <value>Delete location</value>
+  </data>
+  <data name="SettingsLocations_AreYouSureYouWantToDeleteTheSelectedLocation" xml:space="preserve">
+    <value>Are you sure you want to delete the selected location?</value>
+  </data>
+  <data name="SettingsPlayers_EditPlayer" xml:space="preserve">
+    <value>Edit Player</value>
+  </data>
+  <data name="SettingsPlayers_AddPlayer" xml:space="preserve">
+    <value>Add Player</value>
+  </data>
+  <data name="SettingsPlayers_DeletePlayer" xml:space="preserve">
+    <value>Delete Player</value>
+  </data>
+  <data name="SettingsPlayers_DeletePlayerMsg" xml:space="preserve">
+    <value>Delete player</value>
+  </data>
+  <data name="SettingsPlayers_AreYouSureYouWantToDeleteTheSelectedPlayer" xml:space="preserve">
+    <value>Are you sure you want to delete the selected player?</value>
+  </data>
+  <data name="GameMatches_GameNotFound" xml:space="preserve">
+    <value>game not found</value>
+  </data>
+  <data name="GameMatches_Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="GameMatches_Winner" xml:space="preserve">
+    <value>Winner</value>
+  </data>
+  <data name="GameMatches_NoMatchFound" xml:space="preserve">
+    <value>No match found!</value>
+  </data>
+  <data name="GameMatches_ThereAreCurrentlyNoMatchesFor_gameName" xml:space="preserve">
+    <value>There are currently no matches for </value>
+  </data>
+  <data name="GameMatches_ThereAreCurrentlyNoMatchesFor" xml:space="preserve">
+    <value>There are currently no matches for</value>
+  </data>
+  <data name="Games_SearchByName" xml:space="preserve">
+    <value>Search by name...</value>
+  </data>
+  <data name="Match_Share" xml:space="preserve">
+    <value>Share</value>
+  </data>
+  <data name="Match_Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Match_DeleteMatch" xml:space="preserve">
+    <value>Delete match</value>
+  </data>
+  <data name="Match_AreYouSureYouWantToDeleteTheCurrentMatch" xml:space="preserve">
+    <value>Are you sure you want to delete the current match?</value>
+  </data>
+  <data name="Match_AreYouSureYouWantToDeleteTheReview" xml:space="preserve">
+    <value>Are you sure you want to delete the review?</value>
+  </data>
+  <data name="Match_DeleteReview" xml:space="preserve">
+    <value>Delete review</value>
+  </data>
+  <data name="Match_Location" xml:space="preserve">
+    <value>Location</value>
+  </data>
+  <data name="Match_Duration" xml:space="preserve">
+    <value>Duration</value>
+  </data>
+  <data name="Match_Stars" xml:space="preserve">
+    <value>Stars</value>
+  </data>
+  <data name="Match_Player" xml:space="preserve">
+    <value>Player</value>
+  </data>
+  <data name="Match_Points" xml:space="preserve">
     <value>Points</value>
+  </data>
+  <data name="Match_AddReview" xml:space="preserve">
+    <value>Add Review</value>
+  </data>
+  <data name="NewMatch_SelectAGame" xml:space="preserve">
+    <value>Select a Game</value>
+  </data>
+  <data name="NewMatch_DurationInMin" xml:space="preserve">
+    <value>Duration in min</value>
+  </data>
+  <data name="NewMatch_SelectALocation" xml:space="preserve">
+    <value>Select a Location</value>
+  </data>
+  <data name="NewMatch_SelectPlayers" xml:space="preserve">
+    <value>Select players</value>
+  </data>
+  <data name="NewMatch_SelectAFaction" xml:space="preserve">
+    <value>Select a faction</value>
+  </data>
+  <data name="NewMatch_Save" xml:space="preserve">
+    <value>Save</value>
   </data>
 </root>

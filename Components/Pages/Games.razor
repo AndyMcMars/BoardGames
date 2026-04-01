@@ -5,13 +5,10 @@
 @using Microsoft.EntityFrameworkCore;
 @using System.Globalization
 
-@inject IStringLocalizer<SharedResource> Localizer
 @inject NavigationManager Nav
 @inject AppDbContext Db
 
-<p class="font-bold text-2xl mb-4" tabindex="-1">@Localizer["strGames"]</p>
-
-<LumexTextbox Placeholder="Search by name..."
+<LumexTextbox Placeholder="@SharedResource.Games_SearchByName"
               Class="max-w-sm"
                 Behavior="@InputBehavior.OnInput"
                 @bind-Value="@_nameFilter">

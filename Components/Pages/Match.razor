@@ -5,7 +5,6 @@
 @using LumexUI.Common;
 
 @inject AppDbContext Db
-@inject IStringLocalizer<SharedResource> Localizer
 @inject NavigationManager Nav
 @inject IJSRuntime JS
 
@@ -20,7 +19,7 @@
 
 <div class="flex justify-between">
     <div class="flex items-center gap-2 mb-4">
-        <LumexLink Href="/">@Localizer["strGames"]</LumexLink>
+        <LumexLink Href="/">@SharedResource.Settings_Games</LumexLink>
         <p>></p>
         <LumexLink Href="@($"/{game_slug}")">@_match?.Game?.Name</LumexLink>
     </div>
@@ -35,24 +34,24 @@
                 <StartContent>
                     <ShareIcon />
                 </StartContent>
-                <ChildContent>Share</ChildContent>
+                <ChildContent>@SharedResource.Match_Share</ChildContent>
             </LumexDropdownItem>
             <LumexDropdownItem Color="@ThemeColor.Danger" Class="text-danger" OnClick="() => _showDeleteModal = true">
                 <StartContent>
                     <Trash2Icon/>
                 </StartContent>
-                <ChildContent>Delete</ChildContent>
+                <ChildContent>@SharedResource.Match_Delete</ChildContent>
             </LumexDropdownItem>
         </LumexDropdownMenu>
     </LumexDropdown>
 
     @if (_showDeleteModal){
-        <ModalDelete OnResult="@DeleteMatch" _open="_showDeleteModal" Header="Delete match" Description="Are you sure you want to delete the current match?"/>
+        <ModalDelete OnResult="@DeleteMatch" _open="_showDeleteModal" Header="@SharedResource.Match_DeleteMatch" Description="@SharedResource.Match_AreYouSureYouWantToDeleteTheCurrentMatch"/>
     }
 
     @if (_showDeleteReviewModal)
     {
-        <ModalDelete OnResult="@DeleteReview" _open="_showDeleteReviewModal" Header="Delete review" Description="Are you sure you want to delete the review?" />
+        <ModalDelete OnResult="@DeleteReview" _open="_showDeleteReviewModal" Header="@SharedResource.Match_DeleteReview" Description="@SharedResource.Match_AreYouSureYouWantToDeleteTheReview" />
     }
     
     @if (_showEditReviewModal)
@@ -70,25 +69,25 @@
             <img src="@_match.Game.Image" width="200" />
 
             <div class="flex flex-col gap-3 items-start w-full">
-                <LumexUser Name="Game" Description="@_match.Game.Name">
+                <LumexUser Name="@SharedResource.SettingsFactions_Game" Description="@_match.Game.Name">
                     <AvatarContent>
                         <DiceIcon />
                     </AvatarContent>
                 </LumexUser>
 
-                <LumexUser Name="Date" Description="@_match.Date.ToString("dd-MM-yyyy")">
+                <LumexUser Name="@SharedResource.GameMatches_Date" Description="@_match.Date.ToString("dd-MM-yyyy")">
                     <AvatarContent>
                         <CalendarClockIcon />
                     </AvatarContent>
                 </LumexUser>
 
-                <LumexUser Name="Location" Description="@_match.Location?.Description">
+                <LumexUser Name="@SharedResource.Match_Location" Description="@_match.Location?.Description">
                     <AvatarContent>
                         <MapPinIcon />
                     </AvatarContent>
                 </LumexUser>
 
-                <LumexUser Name="Duration" Description="@_match.Duration?.ToString(@"h\h\ mm\m")">
+                <LumexUser Name="@SharedResource.Match_Duration" Description="@_match.Duration?.ToString(@"h\h\ mm\m")">
                     <AvatarContent>
                         <TimerIcon />
                     </AvatarContent>
@@ -100,7 +99,7 @@
         <LumexDivider />
         <LumexCardFooter>
             <div class="flex h-10 justify-evenly gap-4 w-full">
-                <LumexUser Name="Winner" Description="@_match.Winner?.Player.Name">
+                <LumexUser Name="@SharedResource.GameMatches_Winner" Description="@_match.Winner?.Player.Name">
                     <AvatarContent>
                         <CrownIcon />
                     </AvatarContent>
@@ -108,7 +107,7 @@
 
                 <LumexDivider Orientation="Orientation.Vertical"/>
                 
-                <LumexUser Name="Players" Description="@_match.Results.Count.ToString()">
+                <LumexUser Name="@SharedResource.Settings_Players" Description="@_match.Results.Count.ToString()">
                     <AvatarContent>
                         <UsersIcon />
                     </AvatarContent>
@@ -116,7 +115,7 @@
                 
                 <LumexDivider Orientation="Orientation.Vertical" />
 
-                <LumexUser Name="Stars" Description="@_match.Stars.ToString()">
+                <LumexUser Name="@SharedResource.Match_Stars" Description="@_match.Stars.ToString()">
                     <AvatarContent>
                         <StarIcon />
                     </AvatarContent>
@@ -137,8 +136,8 @@
             }
             <p>@($"{@index}°")</p>
         </TemplateColumn>
-        <PropertyColumn Property="@(p => p.Player.Name)" Title="Player" />
-        <PropertyColumn Property="@(p => p.Faction != null ? p.Faction.Name : "")" Title="Faction">
+        <PropertyColumn Property="@(p => p.Player.Name)" Title="@SharedResource.Match_Player" />
+        <PropertyColumn Property="@(p => p.Faction != null ? p.Faction.Name : "")" Title="@SharedResource.SettingsFactions_Faction">
             <Content>
                 <LumexUser Name="@context?.Faction?.Name">
                     <AvatarContent>
@@ -147,7 +146,7 @@
                 </LumexUser>
             </Content>
         </PropertyColumn>
-        <PropertyColumn Property="@(p => p.Points)" Sortable="true" Title="@Localizer["strPoints"]" Class="w-10"/>
+        <PropertyColumn Property="@(p => p.Points)" Sortable="true" Title="@SharedResource.Match_Points" Class="w-10"/>
     </LumexDataGrid>
 
     // Display match reviews
@@ -155,43 +154,36 @@
         <p class="text-xl m-auto font-bold">Reviews</p>
         <LumexDivider Orientation="Orientation.Vertical" Class="mx-auto"/>
         <div class="w-1/3">
-            <ModalReview Match="@_match" OnSaved="UpdateMatchData" ButtonText="Add Review"/>
+            <ModalReview Match="@_match" OnSaved="UpdateMatchData" ButtonText="@SharedResource.Match_AddReview"/>
         </div>
     </div>
-
-    @if(_match.Reviews.Count > 0)
-    {        
-        @foreach (var review in _match.Reviews)
-        {
-            <LumexCard Class="max-w-sm mb-4">
-                <LumexCardHeader Class="justify-between">
-                    <LumexUser Name="@review.Player.Name" Description="@($"{@review.Stars.ToString()} stars")">
-                        <AvatarContent>
-                            <UserIcon/>
-                        </AvatarContent>
-                    </LumexUser>
-                    <LumexDropdown>
-                        <LumexDropdownTrigger>
-                            <LumexButton IconOnly Variant="@Variant.Light">
-                                <EllipsisVerticalIcon />
-                            </LumexButton>
-                        </LumexDropdownTrigger>
-                        <LumexDropdownMenu>
-                            <LumexDropdownItem OnClick="() => OpenEditReviewModal(review)">Edit</LumexDropdownItem>
-                            <LumexDropdownItem Color="ThemeColor.Danger" Class="text-danger" OnClick="() => OpenDeleteReviewModal(review)">Delete</LumexDropdownItem>
-                        </LumexDropdownMenu>
-                    </LumexDropdown>
-                </LumexCardHeader>
-                <LumexDivider />
-                <LumexCardBody>
-                    @review.Comment
-                </LumexCardBody>
-            </LumexCard>
-        }
-    }
-    else
+ 
+    @foreach (var review in _match.Reviews)
     {
-        <LumexAlert Variant="@AlertVariant.Outlined" Class="mt-8" Title="There are no reviews to show." Description="Press the Add Review button to add your personal review of this match!"/>
+        <LumexCard Class="max-w-sm mb-4">
+            <LumexCardHeader Class="justify-between">
+                <LumexUser Name="@review.Player.Name" Description="@($"{@review.Stars.ToString()} stars")">
+                    <AvatarContent>
+                        <UserIcon/>
+                    </AvatarContent>
+                </LumexUser>
+                <LumexDropdown>
+                    <LumexDropdownTrigger>
+                        <LumexButton IconOnly Variant="@Variant.Light">
+                            <EllipsisVerticalIcon />
+                        </LumexButton>
+                    </LumexDropdownTrigger>
+                    <LumexDropdownMenu>
+                        <LumexDropdownItem OnClick="() => OpenEditReviewModal(review)">Edit</LumexDropdownItem>
+                        <LumexDropdownItem Color="ThemeColor.Danger" Class="text-danger" OnClick="() => OpenDeleteReviewModal(review)">Delete</LumexDropdownItem>
+                    </LumexDropdownMenu>
+                </LumexDropdown>
+            </LumexCardHeader>
+            <LumexDivider />
+            <LumexCardBody>
+                @review.Comment
+            </LumexCardBody>
+        </LumexCard>
     }
 
 }

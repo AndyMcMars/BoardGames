@@ -5,9 +5,9 @@
 
 @inject IJSRuntime JS
 
-<p class="text-xl mb-4">@Localizer["settings"]</p>
+<p class="text-xl mb-4">@SharedResource.Settings_Settings</p>
 <div class="flex flex-col max-w-sm gap-4">
-    <LumexSelect TValue="string" Label="language" Value="@selectedCulture" ValueChanged="OnCultureChanged">
+    <LumexSelect TValue="string" Label="@SharedResource.Settings_Language" Value="@selectedCulture" ValueChanged="OnCultureChanged">
         <LumexSelectItem Value="@("en")">English</LumexSelectItem>
         <LumexSelectItem Value="@("it")">Italiano</LumexSelectItem>
         <LumexSelectItem Value="@("de")">Deutsch</LumexSelectItem>
@@ -20,7 +20,7 @@
             <SunIcon />
         </StartContent>
         <ChildContent>
-            Dark Mode
+            @SharedResource.Settings_DarkMode
         </ChildContent>
         <EndContent>
             <MoonIcon />
@@ -28,12 +28,12 @@
     </LumexSwitch>
 </div>
 
-<p class="text-xl mb-4 mt-4">Entities</p>
+<p class="text-xl mb-4 mt-4">@SharedResource.Settings_Entities</p>
 <div class="overflow-x-auto">
     <LumexTabs Color="@LumexUI.Common.ThemeColor.Primary" Variant="LumexUI.Common.TabVariant.Underlined">
         <LumexTab>
             <TitleContent>
-                <p>Games</p>
+                <p>@SharedResource.Settings_Games</p>
             </TitleContent>
             <ChildContent>
                 <SettingsGames />
@@ -41,7 +41,7 @@
         </LumexTab>
         <LumexTab>
             <TitleContent>
-                <p>Factions</p>
+                <p>@SharedResource.Settings_Factions</p>
             </TitleContent>
             <ChildContent>
                 <SettingsFactions />
@@ -49,7 +49,7 @@
         </LumexTab>
         <LumexTab>
             <TitleContent>
-                <p>Players</p>
+                <p>@SharedResource.Settings_Players</p>
             </TitleContent>
             <ChildContent>
                 <SettingsPlayers />
@@ -57,7 +57,7 @@
         </LumexTab>
         <LumexTab>
             <TitleContent>
-                <p>Locations</p>
+                <p>@SharedResource.Settings_Locations</p>
             </TitleContent>
             <ChildContent>
                 <SettingsLocations />

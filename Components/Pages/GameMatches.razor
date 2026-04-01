@@ -5,15 +5,14 @@
 
 @inject AppDbContext Db
 @inject NavigationManager Nav
-@inject IStringLocalizer<SharedResource> Localizer
 
 <div class="flex items-center gap-2 mb-4">
-    <LumexLink Href="/">@Localizer["strGames"]</LumexLink>
+    <LumexLink Href="/">@SharedResource.Settings_Games</LumexLink>
 </div>
 
 @if (_game is null)
 {
-    <p>game not found</p>
+    <p>@SharedResource.GameMatches_GameNotFound</p>
 }
 else
 {
@@ -51,19 +50,19 @@ else
     @if(_matches.Count() > 0)
     {
         <LumexDataGrid Data="@_matches" T=mdMatch Layout="Layout.Fixed" OnRowClick="@GoToMatch">
-            <PropertyColumn Property="@(p => p.Date)" Format="dd-MM-yyyy" Sortable="true" />
-            <TemplateColumn Title="Players" Context="p" Sortable="true">
+            <PropertyColumn Title="@SharedResource.GameMatches_Date" Property="@(p => p.Date)" Format="dd-MM-yyyy" Sortable="true" />
+            <TemplateColumn Title="@SharedResource.Settings_Players" Context="p" Sortable="true">
                 @(p.Results.Count())
             </TemplateColumn>
-            <TemplateColumn Title="Winner" Context="p" Sortable="true">
+            <TemplateColumn Title="@SharedResource.GameMatches_Winner" Context="p" Sortable="true">
                 @($"{p.Winner?.Player?.Name} ({p.Winner?.Points})" ?? "")
             </TemplateColumn>
         </LumexDataGrid>
     }
     else
     {
-        <LumexAlert Title="No match found!"
-                    Description="@($"There are currently no matches for {_game.Name}")" />
+        <LumexAlert Title="@SharedResource.GameMatches_NoMatchFound"
+                    Description="@($"{@SharedResource.GameMatches_ThereAreCurrentlyNoMatchesFor} {_game.Name}")" />
     }
 
 }

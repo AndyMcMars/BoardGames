@@ -9,21 +9,21 @@
 <LumexDataGrid Data="@_players" SelectionMode="@SelectionMode.Multiple" @bind-SelectedItems="_selectedPlayers" @key="_refreshKey">
     <ToolbarContent>
         <div class="flex justify-between">
-            <ModalPlayer ButtonText="@(_selectedPlayers.Count == 1 ? "Edit Player" : "Add Player")" Player="@(_selectedPlayers.Count == 1 ? _selectedPlayers.FirstOrDefault() : null)" OnSaved="UpdateData" ButtonColor="@(_selectedPlayers.Count == 1 ? ThemeColor.Warning : ThemeColor.Success)" />
+            <ModalPlayer ButtonText="@(_selectedPlayers.Count == 1 ? @SharedResource.SettingsPlayers_EditPlayer : @SharedResource.SettingsPlayers_AddPlayer)" Player="@(_selectedPlayers.Count == 1 ? _selectedPlayers.FirstOrDefault() : null)" OnSaved="UpdateData" ButtonColor="@(_selectedPlayers.Count == 1 ? ThemeColor.Warning : ThemeColor.Success)" />
             <LumexButton OnClick="() => _showDeleteModal = true" Disabled="_selectedPlayers.Count < 1" Color="@(_selectedPlayers.Count < 1 ? ThemeColor.Default : ThemeColor.Danger)">
                 <Trash2Icon />
-                Delete Player
+                @SharedResource.SettingsPlayers_DeletePlayer
             </LumexButton>
         </div>
     </ToolbarContent>
     <ChildContent>
-        <PropertyColumn Property="@(p => p.Name)" />
+        <PropertyColumn Property="@(p => p.Name)" Title="@SharedResource.SettingsGames_Name" />
     </ChildContent>
 </LumexDataGrid>
 
 @if (_showDeleteModal)
 {
-    <ModalDelete OnResult="@DeleteSelected" _open="_showDeleteModal" Header="Delete player" Description="Are you sure you want to delete the selected player?" />
+    <ModalDelete OnResult="@DeleteSelected" _open="_showDeleteModal" Header="@SharedResource.SettingsPlayers_DeletePlayerMsg" Description="@SharedResource.SettingsPlayers_AreYouSureYouWantToDeleteTheSelectedPlayer" />
 }
 
 

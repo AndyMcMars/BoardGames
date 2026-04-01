@@ -9,21 +9,21 @@
 <LumexDataGrid Data="@_locations" SelectionMode="@SelectionMode.Multiple" @bind-SelectedItems="_selectedLocations" @key="_refreshKey">
     <ToolbarContent>
         <div class="flex justify-between">
-            <ModalLocation ButtonText="@(_selectedLocations.Count == 1 ? "Edit Location" : "Add Location")" Location="@(_selectedLocations.Count == 1 ? _selectedLocations.FirstOrDefault() : null)" OnSaved="UpdateData" ButtonColor="@(_selectedLocations.Count == 1 ? ThemeColor.Warning : ThemeColor.Success)" />
+            <ModalLocation ButtonText="@(_selectedLocations.Count == 1 ? @SharedResource.SettingsLocations_EditLocation :@SharedResource.SettingsLocations_AddLocation)" Location="@(_selectedLocations.Count == 1 ? _selectedLocations.FirstOrDefault() : null)" OnSaved="UpdateData" ButtonColor="@(_selectedLocations.Count == 1 ? ThemeColor.Warning : ThemeColor.Success)" />
             <LumexButton OnClick="() => _showDeleteModal = true" Disabled="_selectedLocations.Count < 1" Color="@(_selectedLocations.Count < 1 ? ThemeColor.Default : ThemeColor.Danger)">
                 <Trash2Icon />
-                Delete Location
+                @SharedResource.SettingsLocations_DeleteLocation
             </LumexButton>
         </div>
     </ToolbarContent>
     <ChildContent>
-        <PropertyColumn Property="@(p => p.Description)" />
+        <PropertyColumn Property="@(p => p.Description)" Title="@SharedResource.SettingsGames_Name" />
     </ChildContent>
 </LumexDataGrid>
 
 @if (_showDeleteModal)
 {
-    <ModalDelete OnResult="@DeleteSelected" _open="_showDeleteModal" Header="Delete location" Description="Are you sure you want to delete the selected location?" />
+    <ModalDelete OnResult="@DeleteSelected" _open="_showDeleteModal" Header="@SharedResource.SettingsLocations_DeleteLocationMsg" Description="@SharedResource.SettingsLocations_AreYouSureYouWantToDeleteTheSelectedLocation" />
 }
 
 @code {

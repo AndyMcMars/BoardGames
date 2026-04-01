@@ -24,7 +24,7 @@
             <!-- Right: Two rows -->
             <div class="flex flex-col gap-3 w-full">
                 <LumexSelect TValue="int"
-                             Label="Select a Game"
+                             Label="@SharedResource.NewMatch_SelectAGame"
                              @bind-Value="_newMatch.GameId"
                              Required>
                     @foreach (var game in _games)
@@ -45,12 +45,12 @@
         <LumexCardBody>
             <div class="flex gap-4">
                 <LumexNumbox TValue="int?"
-                             Label="Duration in min"
+                             Label="@SharedResource.NewMatch_DurationInMin"
                              @bind-Value="@duration"
                              class="flex-1" />
 
                 <LumexSelect TValue="int"
-                             Label="Select a Location"
+                             Label="@SharedResource.NewMatch_SelectALocation"
                              @bind-Value="_newMatch.LocationId"
                              Required
                              class="flex-1">
@@ -67,11 +67,11 @@
         </LumexCardBody>
     </LumexCard>
 
-    <div class="text-2xl mt-4 mb-4">Points</div>
+    <div class="text-2xl mt-4 mb-4">@SharedResource.Match_Points</div>
 
     <LumexDataGrid Data="@_results.AsQueryable()" Layout="Layout.Fixed" Classes="_classes">
         <ToolbarContent>
-            <LumexSelect Label="Select players"
+            <LumexSelect Label="@SharedResource.NewMatch_SelectPlayers"
                          @bind-Values="@_selectedPlayers">
 
                 @foreach (var player in _players)
@@ -83,11 +83,11 @@
             </LumexSelect>
         </ToolbarContent>
         <ChildContent>
-            <PropertyColumn Property="@(p => p.Player.Name)"/>
-            <EditColumn Property="@(p => p.Points)" />
-            <PropertyColumn Property="@(p => p.Faction)">
+            <PropertyColumn Property="@(p => p.Player.Name)" Title="@SharedResource.SettingsGames_Name"/>
+            <EditColumn Property="@(p => p.Points)" Title="@SharedResource.Match_Points" />
+            <PropertyColumn Property="@(p => p.Faction)" Title="@SharedResource.SettingsFactions_Faction">
                 <Content>
-                    <LumexSelect TValue="mdFaction" Label="@(context.Faction == null ? "Select a faction" : "")" @bind-Value="context.Faction" Context="faction" Variant="InputVariant.Flat">
+                    <LumexSelect TValue="mdFaction" Label="@(context.Faction == null ? "@SharedResource.NewMatch_SelectAFaction" : "")" @bind-Value="context.Faction" Context="faction" Variant="InputVariant.Flat">
                         <ChildContent>
                             @foreach (var faction in _factions)
                             {
@@ -113,7 +113,7 @@
         </ChildContent>
     </LumexDataGrid>
 
-    <LumexButton OnClick="Savematch" Disabled="@(_results.Count() < 1)" Color="@ThemeColor.Success" Class="mt-4">Save</LumexButton>
+    <LumexButton OnClick="Savematch" Disabled="@(_results.Count() < 1)" Color="@ThemeColor.Success" Class="mt-4">@SharedResource.NewMatch_Save</LumexButton>
 
 }
 
