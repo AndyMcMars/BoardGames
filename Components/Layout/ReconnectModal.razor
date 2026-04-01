@@ -1,12 +1,15 @@
 ﻿<script type="module" src="@Assets["Components/Layout/ReconnectModal.razor.js"]"></script>
 
+@inject NavigationManager Nav
+
 <dialog id="components-reconnect-modal" data-nosnippet 
         class="flex inset-0 m-0 p-0 border-0 bg-transparent
     items-center justify-center w-full h-full
     [&:not([open])]:hidden
     [&::backdrop]:bg-black/30
     [&::backdrop]:backdrop-blur-md">
-    <div class="components-reconnect-container m-auto">
+    <div class="components-reconnect-container m-auto flex flex-col items-center justify-center gap-4">
         <LumexSpinner Label="Reconnecting..." Size="LumexUI.Common.Size.Large" />
+        <LumexLink Href="@Nav.Uri">Reload</LumexLink>
     </div>
 </dialog>
