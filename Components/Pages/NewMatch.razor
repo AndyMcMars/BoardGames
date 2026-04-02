@@ -141,7 +141,7 @@
 
     private int? duration;
     private Action<ToastModel> _toasterId = t => t.ToasterId = "toaster-rich-colors";
-    
+
     private DataGridSlots _classes = new()
     {
         Thead = "[&_th]:nth-1:w-20 [&_th]:nth-3:w-80"
@@ -173,9 +173,20 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _newMatch.GameId = await Db.Games
-                                .Select(g => g.Id)
-                                .FirstOrDefaultAsync();
+
+        var lastGame = await Db.Matches
+            .OrderByDescending(m => m.Date)
+            .Select(m => m.Game)
+            .FirstOrDefaultAsync();
+
+        if (lastGame != null)
+        {
+            _newMatch.GameId = lastGame.Id;
+        }
+        else
+        {
+            _newMatch.GameId = await Db.Games.Select(g => g.Id).FirstOrDefaultAsync();
+        }
 
         _newMatch.Date = DateTime.Now;
     }

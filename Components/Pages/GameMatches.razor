@@ -49,7 +49,7 @@ else
 
     @if(_matches.Count() > 0)
     {
-        <LumexDataGrid Data="@_matches" T=mdMatch Layout="Layout.Fixed" OnRowClick="@GoToMatch" Striped Style="cursor: pointer">
+        <LumexDataGrid Data="@_matches" T=mdMatch Layout="Layout.Fixed" OnRowClick="@GoToMatch" Classes="_classes" Hoverable>
             <PropertyColumn Title="@SharedResource.GameMatches_Date" Property="@(p => p.Date)" Format="dd-MM-yyyy" Sortable="true" />
             <TemplateColumn Title="@SharedResource.Settings_Players" Context="p" Sortable="true">
                 @(p.Results.Count())
@@ -74,6 +74,12 @@ else
     [Parameter] public string game_slug { get; set; }
 
     private mdGame? _game;
+
+    
+    private DataGridSlots _classes = new()
+    {
+        Tr = "cursor-pointer"
+    };
 
     private IQueryable<mdMatch> _matches =>
         _game == null
