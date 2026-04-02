@@ -3,11 +3,7 @@
 
 @inject AppDbContext Db
 
-<LumexModal>
-    <LumexModalTrigger Variant="@Variant.Flat" Color="@ButtonColor" Class="mb-4">
-        <StarIcon />
-        @ButtonText
-    </LumexModalTrigger>
+<LumexModal Open="_open">
 
     <LumexModalContent Context="modal">
 
@@ -60,7 +56,8 @@
     [Parameter] public string? ButtonText { get; set; }
     [Parameter] public ThemeColor ButtonColor { get; set; }
 
-    [Parameter]public mdMatch? Match { get; set; }
+    [Parameter] public mdMatch? Match { get; set; }
+    [Parameter] public bool _open { get; set; }
 
     private mdReview _model = new();
     private IQueryable<mdPlayer> _players => Db.Players;

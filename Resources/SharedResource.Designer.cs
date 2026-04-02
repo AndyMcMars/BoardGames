@@ -214,6 +214,15 @@ namespace BoardGames.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Reviews.
+        /// </summary>
+        public static string Match_Reviews {
+            get {
+                return ResourceManager.GetString("Match_Reviews", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Share.
         /// </summary>
         public static string Match_Share {

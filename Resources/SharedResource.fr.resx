@@ -288,4 +288,7 @@
   <data name="NewMatch_Save" xml:space="preserve">
     <value>Sauvegarder</value>
   </data>
+  <data name="Match_Reviews" xml:space="preserve">
+    <value>Avis</value>
+  </data>
 </root>

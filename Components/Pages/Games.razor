@@ -21,7 +21,7 @@
 
     @foreach (var game in FilteredGames)
     {
-        <LumexCard onclick="@(() => GoToMatches(game.Slug))" Class="w-full max-w-sm">
+        <LumexCard onclick="@(() => GoToMatches(game.Slug))" Class="w-full max-w-sm" Style="cursor: pointer">
             <div class="w-full aspect-square overflow-hidden flex items-center justify-center">
                 @if (game.Image != null)
                 {
