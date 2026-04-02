@@ -87,7 +87,7 @@
             <EditColumn Property="@(p => p.Points)" Title="@SharedResource.Match_Points" />
             <PropertyColumn Property="@(p => p.Faction)" Title="@SharedResource.SettingsFactions_Faction">
                 <Content>
-                    <LumexSelect TValue="mdFaction" Label="@(context.Faction == null ? "@SharedResource.NewMatch_SelectAFaction" : "")" @bind-Value="context.Faction" Context="faction" Variant="InputVariant.Flat">
+                    <LumexSelect TValue="mdFaction" Label="@(context.Faction == null ? @SharedResource.NewMatch_SelectAFaction : "")" @bind-Value="context.Faction" Context="faction" Variant="InputVariant.Flat">
                         <ChildContent>
                             @foreach (var faction in _factions)
                             {
