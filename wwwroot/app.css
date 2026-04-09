@@ -551,9 +551,6 @@
   .m-0 {
     margin: calc(var(--spacing) * 0);
   }
-  .m-8 {
-    margin: calc(var(--spacing) * 8);
-  }
   .m-auto {
     margin: auto;
   }
@@ -806,9 +803,6 @@
   .w-14 {
     width: calc(var(--spacing) * 14);
   }
-  .w-16 {
-    width: calc(var(--spacing) * 16);
-  }
   .w-\[25\%\] {
     width: 25%;
   }
@@ -818,17 +812,11 @@
   .w-\[80\%\] {
     width: 80%;
   }
-  .w-\[80px\] {
-    width: 80px;
-  }
   .w-\[100px\] {
     width: 100px;
   }
   .w-\[calc\(100\%_-_--spacing\(6\)\)\] {
     width: calc(100% - calc(var(--spacing) * 6));
-  }
-  .w-fit {
-    width: fit-content;
   }
   .w-full {
     width: 100%;
@@ -1149,9 +1137,6 @@
   .\!rounded-none {
     border-radius: 0 !important;
   }
-  .rounded {
-    border-radius: 0.25rem;
-  }
   .rounded-\[calc\(var\(--radius-large\)\*0\.5\)\] {
     border-radius: calc(var(--radius-large) * 0.5);
   }
@@ -1219,10 +1204,6 @@
     border-style: var(--tw-border-style);
     border-width: 3px;
   }
-  .border-r {
-    border-right-style: var(--tw-border-style);
-    border-right-width: 1px;
-  }
   .border-b {
     border-bottom-style: var(--tw-border-style);
     border-bottom-width: 1px;
@@ -1230,10 +1211,6 @@
   .border-b-2 {
     border-bottom-style: var(--tw-border-style);
     border-bottom-width: 2px;
-  }
-  .border-l {
-    border-left-style: var(--tw-border-style);
-    border-left-width: 1px;
   }
   .border-dotted {
     --tw-border-style: dotted;
@@ -1277,9 +1254,6 @@
       border-color: color-mix(in oklab, var(--lumex-divider) var(--lumex-opacity-divider), transparent);
     }
   }
-  .border-gray-300 {
-    border-color: var(--color-gray-300);
-  }
   .border-info {
     border-color: var(--lumex-info);
   }
@@ -1288,9 +1262,6 @@
   }
   .border-info-200 {
     border-color: var(--lumex-info-200);
-  }
-  .border-neutral-300 {
-    border-color: var(--color-neutral-300);
   }
   .border-primary {
     border-color: var(--lumex-primary);
@@ -4543,12 +4514,6 @@
       }
     }
   }
-  .focus\:outline-none {
-    &:focus {
-      --tw-outline-style: none;
-      outline-style: none;
-    }
-  }
   .focus-visible\:z-10 {
     &:focus-visible {
       z-index: 10;
@@ -6520,14 +6485,6 @@ html[dir='rtl'], [data-sonner-toaster][dir='rtl'] {
     background-color: var(--lumex-background);
     color: var(--lumex-foreground);
   }
-}
-.no-spinner::-webkit-inner-spin-button, .no-spinner::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-.no-spinner {
-  -moz-appearance: textfield;
-  appearance: none;
 }
 @property --tw-translate-x {
   syntax: "*";

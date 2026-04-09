@@ -1,6 +1,8 @@
 ﻿@using LumexUI.Common
 @using LumexUI.Shared.Icons
 @inherits LayoutComponentBase
+@inject PinLockService PinLock
+
 
 <LumexToastProvider />
 
@@ -39,3 +41,13 @@
         @Body
     </main>
 </div>
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await PinLock.InitializeAsync();
+        }
+    }
+}

@@ -3,6 +3,7 @@ using BoardGames.Services;
 using LumexUI.Extensions;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +36,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddLumexServices();
 builder.Services.AddScoped<PinLockService>();
+builder.Services.AddScoped<ProtectedLocalStorage>();
 
 var app = builder.Build();
 

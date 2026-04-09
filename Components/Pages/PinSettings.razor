@@ -25,16 +25,19 @@
     private int[] _pinDigits = new int[4];
     private string _alert = string.Empty;
 
+
     private InputFieldSlots _classes = new()
     {
         Input = "[&::-webkit-inner-spin-button]:appearance-none"
     };
 
-    private void SavePin()
+    private async Task SavePin()
     {
         var pin = string.Join("", _pinDigits);
+        
+        var success = await PinLock.TryUnlockAsync(pin);
 
-        if (PinLock.TryUnlock(pin))
+        if (success)
         {
             Nav.NavigateTo("/settings");
         }
