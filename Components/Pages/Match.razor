@@ -73,7 +73,7 @@
 @if(_match?.Game != null)
 {
     // Display match details
-    <LumexCard Class="mb-4 max-w-sm">
+    <LumexCard Class="mb-4">
         <LumexCardHeader Class="flex gap-4 items-start">
 
             <img src="@_match.Game.Image" width="200" />
@@ -136,7 +136,7 @@
     </LumexCard>
 
     // Display match results
-    <LumexDataGrid T=mdResult Data="@_match.Results.AsQueryable()" Class="max-w-xl">
+    <LumexDataGrid T=mdResult Data="@_match.Results.AsQueryable()">
         <TemplateColumn Title="Nr." Class="w-10">
             @{
                 var index = _match.Results

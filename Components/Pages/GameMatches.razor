@@ -19,8 +19,8 @@ else
     <LumexCard Class="mb-4">
         <LumexCardHeader Class="flex gap-4 items-start">
             <img src="@_game.Image" width="100" />
-            <div class="flex flex-col gap-3 w-full text-xl">
-               <h2>@_game.Name</h2>
+            <div class="flex flex-col gap-3 w-full">
+                <p class="text-xl font-bold">@_game.Name</p>
             </div>
         </LumexCardHeader>
         <LumexCardFooter>
@@ -45,7 +45,26 @@ else
         </LumexCardFooter>
     </LumexCard>
 
+    <LumexDivider />
 
+    <LumexAccordion ItemClasses="_itemClasses" >
+        <LumexAccordionItem Id="1" Title="Leaderboards">
+            <StartContent>
+                <MedalIcon />
+            </StartContent> 
+            <ChildContent>
+                <LumexDataGrid T="PlayerStats" Data="_leaderboard.AsQueryable()" Color="ThemeColor.Primary">
+                    <PropertyColumn Property="@(p => p.Rank)" Title="Nr." />
+                    <PropertyColumn Property="@(p => p.PlayerName)" Title="Player" />
+                    <PropertyColumn Property="@(p => p.MatchesPlayed)" Title="Matches" />
+                    <PropertyColumn Property="@(p => p.Wins)" Title="Wins" />
+                    <PropertyColumn Property="@(p => p.WinRate)" Title="Win %" />
+                </LumexDataGrid>
+            </ChildContent>
+        </LumexAccordionItem>
+    </LumexAccordion>
+
+    <LumexDivider Class="mb-4" />
 
     @if(_matches.Count() > 0)
     {
@@ -80,6 +99,11 @@ else
     {
         Tr = "cursor-pointer"
     };
+    
+    private AccordionItemSlots _itemClasses = new()
+    {
+        Title = "text-xl font-bold",
+    };
 
     private IQueryable<mdMatch> _matches =>
         _game == null
@@ -90,6 +114,8 @@ else
                 .Include(m => m.Results)
                     .ThenInclude(r => r.Player)
                 .OrderByDescending(m => m.Date);
+
+    private List<PlayerStats> _leaderboard = new();
 
     private TimeSpan totalDuration => TimeSpan.FromTicks(
         _matches
@@ -102,11 +128,62 @@ else
     {
         _game = await Db.Games
             .FirstOrDefaultAsync(g => g.Slug == game_slug);
-    }
 
+        if (_game == null) return;
+
+        var matches = await Db.Matches
+            .Where(m => m.GameId == _game.Id)
+            .Include(m => m.Results)
+                .ThenInclude(r => r.Player)
+            .ToListAsync();
+
+        _leaderboard = matches
+            .Select(m => new
+            {
+                m.Results,
+                WinnerPlayerId = m.Results
+                    .OrderByDescending(r => r.Points)
+                    .Select(r => r.PlayerId)
+                    .FirstOrDefault()
+            })
+            .SelectMany(m => m.Results, (m, r) => new
+            {
+                r.PlayerId,
+                PlayerName = r.Player.Name,
+                IsWin = r.PlayerId == m.WinnerPlayerId
+            })
+            .GroupBy(x => new { x.PlayerId, x.PlayerName })
+            .Select(g => new
+            {
+                PlayerName = g.Key.PlayerName,
+                MatchesPlayed = g.Count(),
+                Wins = g.Count(x => x.IsWin),
+                WinRate = g.Count(x => x.IsWin) / (double)g.Count()
+            })
+            .OrderByDescending(x => x.WinRate)
+            .ThenByDescending(x => x.Wins)
+            .Select((x, i) => new PlayerStats
+            {
+                Rank = i + 1,
+                PlayerName = x.PlayerName,
+                MatchesPlayed = x.MatchesPlayed,
+                Wins = x.Wins,
+                WinRate = Math.Round(x.WinRate * 100, 1)
+            })
+            .ToList();
+    }
 
     private void GoToMatch(DataGridRowClickEventArgs<mdMatch> match)
     {
         Nav.NavigateTo($"/{game_slug}/{match.Item.PublicId}");
+    }
+
+    public class PlayerStats
+    {
+        public int Rank { get; set; }
+        public string PlayerName { get; set; } = "";
+        public int MatchesPlayed { get; set; }
+        public int Wins { get; set; }
+        public double WinRate { get; set; }
     }
 }
