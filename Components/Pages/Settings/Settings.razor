@@ -3,6 +3,9 @@
 @using LumexUI.Common
 @using LumexUI.Shared.Icons
 
+@inject PinLockService PinLock
+@inject NavigationManager Nav
+
 @inject IJSRuntime JS
 
 <p class="text-xl mb-4">@SharedResource.Settings_Settings</p>
@@ -72,6 +75,14 @@
     bool isDark;
     string selectedCulture;
     
+    protected override void OnInitialized()
+    {
+        if (!PinLock.IsUnlocked)
+        {
+            Nav.NavigateTo("/pin");
+        }
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender) return;

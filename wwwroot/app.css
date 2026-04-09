@@ -67,6 +67,7 @@
     --color-rose-700: oklch(51.4% 0.222 16.935);
     --color-rose-800: oklch(45.5% 0.188 13.697);
     --color-rose-900: oklch(41% 0.159 10.272);
+    --color-gray-300: oklch(87.2% 0.01 258.338);
     --color-zinc-50: oklch(98.5% 0 0);
     --color-zinc-100: oklch(96.7% 0.001 286.375);
     --color-zinc-200: oklch(92% 0.004 286.32);
@@ -77,6 +78,7 @@
     --color-zinc-700: oklch(37% 0.013 285.805);
     --color-zinc-800: oklch(27.4% 0.006 286.033);
     --color-zinc-900: oklch(21% 0.006 285.885);
+    --color-neutral-300: oklch(87% 0 0);
     --color-black: #000;
     --color-white: #fff;
     --spacing: 0.25rem;
@@ -89,7 +91,6 @@
     --container-sm: 24rem;
     --container-md: 28rem;
     --container-lg: 32rem;
-    --container-xl: 36rem;
     --container-5xl: 64rem;
     --text-xl: 1.25rem;
     --text-xl--line-height: calc(1.75 / 1.25);
@@ -104,7 +105,6 @@
     --radius-lg: 0.5rem;
     --ease-out: cubic-bezier(0, 0, 0.2, 1);
     --animate-spin: spin 1s linear infinite;
-    --blur-sm: 8px;
     --blur-md: 12px;
     --blur-lg: 16px;
     --default-transition-duration: 250ms;
@@ -551,6 +551,9 @@
   .m-0 {
     margin: calc(var(--spacing) * 0);
   }
+  .m-8 {
+    margin: calc(var(--spacing) * 8);
+  }
   .m-auto {
     margin: auto;
   }
@@ -803,11 +806,20 @@
   .w-14 {
     width: calc(var(--spacing) * 14);
   }
+  .w-16 {
+    width: calc(var(--spacing) * 16);
+  }
   .w-\[25\%\] {
     width: 25%;
   }
+  .w-\[40px\] {
+    width: 40px;
+  }
   .w-\[80\%\] {
     width: 80%;
+  }
+  .w-\[80px\] {
+    width: 80px;
   }
   .w-\[100px\] {
     width: 100px;
@@ -815,23 +827,17 @@
   .w-\[calc\(100\%_-_--spacing\(6\)\)\] {
     width: calc(100% - calc(var(--spacing) * 6));
   }
+  .w-fit {
+    width: fit-content;
+  }
   .w-full {
     width: 100%;
-  }
-  .w-lg {
-    width: var(--container-lg);
   }
   .w-max {
     width: max-content;
   }
-  .w-md {
-    width: var(--container-md);
-  }
   .w-px {
     width: 1px;
-  }
-  .w-sm {
-    width: var(--container-sm);
   }
   .max-w-5xl {
     max-width: var(--container-5xl);
@@ -844,9 +850,6 @@
   }
   .max-w-full {
     max-width: 100%;
-  }
-  .max-w-lg {
-    max-width: var(--container-lg);
   }
   .max-w-min {
     max-width: min-content;
@@ -1146,6 +1149,9 @@
   .\!rounded-none {
     border-radius: 0 !important;
   }
+  .rounded {
+    border-radius: 0.25rem;
+  }
   .rounded-\[calc\(var\(--radius-large\)\*0\.5\)\] {
     border-radius: calc(var(--radius-large) * 0.5);
   }
@@ -1213,6 +1219,10 @@
     border-style: var(--tw-border-style);
     border-width: 3px;
   }
+  .border-r {
+    border-right-style: var(--tw-border-style);
+    border-right-width: 1px;
+  }
   .border-b {
     border-bottom-style: var(--tw-border-style);
     border-bottom-width: 1px;
@@ -1220,6 +1230,10 @@
   .border-b-2 {
     border-bottom-style: var(--tw-border-style);
     border-bottom-width: 2px;
+  }
+  .border-l {
+    border-left-style: var(--tw-border-style);
+    border-left-width: 1px;
   }
   .border-dotted {
     --tw-border-style: dotted;
@@ -1263,6 +1277,9 @@
       border-color: color-mix(in oklab, var(--lumex-divider) var(--lumex-opacity-divider), transparent);
     }
   }
+  .border-gray-300 {
+    border-color: var(--color-gray-300);
+  }
   .border-info {
     border-color: var(--lumex-info);
   }
@@ -1271,6 +1288,9 @@
   }
   .border-info-200 {
     border-color: var(--lumex-info-200);
+  }
+  .border-neutral-300 {
+    border-color: var(--color-neutral-300);
   }
   .border-primary {
     border-color: var(--lumex-primary);
@@ -4523,6 +4543,12 @@
       }
     }
   }
+  .focus\:outline-none {
+    &:focus {
+      --tw-outline-style: none;
+      outline-style: none;
+    }
+  }
   .focus-visible\:z-10 {
     &:focus-visible {
       z-index: 10;
@@ -5493,6 +5519,11 @@
       &:nth-child(3) {
         width: calc(var(--spacing) * 80);
       }
+    }
+  }
+  .\[\&\:\:-webkit-inner-spin-button\]\:appearance-none {
+    &::-webkit-inner-spin-button {
+      appearance: none;
     }
   }
   .\[\&\:\:backdrop\]\:bg-black\/30 {
@@ -6489,6 +6520,14 @@ html[dir='rtl'], [data-sonner-toaster][dir='rtl'] {
     background-color: var(--lumex-background);
     color: var(--lumex-foreground);
   }
+}
+.no-spinner::-webkit-inner-spin-button, .no-spinner::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.no-spinner {
+  -moz-appearance: textfield;
+  appearance: none;
 }
 @property --tw-translate-x {
   syntax: "*";

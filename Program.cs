@@ -1,4 +1,5 @@
 using BoardGames.Components;
+using BoardGames.Services;
 using LumexUI.Extensions;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
@@ -33,6 +34,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite($"Data Source={dbPath}"));
 
 builder.Services.AddLumexServices();
+builder.Services.AddScoped<PinLockService>();
 
 var app = builder.Build();
 

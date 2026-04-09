@@ -1,0 +1,48 @@
+﻿@page "/pin"
+@using LumexUI.Common
+@inject NavigationManager Nav
+@inject PinLockService PinLock
+@layout MainLayout
+
+<div class="w-full flex gap-4 justify-center">
+    <LumexNumbox Classes="@_classes" Class="w-[40px]" min="0" max="9" @bind-Value="_pinDigits[0]" />
+    <LumexNumbox Classes="@_classes" Class="w-[40px]" min="0" max="9" @bind-Value="_pinDigits[1]" />
+    <LumexNumbox Classes="@_classes" Class="w-[40px]" min="0" max="9" @bind-Value="_pinDigits[2]" />
+    <LumexNumbox Classes="@_classes" Class="w-[40px]" min="0" max="9" @bind-Value="_pinDigits[3]" />
+</div>
+
+@if (!string.IsNullOrEmpty(_alert))
+{
+    <LumexAlert Color="ThemeColor.Danger" Class="mt-4">@_alert</LumexAlert>
+}
+
+<div class="flex justify-center w-full">
+    <LumexButton Class="mt-4" Color="ThemeColor.Success" @onclick="SavePin">Save PIN</LumexButton>
+</div>
+
+@code {
+
+    private int[] _pinDigits = new int[4];
+    private string _alert = string.Empty;
+
+    private InputFieldSlots _classes = new()
+    {
+        Input = "[&::-webkit-inner-spin-button]:appearance-none"
+    };
+
+    private void SavePin()
+    {
+        var pin = string.Join("", _pinDigits);
+
+        if (PinLock.TryUnlock(pin))
+        {
+            Nav.NavigateTo("/settings");
+        }
+        else
+        {
+            _alert = "Incorrect pin";
+        }
+
+    }
+
+}

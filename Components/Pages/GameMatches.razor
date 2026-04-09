@@ -21,28 +21,26 @@ else
             <img src="@_game.Image" width="100" />
             <div class="flex flex-col gap-3 w-full">
                 <p class="text-xl font-bold">@_game.Name</p>
+                <div class="flex w-full">
+                    <LumexChip Variant="ChipVariant.Light">
+                        <StartContent>
+                            @_matches.Count()
+                        </StartContent>
+                        <ChildContent>
+                            <SwordsIcon />
+                        </ChildContent>
+                    </LumexChip>
+                    <LumexChip Variant="ChipVariant.Light">
+                        <StartContent>
+                            @totalDuration
+                        </StartContent>
+                        <ChildContent>
+                            <TimerIcon />
+                        </ChildContent>
+                    </LumexChip>
+                </div>
             </div>
         </LumexCardHeader>
-        <LumexCardFooter>
-            <div class="flex justify-between w-full">
-                <LumexChip Variant="ChipVariant.Light">
-                    <StartContent>
-                        @_matches.Count()
-                    </StartContent>
-                    <ChildContent>
-                        <SwordsIcon/>
-                    </ChildContent>
-                </LumexChip>
-                <LumexChip Variant="ChipVariant.Light">
-                    <StartContent>
-                        @totalDuration
-                    </StartContent>
-                    <ChildContent>
-                        <TimerIcon />
-                    </ChildContent>
-                </LumexChip>
-            </div>
-        </LumexCardFooter>
     </LumexCard>
 
     <LumexDivider />
