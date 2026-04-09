@@ -79,11 +79,38 @@ namespace BoardGames.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Leaderboards.
+        /// </summary>
+        public static string GameMatches_Leaderboards {
+            get {
+                return ResourceManager.GetString("GameMatches_Leaderboards", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Matches.
+        /// </summary>
+        public static string GameMatches_Matches {
+            get {
+                return ResourceManager.GetString("GameMatches_Matches", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No match found!.
         /// </summary>
         public static string GameMatches_NoMatchFound {
             get {
                 return ResourceManager.GetString("GameMatches_NoMatchFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nr..
+        /// </summary>
+        public static string GameMatches_Nr {
+            get {
+                return ResourceManager.GetString("GameMatches_Nr", resourceCulture);
             }
         }
         
@@ -106,11 +133,29 @@ namespace BoardGames.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Win %.
+        /// </summary>
+        public static string GameMatches_Win {
+            get {
+                return ResourceManager.GetString("GameMatches_Win", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Winner.
         /// </summary>
         public static string GameMatches_Winner {
             get {
                 return ResourceManager.GetString("GameMatches_Winner", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Wins.
+        /// </summary>
+        public static string GameMatches_Wins {
+            get {
+                return ResourceManager.GetString("GameMatches_Wins", resourceCulture);
             }
         }
         

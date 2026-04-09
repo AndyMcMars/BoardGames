@@ -159,9 +159,9 @@
         <PropertyColumn Property="@(p => p.Points)" Sortable="true" Title="@SharedResource.Match_Points" Class="w-10"/>
     </LumexDataGrid>
 
+    <p class="text-xl m-auto font-bold mt-4 mb-4">@SharedResource.Match_Reviews</p>
     @foreach (var review in _match.Reviews)
     {
-        <p class="text-xl m-auto font-bold">@SharedResource.Match_Reviews</p>
         <LumexCard Class="max-w-sm mb-4">
             <LumexCardHeader Class="justify-between">
                 <LumexUser Name="@review.Player.Name" Description="@($"{@review.Stars.ToString()} stars")">
@@ -181,10 +181,12 @@
                     </LumexDropdownMenu>
                 </LumexDropdown>
             </LumexCardHeader>
-            <LumexDivider />
-            <LumexCardBody>
-                @review.Comment
-            </LumexCardBody>
+            @if (review.Comment != null){
+                <LumexDivider />
+                <LumexCardBody>
+                    @review.Comment
+                </LumexCardBody>
+            }
         </LumexCard>
     }
 

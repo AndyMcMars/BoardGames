@@ -43,29 +43,29 @@ else
         </LumexCardHeader>
     </LumexCard>
 
-    <LumexDivider />
-
-    <LumexAccordion ItemClasses="_itemClasses" >
-        <LumexAccordionItem Id="1" Title="Leaderboards">
-            <StartContent>
-                <MedalIcon />
-            </StartContent> 
-            <ChildContent>
-                <LumexDataGrid T="PlayerStats" Data="_leaderboard.AsQueryable()" Color="ThemeColor.Primary">
-                    <PropertyColumn Property="@(p => p.Rank)" Title="Nr." />
-                    <PropertyColumn Property="@(p => p.PlayerName)" Title="Player" />
-                    <PropertyColumn Property="@(p => p.MatchesPlayed)" Title="Matches" />
-                    <PropertyColumn Property="@(p => p.Wins)" Title="Wins" />
-                    <PropertyColumn Property="@(p => p.WinRate)" Title="Win %" />
-                </LumexDataGrid>
-            </ChildContent>
-        </LumexAccordionItem>
-    </LumexAccordion>
-
-    <LumexDivider Class="mb-4" />
 
     @if(_matches.Count() > 0)
     {
+        <LumexDivider />
+
+        <LumexAccordion ItemClasses="_itemClasses" >
+            <LumexAccordionItem Id="1" Title="@($"{@SharedResource.GameMatches_Leaderboards} - {DateTime.Now.Year}")">
+                <StartContent>
+                    <MedalIcon />
+                </StartContent> 
+                <ChildContent>
+                    <LumexDataGrid T="PlayerStats" Data="_leaderboard.AsQueryable()" Color="ThemeColor.Primary" Shadow="0">
+                        <PropertyColumn Property="@(p => p.Rank)" Title="@SharedResource.GameMatches_Nr" />
+                        <PropertyColumn Property="@(p => p.PlayerName)" Title="@SharedResource.Match_Player" />
+                        <PropertyColumn Property="@(p => p.MatchesPlayed)" Title="@SharedResource.GameMatches_Matches" />
+                        <PropertyColumn Property="@(p => p.Wins)" Title="@SharedResource.GameMatches_Wins" />
+                        <PropertyColumn Property="@(p => p.WinRate)" Title="@SharedResource.GameMatches_Win" />
+                    </LumexDataGrid>
+                </ChildContent>
+            </LumexAccordionItem>
+        </LumexAccordion>
+
+        <LumexDivider Class="mb-4" />
         <LumexDataGrid Data="@_matches" T=mdMatch Layout="Layout.Fixed" OnRowClick="@GoToMatch" Classes="_classes" Hoverable>
             <PropertyColumn Title="@SharedResource.GameMatches_Date" Property="@(p => p.Date)" Format="dd-MM-yyyy" Sortable="true" />
             <TemplateColumn Title="@SharedResource.Settings_Players" Context="p" Sortable="true">
@@ -130,7 +130,7 @@ else
         if (_game == null) return;
 
         var matches = await Db.Matches
-            .Where(m => m.GameId == _game.Id)
+            .Where(m => m.GameId == _game.Id && m.Date.Year == DateTime.Now.Year)
             .Include(m => m.Results)
                 .ThenInclude(r => r.Player)
             .ToListAsync();

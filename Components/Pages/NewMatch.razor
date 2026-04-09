@@ -176,16 +176,17 @@
 
         var lastGame = await Db.Matches
             .OrderByDescending(m => m.Date)
-            .Select(m => m.Game)
             .FirstOrDefaultAsync();
 
         if (lastGame != null)
         {
-            _newMatch.GameId = lastGame.Id;
+            _newMatch.GameId = lastGame.GameId;
+            _newMatch.LocationId = lastGame.LocationId;
         }
         else
         {
             _newMatch.GameId = await Db.Games.Select(g => g.Id).FirstOrDefaultAsync();
+            _newMatch.LocationId = await Db.Locations.Select(l => l.Id).FirstOrDefaultAsync();
         }
 
         _newMatch.Date = DateTime.Now;
