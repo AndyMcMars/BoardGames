@@ -38,41 +38,13 @@
 </div>
 
 <p class="text-xl mb-4 mt-4">@SharedResource.Settings_Entities</p>
-<div class="overflow-x-auto">
-    <LumexTabs Color="@LumexUI.Common.ThemeColor.Primary" Variant="LumexUI.Common.TabVariant.Underlined">
-        <LumexTab>
-            <TitleContent>
-                <p>@SharedResource.Settings_Games</p>
-            </TitleContent>
-            <ChildContent>
-                <SettingsGames />
-            </ChildContent>
-        </LumexTab>
-        <LumexTab>
-            <TitleContent>
-                <p>@SharedResource.Settings_Factions</p>
-            </TitleContent>
-            <ChildContent>
-                <SettingsFactions />
-            </ChildContent>
-        </LumexTab>
-        <LumexTab>
-            <TitleContent>
-                <p>@SharedResource.Settings_Players</p>
-            </TitleContent>
-            <ChildContent>
-                <SettingsPlayers />
-            </ChildContent>
-        </LumexTab>
-        <LumexTab>
-            <TitleContent>
-                <p>@SharedResource.Settings_Locations</p>
-            </TitleContent>
-            <ChildContent>
-                <SettingsLocations />
-            </ChildContent>
-        </LumexTab>
-    </LumexTabs>
+
+<div class="flex flex-col">
+    <LumexLink Href="/settings/games">@SharedResource.Settings_Games</LumexLink>
+    <LumexLink Href="/settings/factions">@SharedResource.Settings_Factions</LumexLink>
+    <LumexLink Href="/settings/players">@SharedResource.Settings_Players</LumexLink>
+    <LumexLink Href="/settings/locations">@SharedResource.Settings_Locations</LumexLink>
+    <LumexLink Href="/settings/tournaments">Tournaments</LumexLink>
 </div>
 
 

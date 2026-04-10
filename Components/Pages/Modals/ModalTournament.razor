@@ -1,0 +1,164 @@
+﻿@using LumexUI.Common
+@using Blazor.Sonner.Services
+@using Microsoft.EntityFrameworkCore
+
+@inject AppDbContext Db
+@inject ToastService Toast
+
+<LumexModal>
+    <LumexModalTrigger Variant="@Variant.Flat" Color="@ButtonColor" OnClick="OnOpen">
+        <DiceIcon/>
+        @ButtonText
+    </LumexModalTrigger>
+
+    <LumexModalContent Context="modal">
+
+        <LumexModalHeader>
+            Add New Tournament
+        </LumexModalHeader>
+
+        <LumexModalBody>
+
+            <LumexSelect TValue="mdGame" Label="Select a Game" @bind-Value="_model.Game" Required Disabled="@(_model.Id != 0)">
+                @foreach (var game in _games)
+                {
+                    <LumexSelectItem @key="@game" Value="game" TextValue="@game.Name">@game.Name</LumexSelectItem>
+                }
+            </LumexSelect>
+
+            <LumexTextbox Label="Name"
+                          DebounceDelay="250"
+                          Behavior="InputBehavior.OnInput"
+                          Required
+                          @bind-Value="_model.Name"
+                          Placeholder="Enter tournament name"
+                          Variant="@InputVariant.Outlined" />
+
+            @if (_alertContent is not null)
+            {
+                <LumexAlert Color="ThemeColor.Danger" Title="@_alertContent" />
+            }
+        </LumexModalBody>
+
+
+        <LumexModalFooter>
+
+            <LumexButton Color="@ThemeColor.Danger"
+                         Variant="@Variant.Flat"
+                         OnClick="@modal.CloseAsync">
+                Cancel
+            </LumexButton>
+
+            <LumexButton Color="@ThemeColor.Primary"
+                         Variant="@Variant.Solid"
+                         OnClick="async () => await SaveTournament(modal)">
+                Save
+            </LumexButton>
+
+        </LumexModalFooter>
+
+    </LumexModalContent>
+</LumexModal>
+
+@code {
+
+    [Parameter] public EventCallback<int> OnSaved { get; set; }
+    [Parameter] public mdTournament? Tournament { get; set; }
+    [Parameter] public int GameId { get; set; }
+    [Parameter] public string? ButtonText { get; set; }
+    [Parameter] public ThemeColor ButtonColor { get; set; }
+
+    private mdTournament _model = new();
+    
+    private IQueryable<mdGame> _games => Db.Games;
+    private static readonly Random _random = new();
+    private string? _alertContent;
+
+    protected override void OnParametersSet()
+    {
+        if (Tournament is null)
+        {
+            _model = new mdTournament()
+            {
+                GameId = GameId,
+                IsActive = true
+            };
+        }
+        else
+        {
+            _model = new mdTournament
+            {
+                Id = Tournament.Id,
+                Name = Tournament.Name
+            };
+        }
+    }
+
+    
+    public static string GeneratePublicId()
+    {
+        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+        return new string(Enumerable.Range(0, 8)
+            .Select(_ => chars[_random.Next(chars.Length)])
+            .ToArray());
+    }
+
+    public async Task<string> GenerateUniqueId()
+    {
+        string id;
+
+        do
+        {
+            id = GeneratePublicId();
+        }
+        while (await Db.Tournaments.AnyAsync(m => m.PublicId == id));
+
+        return id;
+    }
+
+
+    private void OnOpen()
+    {
+        _alertContent = null;
+        OnParametersSet();
+    }
+
+    private async Task SaveTournament(LumexModal modal)
+    {
+        _alertContent = null;
+
+        if(_model.Game is null)
+        {
+            _alertContent = "Please select a game.";
+            return;
+        }
+
+        if(_model.Name is null || _model.Name == "")
+        {
+            _alertContent = "Please give a name.";
+            return;
+        }
+
+        if (_model.Id == 0)
+        {
+            _model.PublicId = await GenerateUniqueId();
+            Db.Tournaments.Add(_model);
+        }
+        else
+        {
+            var existing = await Db.Tournaments.FindAsync(_model.Id);
+
+            if (existing != null)
+            {
+                existing.Name = _model.Name;
+            }
+        }
+
+        await Db.SaveChangesAsync();
+
+        await OnSaved.InvokeAsync(_model.Id);
+
+        await modal.CloseAsync();
+    }
+}

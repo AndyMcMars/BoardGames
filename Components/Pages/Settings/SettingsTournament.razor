@@ -1,0 +1,81 @@
+﻿@page "/settings/tournaments"
+
+@using LumexUI.Common
+@using LumexUI.Shared.Icons
+@using Microsoft.EntityFrameworkCore
+
+@inject AppDbContext Db
+@inject NavigationManager Nav
+
+<LumexLink Href="/settings">Settings</LumexLink>
+
+<LumexDivider Class="my-4" />
+
+@if (_tournaments != null)
+{
+    <LumexDataGrid Data="@_tournaments" SelectionMode="@SelectionMode.Multiple" @bind-SelectedItems="_selectedTournaments" @key="_refreshKey">
+        <ToolbarContent>
+            <div class="flex justify-between">
+                <ModalTournament ButtonText="@(_selectedTournaments.Count == 1 ? "Edit tournament" : "Add tournament")" Tournament="_selectedTournaments.FirstOrDefault()" OnSaved="UpdateData" ButtonColor="@(_selectedTournaments.Count == 1 ? ThemeColor.Warning : ThemeColor.Success)" />
+                <LumexButton OnClick="() => _showDeleteModal = true" Disabled="_selectedTournaments.Count < 1" Color="@(_selectedTournaments.Count < 1 ? ThemeColor.Default : ThemeColor.Danger)">
+                    <Trash2Icon/>
+                    Delete tournament
+                </LumexButton>
+            </div>
+        </ToolbarContent>
+        <ChildContent>
+            <PropertyColumn Property="@(p => p.Game.Name )" Title="Game"/>
+            <PropertyColumn Property="@(p => p.Name)" Title="@SharedResource.SettingsGames_Name" />
+            <PropertyColumn Property="@(p => p.Matches.Count)" Title="Matches" />
+            <TemplateColumn Title="Status" Context="p">
+                @if (p.IsActive)
+                {
+                    <LockOpen />
+                }
+                else
+                {
+                    <Lock />
+                }
+            </TemplateColumn>
+        </ChildContent>
+    </LumexDataGrid>
+}
+
+
+@if (_showDeleteModal)
+{
+    <ModalDelete OnResult="@DeleteSelected" _open="_showDeleteModal" Header="@SharedResource.SettingsGames_DeleteGameMsg" Description="@SharedResource.SettingsGames_AreYouSureYouWantToDeleteTheSelectedGame" />
+}
+
+@code {
+    private IQueryable<mdTournament> _tournaments => Db.Tournaments.Include(t => t.Matches);
+    private ICollection<mdTournament> _selectedTournaments = [];
+    private int _refreshKey;
+    private bool _showDeleteModal = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await UpdateData();
+    }
+
+    private async Task UpdateData()
+    {
+        _refreshKey++;
+        _selectedTournaments = [];
+        StateHasChanged();
+    }
+
+
+    private async Task DeleteSelected(bool confirmed)
+    {
+        _showDeleteModal = false;
+        if (!confirmed) return;
+        
+        Db.Tournaments.RemoveRange(_selectedTournaments);
+        await Db.SaveChangesAsync();
+        _selectedTournaments = [];
+        await UpdateData();
+    }
+
+}
+

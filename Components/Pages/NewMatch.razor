@@ -65,6 +65,43 @@
                 </LumexSelect>
             </div>
         </LumexCardBody>
+        <LumexCardFooter>
+            <LumexAccordion>
+                <LumexAccordionItem Id="1" Expanded="_addToTournament">
+                    <StartContent>
+                        <LumexCheckbox @bind-Value="_addToTournament">Add to tournament</LumexCheckbox>
+                    </StartContent>
+                    <ChildContent>
+                        @if (_addToTournament)
+                        {
+                            <div class="flex gap-4 w-full">
+                                <LumexSelect TValue="int"
+                                             Label="Select tournament"
+                                             Value="_tournamentID"
+                                             ValueChanged="UpdateTournaments"
+                                             class="w-2/4">
+                                    <LumexSelectItem @key="-1"
+                                                     Value="-1"
+                                                     TextValue="No tournament selected">
+                                        No tournament selected
+                                    </LumexSelectItem>
+                                    @foreach (var tournament in _tournaments)
+                                    {
+                                        <LumexSelectItem @key="@tournament.Id"
+                                                            Value="@tournament.Id"
+                                                            TextValue="@($"{tournament.Name} - [{tournament.Matches.Count}]")">
+                                            @($"{tournament.Name} - [{tournament.Matches.Count}]")
+                                        </LumexSelectItem>
+                                    }
+                                </LumexSelect>
+
+                                <ModalTournament ButtonColor="ThemeColor.Primary" GameId="_newMatch.GameId" ButtonText="Add Tournament" OnSaved="UpdateTournaments" />
+                            </div>
+                        }
+                    </ChildContent>
+                </LumexAccordionItem>
+            </LumexAccordion>
+        </LumexCardFooter>
     </LumexCard>
 
     <div class="text-2xl mt-4 mb-4">@SharedResource.Match_Points</div>
@@ -123,6 +160,7 @@
     private mdMatch _newMatch = new();
     private IQueryable<mdGame> _games => Db.Games;
     private IQueryable<mdLocation> _locations => Db.Locations;
+    private IQueryable<mdTournament> _tournaments => Db.Tournaments.Where(t => t.GameId == _newMatch.GameId && t.IsActive == true);
     private IQueryable<mdPlayer> _players => Db.Players;
     private IQueryable<mdFaction> _factions => Db.Factions.Where(f => f.GameId == _newMatch.GameId);
     private ICollection<mdPlayer>? _selectedPlayers
@@ -136,6 +174,8 @@
     }
 
     private ICollection<mdPlayer>? _selectedPlayersBacking;
+    private int _tournamentID;
+    private bool _addToTournament;
 
     private List<mdResult> _results = new();
 
@@ -178,6 +218,7 @@
             .OrderByDescending(m => m.Date)
             .FirstOrDefaultAsync();
 
+
         if (lastGame != null)
         {
             _newMatch.GameId = lastGame.GameId;
@@ -217,6 +258,18 @@
 
     }
 
+    private async Task UpdateTournaments(int tournamentId)
+    {
+        if(tournamentId == 0)
+        {
+            _tournamentID = -1;
+            return;
+        }
+
+        await Task.Yield();
+        _tournamentID = tournamentId;
+    }
+
     private async Task Savematch()
     {
         if (_newMatch.GameId == 0)
@@ -228,6 +281,12 @@
         {
             Toast.Error("Please select a location.");
             return;
+        }
+
+        //Add tournament
+        if(_addToTournament && _tournamentID > 0)
+        {
+            _newMatch.TournamentId = _tournamentID;
         }
 
         foreach (var r in _results)

@@ -66,15 +66,40 @@ else
         </LumexAccordion>
 
         <LumexDivider Class="mb-4" />
-        <LumexDataGrid Data="@_matches" T=mdMatch Layout="Layout.Fixed" OnRowClick="@GoToMatch" Classes="_classes" Hoverable>
-            <PropertyColumn Title="@SharedResource.GameMatches_Date" Property="@(p => p.Date)" Format="dd-MM-yyyy" Sortable="true" />
-            <TemplateColumn Title="@SharedResource.Settings_Players" Context="p" Sortable="true">
-                @(p.Results.Count())
-            </TemplateColumn>
-            <TemplateColumn Title="@SharedResource.GameMatches_Winner" Context="p" Sortable="true">
-                @($"{p.Winner?.Player?.Name} ({p.Winner?.Points})" ?? "")
-            </TemplateColumn>
-        </LumexDataGrid>
+
+        <LumexTabs>
+            <LumexTab Title="Matches">
+                <LumexDataGrid Data="@_matches" T=mdMatch Layout="Layout.Fixed" OnRowClick="@GoToMatch" Classes="_classes" Hoverable>
+                    <PropertyColumn Title="@SharedResource.GameMatches_Date" Property="@(p => p.Date)" Format="dd-MM-yyyy" Sortable="true" />
+                    <TemplateColumn Title="@SharedResource.Settings_Players" Context="p" Sortable="true">
+                        @(p.Results.Count())
+                    </TemplateColumn>
+                    <TemplateColumn Title="@SharedResource.GameMatches_Winner" Context="p" Sortable="true">
+                        @($"{p.Winner?.Player?.Name} ({p.Winner?.Points})" ?? "")
+                    </TemplateColumn>
+                </LumexDataGrid>
+            </LumexTab>
+            <LumexTab Title="Tournaments">
+                <LumexDataGrid Data="@_tournaments" T="mdTournament" Layout="Layout.Fixed" OnRowClick="@GoToTournement" Hoverable Classes="_classes">
+                    <PropertyColumn Property="@(p=>p.Name)" />
+                    <PropertyColumn Property="@(p => p.Matches.Count)" Title="Matches" />
+                    <TemplateColumn Title="@SharedResource.GameMatches_Winner" Context="p" Sortable="true">
+                        @($"{p.Winner?.Player?.Name} ({p.Winner?.TotalPoints})" ?? "")
+                    </TemplateColumn>
+                    <TemplateColumn Title="Status" Context="p">
+                        @if (p.IsActive)
+                        {
+                            <LockOpen />
+                        }
+                        else
+                        {
+                            <Lock/>
+                        }
+                    </TemplateColumn>
+                </LumexDataGrid>
+            </LumexTab>
+        </LumexTabs>
+
     }
     else
     {
@@ -92,12 +117,12 @@ else
 
     private mdGame? _game;
 
-    
+
     private DataGridSlots _classes = new()
     {
         Tr = "cursor-pointer"
     };
-    
+
     private AccordionItemSlots _itemClasses = new()
     {
         Title = "text-xl font-bold",
@@ -107,11 +132,19 @@ else
         _game == null
             ? Enumerable.Empty<mdMatch>().AsQueryable()
             : Db.Matches
-                .Where(m => m.GameId == _game.Id)
+                .Where(m => m.GameId == _game.Id && m.TournamentId == null)
                 .Include(m => m.Location)
                 .Include(m => m.Results)
                     .ThenInclude(r => r.Player)
                 .OrderByDescending(m => m.Date);
+
+    private IQueryable<mdTournament> _tournaments =>
+                                      _game == null
+                                      ? Enumerable.Empty<mdTournament>().AsQueryable()
+                                      : Db.Tournaments.Where(t => t.GameId == _game.Id && t.Matches.Count > 0)
+                                                        .Include(t => t.Matches)
+                                                            .ThenInclude(m => m.Results)
+                                                                .ThenInclude(r => r.Player);
 
     private List<PlayerStats> _leaderboard = new();
 
@@ -174,6 +207,11 @@ else
     private void GoToMatch(DataGridRowClickEventArgs<mdMatch> match)
     {
         Nav.NavigateTo($"/{game_slug}/{match.Item.PublicId}");
+    }
+
+    private void GoToTournement(DataGridRowClickEventArgs<mdTournament> tournament)
+    {
+        Nav.NavigateTo($"/{game_slug}/tournament/{tournament.Item.PublicId}");
     }
 
     public class PlayerStats

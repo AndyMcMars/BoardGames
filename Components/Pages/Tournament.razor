@@ -1,0 +1,376 @@
+﻿@page "/{game_slug}/tournament/{tournament_public_id}"
+@using BoardGames.Components.Pages.Icons
+@using LumexUI.Shared.Icons
+@using Microsoft.EntityFrameworkCore;
+@using LumexUI.Common;
+
+@inject AppDbContext Db
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+<HeadContent>
+    <title>@_tournament?.Name</title>
+</HeadContent>
+
+<div class="flex justify-between">
+    <div class="flex items-center gap-2">
+        <LumexLink Href="/">@SharedResource.Settings_Games</LumexLink>
+        <p>></p>
+        <LumexLink Href="@($"/{game_slug}")">@_tournament?.Game?.Name</LumexLink>
+    </div>
+    <LumexDropdown Classes="@_classes">
+        <LumexDropdownTrigger>
+            <LumexButton IconOnly Variant="Variant.Flat" Size="Size.Small">
+                <EllipsisVerticalIcon/>
+            </LumexButton>
+        </LumexDropdownTrigger>
+        <LumexDropdownMenu>
+            <LumexDropdownItem Disabled="@(!_tournament.IsActive)" OnClick="() => _showLockTournament = true">
+                <StartContent>
+                    <Lock />
+                </StartContent>
+                <ChildContent>Lock tournament</ChildContent>
+            </LumexDropdownItem>
+
+            <LumexDropdownItem ShowDivider OnClick="Share">
+                <StartContent>
+                    <ShareIcon />
+                </StartContent>
+                <ChildContent>@SharedResource.Match_Share</ChildContent>
+            </LumexDropdownItem>
+            <LumexDropdownItem Color="@ThemeColor.Danger" Class="text-danger" OnClick="() => _showDeleteModal = true">
+                <StartContent>
+                    <Trash2Icon/>
+                </StartContent>
+                <ChildContent>@SharedResource.Match_Delete</ChildContent>
+            </LumexDropdownItem>
+        </LumexDropdownMenu>
+    </LumexDropdown>
+
+    @if (_showDeleteModal){
+        <ModalDelete OnResult="@DeleteTournament" _open="_showDeleteModal" Header="Delete tournament" Description="Are you sure you want to delete the torunament?"/>
+    }
+
+    @if (_showLockTournament)
+    {
+        <ModalDelete OnResult="@LockTournament" _open="_showLockTournament" Header="Lock tournament" Description="Are you sure you want to lock the current torunament? You won't be able to add any further match.'" />
+    }
+
+</div>
+
+<p class="text-xl font-bold my-4">@_tournament.Name</p>
+
+@if (_tournament?.Game != null)
+{
+    // Display match details
+    <LumexCard Class="mb-4">
+        <LumexCardHeader Class="flex gap-4 items-start">
+
+            <img src="@_tournament.Game.Image" width="200" />
+
+            <div class="flex flex-col gap-3 items-start w-full">
+
+                <LumexUser Name="@SharedResource.SettingsFactions_Game" Description="@_tournament.Game.Name">
+                    <AvatarContent>
+                        <DiceIcon />
+                    </AvatarContent>
+                </LumexUser>
+
+                <LumexUser Name="Tournament Status" Description="@(_tournament.IsActive ? "open" : "close")">
+                    <AvatarContent>
+                        @if (_tournament.IsActive)
+                        {
+                            <LockOpen />
+                        }
+                        else
+                        {
+                            <Lock/>
+                        }
+                    </AvatarContent>
+                </LumexUser>
+
+                <LumexUser Name="@SharedResource.GameMatches_Winner" Description="@_tournament?.Winner?.Player.Name">
+                    <AvatarContent>
+                        <CrownIcon />
+                    </AvatarContent>
+                </LumexUser>
+
+                
+                <LumexUser Name="@SharedResource.Settings_Players" Description="@PlayerCount.ToString()">
+                    <AvatarContent>
+                        <UsersIcon />
+                    </AvatarContent>
+                </LumexUser>
+            </div>
+
+        </LumexCardHeader>
+        <LumexCardFooter>
+            <div class="flex h-10 justify-evenly gap-4 w-full">
+                
+                <LumexUser Name="First match" Description="@FirstMatchDate?.ToString("dd.MM.yyyy")">
+                    <AvatarContent>
+                        <CalendarClockIcon />
+                    </AvatarContent>
+                </LumexUser>
+
+                <LumexDivider Orientation="Orientation.Vertical" />
+
+                <LumexUser Name="Total duration" Description="@TotalDuration.ToString(@"h\h\ mm\m")">
+                    <AvatarContent>
+                        <TimerIcon />
+                    </AvatarContent>
+                </LumexUser>
+
+                <LumexDivider Orientation="Orientation.Vertical"/>
+
+                <LumexUser Name="Last match" Description="@LastMatchDate?.ToString("dd.MM.yyyy")">
+                    <AvatarContent>
+                        <CalendarClockIcon />
+                    </AvatarContent>
+                </LumexUser>
+            </div>
+        </LumexCardFooter>
+    </LumexCard>
+
+    <LumexDivider />
+
+    <LumexAccordion ItemClasses="_itemClasses">
+        <LumexAccordionItem Id="1" Title="@($"{@SharedResource.GameMatches_Leaderboards}")">
+            <StartContent>
+                <MedalIcon />
+            </StartContent>
+            <ChildContent>
+                <LumexDataGrid T="TournamentStats" Data="_leaderboard.AsQueryable()" Color="ThemeColor.Primary" Shadow="0">
+                    <PropertyColumn Property="@(p => p.Rank)" Title="@SharedResource.GameMatches_Nr" />
+                    <PropertyColumn Property="@(p => p.PlayerName)" Title="@SharedResource.Match_Player" />
+                    <PropertyColumn Property="@(p => p.MatchesPlayed)" Title="@SharedResource.GameMatches_Matches" />
+                    <PropertyColumn Property="@(p => p.Points)" Title="@SharedResource.Match_Points" />
+                </LumexDataGrid>
+            </ChildContent>
+        </LumexAccordionItem>
+    </LumexAccordion>
+
+    <LumexDivider Class="mb-4" />
+
+    <p class="text-xl font-bold">Matches</p>
+
+    <LumexAccordion>
+        @foreach (var match in _tournament.Matches ?? Enumerable.Empty<mdMatch>())
+        {
+            <LumexAccordionItem Title="@($"{match.Date.ToString("dd.MM.yyyy")} - Winner: {match?.Winner?.Player?.Name}")" Id="@match?.Id.ToString()">
+                <LumexDataGrid T=mdResult Data="@match?.Results.AsQueryable()">
+                    <ToolbarContent>
+                        <div class="flex justify-around gap-4">
+                            <LumexUser Name="@SharedResource.Match_Location" Description="@match?.Location?.Description">
+                                <AvatarContent>
+                                    <MapPinIcon />
+                                </AvatarContent>
+                            </LumexUser>
+
+                            <LumexUser Name="@SharedResource.Match_Duration" Description="@match?.Duration?.ToString(@"h\h\ mm\m")">
+                                <AvatarContent>
+                                    <TimerIcon />
+                                </AvatarContent>
+                            </LumexUser>
+
+                            <LumexButton Color="@ThemeColor.Default" Variant="Variant.Ghost" OnClick="@(() => Nav.NavigateTo($"/{game_slug}/{match?.PublicId}"))">
+                                <ChildContent>Open match details</ChildContent>
+                                <EndContent>
+                                    <FolderOpenIcon />
+                                </EndContent>
+                            </LumexButton>
+                        </div>
+                    </ToolbarContent>
+                    <ChildContent>
+                        <TemplateColumn Title="Nr." Class="w-10">
+                            @{
+                                var index = match?.Results
+                                    .OrderByDescending(r => r.Points)
+                                    .ToList()
+                                    .IndexOf(context) + 1;
+                            }
+                            <p>@($"{@index}°")</p>
+                        </TemplateColumn>
+                        <PropertyColumn Property="@(p => p.Player.Name)" Title="@SharedResource.Match_Player" />
+                        <PropertyColumn Property="@(p => p.Faction != null ? p.Faction.Name : "")" Title="@SharedResource.SettingsFactions_Faction">
+                            <Content>
+                                <LumexUser Name="@context?.Faction?.Name">
+                                    <AvatarContent>
+                                        <div style="width:15px;height:15px;background:@context?.Faction?.Color;border-radius:50%;" />
+                                    </AvatarContent>
+                                </LumexUser>
+                            </Content>
+                        </PropertyColumn>
+                        <PropertyColumn Property="@(p => p.Points)" Sortable="true" Title="@SharedResource.Match_Points" Class="w-10"/>
+                    </ChildContent>
+                </LumexDataGrid>
+
+            </LumexAccordionItem>
+        }
+    </LumexAccordion>
+
+
+}
+
+
+
+
+
+@code {
+    [Parameter] public string tournament_public_id { get; set; }
+    [Parameter] public string game_slug { get; set; }
+
+    private mdTournament? _tournament;
+
+    public int? PlayerCount =>
+    _tournament?.Matches?
+        .SelectMany(m => m.Results)
+        .Select(r => r.PlayerId)
+        .Distinct()
+        .Count();
+
+    public DateTime? FirstMatchDate =>
+        _tournament.Matches.Any()
+            ? _tournament?.Matches?.Min(m => m.Date)
+            : null;
+
+    public DateTime? LastMatchDate =>
+        _tournament.Matches.Any()
+            ? _tournament?.Matches?.Max(m => m.Date)
+            : null;
+
+    public TimeSpan TotalDuration =>
+        _tournament?.Matches?
+            .Where(m => m.Duration.HasValue)
+            .Aggregate(TimeSpan.Zero, (sum, m) => sum + m.Duration!.Value)
+            ?? TimeSpan.Zero;
+
+    private List<TournamentStats> _leaderboard = new();
+
+    private PopoverSlots _classes = new()
+    {
+        Content = "p-0 border border-divider bg-background",
+        Arrow = "bg-default-200"
+    };
+    private AccordionItemSlots _itemClasses = new()
+    {
+        Title = "text-xl font-bold",
+    };
+
+    private bool _showDeleteModal = false;
+    private bool _showLockTournament = false;
+
+    private mdReview? _selectedReview;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await UpdateTournamentData();
+
+        _leaderboard = _tournament.Matches
+            .SelectMany(m => m.Results)
+            .GroupBy(r => new { r.PlayerId, PlayerName = r.Player.Name })
+            .Select(g => new
+            {
+                PlayerId = g.Key.PlayerId,
+                PlayerName = g.Key.PlayerName,
+                TotalPoints = g.Sum(r => r.Points),
+                MatchesPlayed = g.Count()
+            })
+            .OrderByDescending(x => x.TotalPoints)
+            .ThenByDescending(x => x.MatchesPlayed)
+            .Select((x, i) => new TournamentStats
+            {
+                Rank = i + 1,
+                PlayerName = x.PlayerName,
+                MatchesPlayed = x.MatchesPlayed,
+                Points = x.TotalPoints
+            })
+            .ToList();
+
+    }
+
+    private async Task UpdateTournamentData()
+    {
+        _tournament = await Db.Tournaments
+            .Where(t => t.PublicId == tournament_public_id)
+            .Include(t => t.Game)
+            .Include(t => t.Reviews)
+            .Include(t => t.Matches)
+                .ThenInclude(m => m.Location)
+            .Include(t => t.Matches)
+                .ThenInclude(m => m.Results)
+                    .ThenInclude(r => r.Player)
+            .Include(t => t.Matches)
+                .ThenInclude(m => m.Results)
+                    .ThenInclude(r => r.Faction)
+            .FirstOrDefaultAsync();
+
+
+
+        if (_tournament != null && _tournament.Matches != null)
+        {
+            foreach (var match in _tournament.Matches)
+            {
+                match.Results = match.Results
+                    .OrderByDescending(r => r.Points)
+                    .ToList();
+            }
+        }
+    }
+
+
+    private async Task LockTournament(bool confirmed)
+    {
+        _showLockTournament = false;
+        if (!confirmed) return;
+
+        var tournament = await Db.Tournaments.FirstOrDefaultAsync(t => t.PublicId == tournament_public_id);
+        if (tournament != null)
+        {
+            tournament.IsActive = false;
+            await Db.SaveChangesAsync();
+        }
+        StateHasChanged();
+    }
+
+    private async Task DeleteTournament(bool confirmed) 
+    { 
+        _showDeleteModal = false;
+        if (!confirmed) return;
+
+        var tournament = await Db.Tournaments.FirstOrDefaultAsync(t => t.PublicId == tournament_public_id);
+        if (tournament != null)
+        {
+            Db.Tournaments.Remove(tournament);
+            await Db.SaveChangesAsync();
+        }
+        
+        Nav.NavigateTo($"/{game_slug}"); 
+    }
+
+    private void CloseDeleteModal()
+    {
+        _showDeleteModal = false;
+    }
+
+    private async Task Share()
+    {
+        var url = Nav.Uri;
+
+        await JS.InvokeVoidAsync("navigator.share", new
+        {
+            title = "Tournament",
+            text = "Summary of the Tournament:",
+            url
+        });
+    }
+
+    
+    public class TournamentStats
+    {
+        public int Rank { get; set; }
+        public string PlayerName { get; set; } = "";
+        public int MatchesPlayed { get; set; }
+        public int Points { get; set; }
+    }
+}

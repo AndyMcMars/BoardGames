@@ -1,10 +1,15 @@
-﻿@using LumexUI.Common
+﻿@page "/settings/players"
+
+@using LumexUI.Common
 @using LumexUI.Shared.Icons
 @using Microsoft.EntityFrameworkCore
 
 @inject AppDbContext Db
 @inject NavigationManager Nav
 
+<LumexLink Href="/settings">Settings</LumexLink>
+
+<LumexDivider Class="my-4" />
 
 <LumexDataGrid Data="@_players" SelectionMode="@SelectionMode.Multiple" @bind-SelectedItems="_selectedPlayers" @key="_refreshKey">
     <ToolbarContent>
