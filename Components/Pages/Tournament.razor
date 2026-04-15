@@ -157,53 +157,59 @@
     <LumexAccordion>
         @foreach (var match in _tournament.Matches ?? Enumerable.Empty<mdMatch>())
         {
-            <LumexAccordionItem Title="@($"{match.Date.ToString("dd.MM.yyyy")} - Winner: {match?.Winner?.Player?.Name}")" Id="@match?.Id.ToString()">
-                <LumexDataGrid T=mdResult Data="@match?.Results.AsQueryable()">
-                    <ToolbarContent>
-                        <div class="flex justify-around gap-4">
-                            <LumexUser Name="@SharedResource.Match_Location" Description="@match?.Location?.Description">
-                                <AvatarContent>
-                                    <MapPinIcon />
-                                </AvatarContent>
-                            </LumexUser>
-
-                            <LumexUser Name="@SharedResource.Match_Duration" Description="@match?.Duration?.ToString(@"h\h\ mm\m")">
-                                <AvatarContent>
-                                    <TimerIcon />
-                                </AvatarContent>
-                            </LumexUser>
-
-                            <LumexButton Color="@ThemeColor.Default" Variant="Variant.Ghost" OnClick="@(() => Nav.NavigateTo($"/{game_slug}/{match?.PublicId}"))">
-                                <ChildContent>Open match details</ChildContent>
-                                <EndContent>
-                                    <FolderOpenIcon />
-                                </EndContent>
-                            </LumexButton>
-                        </div>
-                    </ToolbarContent>
-                    <ChildContent>
-                        <TemplateColumn Title="Nr." Class="w-10">
-                            @{
-                                var index = match?.Results
-                                    .OrderByDescending(r => r.Points)
-                                    .ToList()
-                                    .IndexOf(context) + 1;
-                            }
-                            <p>@($"{@index}°")</p>
-                        </TemplateColumn>
-                        <PropertyColumn Property="@(p => p.Player.Name)" Title="@SharedResource.Match_Player" />
-                        <PropertyColumn Property="@(p => p.Faction != null ? p.Faction.Name : "")" Title="@SharedResource.SettingsFactions_Faction">
-                            <Content>
-                                <LumexUser Name="@context?.Faction?.Name">
+            <LumexAccordionItem Id="@match.PublicId">
+                <TitleContent>
+                    <div class="w-full justify-between flex">
+                        @($"{match.Date.ToString("dd.MM.yyyy")} - Winner: {match?.Winner?.Player?.Name}")
+                        <LumexButton Color="@ThemeColor.Default" Variant="Variant.Ghost" OnClick="@(() => Nav.NavigateTo($"/{game_slug}/{match?.PublicId}"))">
+                            <ChildContent>Open match details</ChildContent>
+                            <EndContent>
+                                <FolderOpenIcon />
+                            </EndContent>
+                        </LumexButton>
+                    </div>
+                </TitleContent>
+                <ChildContent>
+                    <LumexDataGrid T=mdResult Data="@match?.Results.AsQueryable()">
+                        <ToolbarContent>
+                            <div class="flex justify-around gap-4">
+                                <LumexUser Name="@SharedResource.Match_Location" Description="@match?.Location?.Description">
                                     <AvatarContent>
-                                        <div style="width:15px;height:15px;background:@context?.Faction?.Color;border-radius:50%;" />
+                                        <MapPinIcon />
                                     </AvatarContent>
                                 </LumexUser>
-                            </Content>
-                        </PropertyColumn>
-                        <PropertyColumn Property="@(p => p.Points)" Sortable="true" Title="@SharedResource.Match_Points" Class="w-10"/>
-                    </ChildContent>
-                </LumexDataGrid>
+
+                                <LumexUser Name="@SharedResource.Match_Duration" Description="@match?.Duration?.ToString(@"h\h\ mm\m")">
+                                    <AvatarContent>
+                                        <TimerIcon />
+                                    </AvatarContent>
+                                </LumexUser>
+                            </div>
+                        </ToolbarContent>
+                        <ChildContent>
+                            <TemplateColumn Title="Nr." Class="w-10">
+                                @{
+                                    var index = match?.Results
+                                        .OrderByDescending(r => r.Points)
+                                        .ToList()
+                                        .IndexOf(context) + 1;
+                                }
+                                <p>@($"{@index}°")</p>
+                            </TemplateColumn>
+                            <PropertyColumn Property="@(p => p.Player.Name)" Title="@SharedResource.Match_Player" />
+                            <PropertyColumn Property="@(p => p.Faction != null ? p.Faction.Name : "")" Title="@SharedResource.SettingsFactions_Faction">
+                                <Content>
+                                    <LumexUser Name="@context?.Faction?.Name">
+                                        <AvatarContent>
+                                            <div style="width:15px;height:15px;background:@context?.Faction?.Color;border-radius:50%;" />
+                                        </AvatarContent>
+                                    </LumexUser>
+                                </Content>
+                            </PropertyColumn>
+                            <PropertyColumn Property="@(p => p.Points)" Sortable="true" Title="@SharedResource.Match_Points" Class="w-10"/>
+                        </ChildContent>
+                    </LumexDataGrid>
+                </ChildContent>
 
             </LumexAccordionItem>
         }
@@ -305,10 +311,13 @@
                     .ThenInclude(r => r.Faction)
             .FirstOrDefaultAsync();
 
-
-
         if (_tournament != null && _tournament.Matches != null)
         {
+            
+            _tournament.Matches = _tournament.Matches
+                .OrderByDescending(m => m.Date)
+                .ToList();
+
             foreach (var match in _tournament.Matches)
             {
                 match.Results = match.Results
