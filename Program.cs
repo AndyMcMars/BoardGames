@@ -1,9 +1,10 @@
 using BoardGames.Components;
 using BoardGames.Services;
 using LumexUI.Extensions;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,7 +28,9 @@ localizationOptions.RequestCultureProviders = new List<IRequestCultureProvider>
 };
 
 var dataDir = Path.Combine(AppContext.BaseDirectory, "Data");
+var keysDir = Path.Combine(AppContext.BaseDirectory, "Keys");
 Directory.CreateDirectory(dataDir);
+Directory.CreateDirectory(keysDir);
 
 var dbPath = Path.Combine(dataDir, "app.db");
 
@@ -37,6 +40,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddLumexServices();
 builder.Services.AddScoped<PinLockService>();
 builder.Services.AddScoped<ProtectedLocalStorage>();
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo(keysDir));
 
 var app = builder.Build();
 
