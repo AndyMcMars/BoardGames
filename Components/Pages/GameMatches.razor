@@ -69,7 +69,7 @@ else
 
         <LumexTabs>
             <LumexTab Title="Matches">
-                <LumexDataGrid Data="@_matches" T=mdMatch Layout="Layout.Fixed" OnRowClick="@GoToMatch" Classes="_classes" Hoverable>
+                <LumexDataGrid Data="@_matches.AsQueryable()" T=mdMatch Layout="Layout.Fixed" OnRowClick="@GoToMatch" Classes="_classes" Hoverable>
                     <PropertyColumn Title="@SharedResource.GameMatches_Date" Property="@(p => p.Date)" Format="dd-MM-yyyy" Sortable="true" />
                     <TemplateColumn Title="@SharedResource.Settings_Players" Context="p" Sortable="true">
                         @(p.Results.Count())
@@ -80,7 +80,7 @@ else
                 </LumexDataGrid>
             </LumexTab>
             <LumexTab Title="Tournaments">
-                <LumexDataGrid Data="@_tournaments" T="mdTournament" Layout="Layout.Fixed" OnRowClick="@GoToTournement" Hoverable Classes="_classes">
+                <LumexDataGrid Data="@_tournaments.AsQueryable()" T="mdTournament" Layout="Layout.Fixed" OnRowClick="@GoToTournement" Hoverable Classes="_classes">
                     <PropertyColumn Property="@(p=>p.Name)" />
                     <PropertyColumn Property="@(p => p.Matches.Count)" Title="Matches" />
                     <TemplateColumn Title="@SharedResource.GameMatches_Winner" Context="p" Sortable="true">
@@ -128,23 +128,8 @@ else
         Title = "text-xl font-bold",
     };
 
-    private IQueryable<mdMatch> _matches =>
-        _game == null
-            ? Enumerable.Empty<mdMatch>().AsQueryable()
-            : Db.Matches
-                .Where(m => m.GameId == _game.Id && m.TournamentId == null)
-                .Include(m => m.Location)
-                .Include(m => m.Results)
-                    .ThenInclude(r => r.Player)
-                .OrderByDescending(m => m.Date);
-
-    private IQueryable<mdTournament> _tournaments =>
-                                      _game == null
-                                      ? Enumerable.Empty<mdTournament>().AsQueryable()
-                                      : Db.Tournaments.Where(t => t.GameId == _game.Id && t.Matches.Count > 0)
-                                                        .Include(t => t.Matches)
-                                                            .ThenInclude(m => m.Results)
-                                                                .ThenInclude(r => r.Player);
+    private List<mdMatch> _matches = new();
+    private List<mdTournament> _tournaments = new();
 
     private List<PlayerStats> _leaderboard = new();
 
@@ -161,6 +146,22 @@ else
             .FirstOrDefaultAsync(g => g.Slug == game_slug);
 
         if (_game == null) return;
+
+        
+        _matches = await Db.Matches
+            .Where(m => m.GameId == _game.Id && m.TournamentId == null)
+            .Include(m => m.Location)
+            .Include(m => m.Results)
+                .ThenInclude(r => r.Player)
+            .OrderByDescending(m => m.Date)
+            .ToListAsync();
+
+        _tournaments = await Db.Tournaments
+            .Where(t => t.GameId == _game.Id && t.Matches.Count > 0)
+            .Include(t => t.Matches)
+                .ThenInclude(m => m.Results)
+                    .ThenInclude(r => r.Player)
+            .ToListAsync();
 
         var matches = await Db.Matches
             .Where(m => m.GameId == _game.Id && m.Date.Year == DateTime.Now.Year)

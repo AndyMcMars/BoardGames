@@ -38,7 +38,7 @@
                     <h2>@game.Name</h2>
                     <LumexChip Variant="ChipVariant.Light">
                         <StartContent>
-                            @_matches.Where(m=>m.GameId == game.Id).Count()
+                            @_matches?.Where(m=>m.GameId == game.Id).Count()
                         </StartContent>
                         <ChildContent>
                             <SwordsIcon/>
@@ -52,25 +52,32 @@
 
 @code {
 
-    private IQueryable<mdGame> _games => Db.Games;
-    private IQueryable<mdMatch> _matches => Db.Matches;
+    private List<mdGame>? _games;
+    private List<mdMatch>? _matches;
 
-    private IQueryable<mdGame> FilteredGames
+    private List<mdGame> FilteredGames
     {
         get
         {
             var result = _games;
 
-            if (!string.IsNullOrEmpty(_nameFilter))
+            if (!string.IsNullOrEmpty(_nameFilter) && result != null)
             {
-                result = result.Where(u => EF.Functions.Like(u.Name, $"%{_nameFilter}%"));
+                result = result.Where(u => u.Name.Contains(_nameFilter, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
-            return result;
+            return result ?? new List<mdGame>();
         }
     }
 
     private string? _nameFilter;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        _games = await Db.Games.ToListAsync();
+        _matches = await Db.Matches.ToListAsync();
+    }
 
     private void GoToMatches(string game_slug)
     {

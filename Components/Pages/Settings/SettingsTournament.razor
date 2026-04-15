@@ -13,7 +13,7 @@
 
 @if (_tournaments != null)
 {
-    <LumexDataGrid Data="@_tournaments" SelectionMode="@SelectionMode.Multiple" @bind-SelectedItems="_selectedTournaments" @key="_refreshKey">
+    <LumexDataGrid Data="@_tournaments.AsQueryable()" SelectionMode="@SelectionMode.Multiple" @bind-SelectedItems="_selectedTournaments" @key="_refreshKey">
         <ToolbarContent>
             <div class="flex justify-between">
                 <ModalTournament ButtonText="@(_selectedTournaments.Count == 1 ? "Edit tournament" : "Add tournament")" Tournament="_selectedTournaments.FirstOrDefault()" OnSaved="UpdateData" ButtonColor="@(_selectedTournaments.Count == 1 ? ThemeColor.Warning : ThemeColor.Success)" />
@@ -48,7 +48,7 @@
 }
 
 @code {
-    private IQueryable<mdTournament> _tournaments => Db.Tournaments.Include(t => t.Matches);
+    private List<mdTournament> _tournaments = new();
     private ICollection<mdTournament> _selectedTournaments = [];
     private int _refreshKey;
     private bool _showDeleteModal = false;
@@ -60,6 +60,7 @@
 
     private async Task UpdateData()
     {
+        _tournaments = await Db.Tournaments.Include(t => t.Game).Include(t => t.Matches).OrderBy(t => t.Name).ToListAsync();
         _refreshKey++;
         _selectedTournaments = [];
         StateHasChanged();

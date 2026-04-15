@@ -11,7 +11,7 @@
 
 <LumexDivider Class="my-4"/>
 
-<LumexDataGrid Data="@_games" SelectionMode="@SelectionMode.Multiple" @bind-SelectedItems="_selectedGames" @key="_refreshKey">
+<LumexDataGrid Data="@_games.AsQueryable()" SelectionMode="@SelectionMode.Multiple" @bind-SelectedItems="_selectedGames" @key="_refreshKey">
     <ToolbarContent>
         <div class="flex justify-between">
             <ModalGame ButtonText="@(_selectedGames.Count == 1 ? @SharedResource.SettingsGames_EditGame : @SharedResource.SettingsGames_AddGame)" Game="_selectedGames.FirstOrDefault()" OnSaved="UpdateData" ButtonColor="@(_selectedGames.Count == 1 ? ThemeColor.Warning : ThemeColor.Success)" />
@@ -47,7 +47,7 @@
 }
 
 @code {
-    private IQueryable<mdGame> _games => Db.Games;
+    private List<mdGame> _games = new();
     private ICollection<mdGame> _selectedGames = [];
     private int _refreshKey;
     private bool _showDeleteModal = false;
@@ -59,6 +59,7 @@
 
     private async Task UpdateData()
     {
+        _games = await Db.Games.ToListAsync();
         _refreshKey++;
         _selectedGames = [];
         StateHasChanged();
@@ -69,11 +70,12 @@
     {
         _showDeleteModal = false;
         if (!confirmed) return;
-        
+
         Db.Games.RemoveRange(_selectedGames);
         await Db.SaveChangesAsync();
         _selectedGames = [];
         await UpdateData();
+        StateHasChanged();
     }
 
 }
