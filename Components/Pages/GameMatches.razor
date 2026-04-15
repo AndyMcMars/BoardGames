@@ -68,7 +68,7 @@ else
         <LumexDivider Class="mb-4" />
 
         <LumexTabs>
-            <LumexTab Title="Matches">
+            <LumexTab Title="@SharedResource.GameMatches_Matches">
                 <LumexDataGrid Data="@_matches.AsQueryable()" T=mdMatch Layout="Layout.Fixed" OnRowClick="@GoToMatch" Classes="_classes" Hoverable>
                     <PropertyColumn Title="@SharedResource.GameMatches_Date" Property="@(p => p.Date)" Format="dd-MM-yyyy" Sortable="true" />
                     <TemplateColumn Title="@SharedResource.Settings_Players" Context="p" Sortable="true">
@@ -79,14 +79,14 @@ else
                     </TemplateColumn>
                 </LumexDataGrid>
             </LumexTab>
-            <LumexTab Title="Tournaments">
+            <LumexTab Title="@SharedResource.GameMatches_Tournaments">
                 <LumexDataGrid Data="@_tournaments.AsQueryable()" T="mdTournament" Layout="Layout.Fixed" OnRowClick="@GoToTournement" Hoverable Classes="_classes">
                     <PropertyColumn Property="@(p=>p.Name)" />
-                    <PropertyColumn Property="@(p => p.Matches.Count)" Title="Matches" />
+                    <PropertyColumn Property="@(p => p.Matches.Count)" Title="@SharedResource.GameMatches_Matches" />
                     <TemplateColumn Title="@SharedResource.GameMatches_Winner" Context="p" Sortable="true">
                         @($"{p.Winner?.Player?.Name} ({p.Winner?.TotalPoints})" ?? "")
                     </TemplateColumn>
-                    <TemplateColumn Title="Status" Context="p">
+                    <TemplateColumn Title="@SharedResource.GameMatches_Status" Context="p">
                         @if (p.IsActive)
                         {
                             <LockOpen />

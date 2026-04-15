@@ -115,6 +115,15 @@ namespace BoardGames.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Status.
+        /// </summary>
+        public static string GameMatches_Status {
+            get {
+                return ResourceManager.GetString("GameMatches_Status", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There are currently no matches for.
         /// </summary>
         public static string GameMatches_ThereAreCurrentlyNoMatchesFor {
@@ -129,6 +138,15 @@ namespace BoardGames.Resources {
         public static string GameMatches_ThereAreCurrentlyNoMatchesFor_gameName {
             get {
                 return ResourceManager.GetString("GameMatches_ThereAreCurrentlyNoMatchesFor_gameName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tournaments.
+        /// </summary>
+        public static string GameMatches_Tournaments {
+            get {
+                return ResourceManager.GetString("GameMatches_Tournaments", resourceCulture);
             }
         }
         
@@ -165,6 +183,15 @@ namespace BoardGames.Resources {
         public static string Games_SearchByName {
             get {
                 return ResourceManager.GetString("Games_SearchByName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New Match.
+        /// </summary>
+        public static string MainLayout_NewMatch {
+            get {
+                return ResourceManager.GetString("MainLayout_NewMatch", resourceCulture);
             }
         }
         
@@ -286,11 +313,38 @@ namespace BoardGames.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add to tournament.
+        /// </summary>
+        public static string NewMatch_AddToTournament {
+            get {
+                return ResourceManager.GetString("NewMatch_AddToTournament", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add Tournament.
+        /// </summary>
+        public static string NewMatch_AddTournament {
+            get {
+                return ResourceManager.GetString("NewMatch_AddTournament", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Duration in min.
         /// </summary>
         public static string NewMatch_DurationInMin {
             get {
                 return ResourceManager.GetString("NewMatch_DurationInMin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No tournament selected.
+        /// </summary>
+        public static string NewMatch_NoTournamentSelected {
+            get {
+                return ResourceManager.GetString("NewMatch_NoTournamentSelected", resourceCulture);
             }
         }
         
@@ -336,6 +390,15 @@ namespace BoardGames.Resources {
         public static string NewMatch_SelectPlayers {
             get {
                 return ResourceManager.GetString("NewMatch_SelectPlayers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select tournament.
+        /// </summary>
+        public static string NewMatch_SelectTournament {
+            get {
+                return ResourceManager.GetString("NewMatch_SelectTournament", resourceCulture);
             }
         }
         
@@ -624,6 +687,105 @@ namespace BoardGames.Resources {
         public static string SettingsPlayers_EditPlayer {
             get {
                 return ResourceManager.GetString("SettingsPlayers_EditPlayer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add tournament.
+        /// </summary>
+        public static string SettingsTournament_AddTournament {
+            get {
+                return ResourceManager.GetString("SettingsTournament_AddTournament", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete tournament.
+        /// </summary>
+        public static string SettingsTournament_DeleteTournament {
+            get {
+                return ResourceManager.GetString("SettingsTournament_DeleteTournament", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit tournament.
+        /// </summary>
+        public static string SettingsTournament_EditTournament {
+            get {
+                return ResourceManager.GetString("SettingsTournament_EditTournament", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Close.
+        /// </summary>
+        public static string Tournament_Close {
+            get {
+                return ResourceManager.GetString("Tournament_Close", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to First match.
+        /// </summary>
+        public static string Tournament_FirstMatch {
+            get {
+                return ResourceManager.GetString("Tournament_FirstMatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Last match.
+        /// </summary>
+        public static string Tournament_LastMatch {
+            get {
+                return ResourceManager.GetString("Tournament_LastMatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open.
+        /// </summary>
+        public static string Tournament_Open {
+            get {
+                return ResourceManager.GetString("Tournament_Open", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open details.
+        /// </summary>
+        public static string Tournament_OpenDetails {
+            get {
+                return ResourceManager.GetString("Tournament_OpenDetails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total duration.
+        /// </summary>
+        public static string Tournament_TotalDuration {
+            get {
+                return ResourceManager.GetString("Tournament_TotalDuration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tournament matches.
+        /// </summary>
+        public static string Tournament_TournamentMatches {
+            get {
+                return ResourceManager.GetString("Tournament_TournamentMatches", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tournament Status.
+        /// </summary>
+        public static string Tournament_TournamentStatus {
+            get {
+                return ResourceManager.GetString("Tournament_TournamentStatus", resourceCulture);
             }
         }
     }

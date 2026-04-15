@@ -3,17 +3,13 @@
 @using LumexUI.Common
 @using LumexUI.Shared.Icons
 
-@inject PinLockService PinLock
 @inject NavigationManager Nav
 
 @inject IJSRuntime JS
 
-@if (!PinLock.IsUnlocked)
-{
-    return;
-}
 
 <p class="text-xl mb-4">@SharedResource.Settings_Settings</p>
+
 <div class="flex flex-col max-w-sm gap-4">
     <LumexSelect TValue="string" Label="@SharedResource.Settings_Language" Value="@selectedCulture" ValueChanged="OnCultureChanged">
         <LumexSelectItem Value="@("fr")" TextValue="French">French</LumexSelectItem>
@@ -44,7 +40,7 @@
     <LumexLink Href="/settings/factions">@SharedResource.Settings_Factions</LumexLink>
     <LumexLink Href="/settings/players">@SharedResource.Settings_Players</LumexLink>
     <LumexLink Href="/settings/locations">@SharedResource.Settings_Locations</LumexLink>
-    <LumexLink Href="/settings/tournaments">Tournaments</LumexLink>
+    <LumexLink Href="/settings/tournaments">@SharedResource.GameMatches_Tournaments</LumexLink>
 </div>
 
 
@@ -54,13 +50,6 @@
     
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-
-        await PinLock.InitializeAsync();
-
-        if (!PinLock.IsUnlocked)
-        {
-            Nav.NavigateTo("/pin");
-        }
 
         if (!firstRender) return;
 

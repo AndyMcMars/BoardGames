@@ -72,21 +72,21 @@
             <LumexAccordion>
                 <LumexAccordionItem Id="1" Expanded="_addToTournament">
                     <StartContent>
-                        <LumexCheckbox @bind-Value="_addToTournament">Add to tournament</LumexCheckbox>
+                        <LumexCheckbox @bind-Value="_addToTournament">@SharedResource.NewMatch_AddToTournament</LumexCheckbox>
                     </StartContent>
                     <ChildContent>
                         @if (_addToTournament)
                         {
                             <div class="flex gap-4 w-full">
                                 <LumexSelect TValue="int"
-                                             Label="Select tournament"
+                                             Label="@SharedResource.NewMatch_SelectTournament"
                                              Value="_tournamentID"
                                              ValueChanged="UpdateTournaments"
                                              class="w-2/4">
                                     <LumexSelectItem @key="-1"
                                                      Value="-1"
-                                                     TextValue="No tournament selected">
-                                        No tournament selected
+                                                     TextValue="@SharedResource.NewMatch_NoTournamentSelected">
+                                        @SharedResource.NewMatch_NoTournamentSelected
                                     </LumexSelectItem>
                                     @foreach (var tournament in _tournaments)
                                     {
@@ -98,7 +98,7 @@
                                     }
                                 </LumexSelect>
 
-                                <ModalTournament ButtonColor="ThemeColor.Primary" GameId="_newMatch.GameId" ButtonText="Add Tournament" OnSaved="UpdateTournaments" />
+                                <ModalTournament ButtonColor="ThemeColor.Primary" GameId="_newMatch.GameId" ButtonText="@SharedResource.NewMatch_AddTournament" OnSaved="UpdateTournaments" />
                             </div>
                         }
                     </ChildContent>
@@ -153,7 +153,7 @@
         </ChildContent>
     </LumexDataGrid>
 
-    <LumexButton OnClick="Savematch" Disabled="@(_results.Count() < 1)" Color="@ThemeColor.Success" Class="mt-4">@SharedResource.NewMatch_Save</LumexButton>
+    <LumexButton OnClick="Savematch" Disabled="@(_results.Count() < 1)" Color="@ThemeColor.Success" Class="mt-4 mb-4">@SharedResource.NewMatch_Save</LumexButton>
 
 
 @code {

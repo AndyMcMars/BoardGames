@@ -286,4 +286,58 @@
   <data name="GameMatches_Win" xml:space="preserve">
     <value>Win %</value>
   </data>
+  <data name="Tournament_Open" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="Tournament_Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="MainLayout_NewMatch" xml:space="preserve">
+    <value>New Match</value>
+  </data>
+  <data name="NewMatch_AddToTournament" xml:space="preserve">
+    <value>Add to tournament</value>
+  </data>
+  <data name="NewMatch_SelectTournament" xml:space="preserve">
+    <value>Select tournament</value>
+  </data>
+  <data name="NewMatch_NoTournamentSelected" xml:space="preserve">
+    <value>No tournament selected</value>
+  </data>
+  <data name="NewMatch_AddTournament" xml:space="preserve">
+    <value>Add Tournament</value>
+  </data>
+  <data name="GameMatches_Tournaments" xml:space="preserve">
+    <value>Tournaments</value>
+  </data>
+  <data name="GameMatches_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Tournament_TournamentStatus" xml:space="preserve">
+    <value>Tournament Status</value>
+  </data>
+  <data name="Tournament_FirstMatch" xml:space="preserve">
+    <value>First match</value>
+  </data>
+  <data name="Tournament_TotalDuration" xml:space="preserve">
+    <value>Total duration</value>
+  </data>
+  <data name="Tournament_LastMatch" xml:space="preserve">
+    <value>Last match</value>
+  </data>
+  <data name="Tournament_TournamentMatches" xml:space="preserve">
+    <value>Tournament matches</value>
+  </data>
+  <data name="Tournament_OpenDetails" xml:space="preserve">
+    <value>Open details</value>
+  </data>
+  <data name="SettingsTournament_DeleteTournament" xml:space="preserve">
+    <value>Delete tournament</value>
+  </data>
+  <data name="SettingsTournament_EditTournament" xml:space="preserve">
+    <value>Edit tournament</value>
+  </data>
+  <data name="SettingsTournament_AddTournament" xml:space="preserve">
+    <value>Add tournament</value>
+  </data>
 </root>

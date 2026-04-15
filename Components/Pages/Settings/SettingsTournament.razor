@@ -14,7 +14,7 @@
     return;
 }
 
-<LumexLink Href="/settings">Settings</LumexLink>
+<LumexLink Href="/settings">@SharedResource.Settings_Settings</LumexLink>
 
 <LumexDivider Class="my-4" />
 
@@ -23,10 +23,10 @@
     <LumexDataGrid Data="@_tournaments.AsQueryable()" SelectionMode="@SelectionMode.Multiple" @bind-SelectedItems="_selectedTournaments" @key="_refreshKey">
         <ToolbarContent>
             <div class="flex justify-between">
-                <ModalTournament ButtonText="@(_selectedTournaments.Count == 1 ? "Edit tournament" : "Add tournament")" Tournament="_selectedTournaments.FirstOrDefault()" OnSaved="UpdateData" ButtonColor="@(_selectedTournaments.Count == 1 ? ThemeColor.Warning : ThemeColor.Success)" />
+                <ModalTournament ButtonText="@(_selectedTournaments.Count == 1 ? @SharedResource.SettingsTournament_EditTournament : @SharedResource.SettingsTournament_AddTournament)" Tournament="_selectedTournaments.FirstOrDefault()" OnSaved="UpdateData" ButtonColor="@(_selectedTournaments.Count == 1 ? ThemeColor.Warning : ThemeColor.Success)" />
                 <LumexButton OnClick="() => _showDeleteModal = true" Disabled="_selectedTournaments.Count < 1" Color="@(_selectedTournaments.Count < 1 ? ThemeColor.Default : ThemeColor.Danger)">
                     <Trash2Icon/>
-                    Delete tournament
+                    @SharedResource.SettingsTournament_DeleteTournament
                 </LumexButton>
             </div>
         </ToolbarContent>

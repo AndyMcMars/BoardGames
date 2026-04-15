@@ -291,4 +291,73 @@
   <data name="Match_Reviews" xml:space="preserve">
     <value>Recensioni</value>
   </data>
+  <data name="GameMatches_Leaderboards" xml:space="preserve">
+    <value>Classifiche</value>
+  </data>
+  <data name="GameMatches_Nr" xml:space="preserve">
+    <value>no.</value>
+  </data>
+  <data name="GameMatches_Matches" xml:space="preserve">
+    <value>Partite</value>
+  </data>
+  <data name="GameMatches_Wins" xml:space="preserve">
+    <value>Vince</value>
+  </data>
+  <data name="GameMatches_Win" xml:space="preserve">
+    <value>Vincita %</value>
+  </data>
+  <data name="Tournament_Open" xml:space="preserve">
+    <value>Aprire</value>
+  </data>
+  <data name="Tournament_Close" xml:space="preserve">
+    <value>Vicino</value>
+  </data>
+  <data name="MainLayout_NewMatch" xml:space="preserve">
+    <value>Nuova partita</value>
+  </data>
+  <data name="NewMatch_AddToTournament" xml:space="preserve">
+    <value>Aggiungi al torneo</value>
+  </data>
+  <data name="NewMatch_SelectTournament" xml:space="preserve">
+    <value>Seleziona torneo</value>
+  </data>
+  <data name="NewMatch_NoTournamentSelected" xml:space="preserve">
+    <value>Nessun torneo selezionato</value>
+  </data>
+  <data name="NewMatch_AddTournament" xml:space="preserve">
+    <value>Aggiungi Torneo</value>
+  </data>
+  <data name="GameMatches_Tournaments" xml:space="preserve">
+    <value>Tornei</value>
+  </data>
+  <data name="GameMatches_Status" xml:space="preserve">
+    <value>Stato</value>
+  </data>
+  <data name="Tournament_TournamentStatus" xml:space="preserve">
+    <value>Stato del torneo</value>
+  </data>
+  <data name="Tournament_FirstMatch" xml:space="preserve">
+    <value>Prima partita</value>
+  </data>
+  <data name="Tournament_TotalDuration" xml:space="preserve">
+    <value>Durata totale</value>
+  </data>
+  <data name="Tournament_LastMatch" xml:space="preserve">
+    <value>Ultima partita</value>
+  </data>
+  <data name="Tournament_TournamentMatches" xml:space="preserve">
+    <value>Partite del torneo</value>
+  </data>
+  <data name="Tournament_OpenDetails" xml:space="preserve">
+    <value>Apri i dettagli</value>
+  </data>
+  <data name="SettingsTournament_DeleteTournament" xml:space="preserve">
+    <value>Elimina torneo</value>
+  </data>
+  <data name="SettingsTournament_EditTournament" xml:space="preserve">
+    <value>Modifica torneo</value>
+  </data>
+  <data name="SettingsTournament_AddTournament" xml:space="preserve">
+    <value>Aggiungi torneo</value>
+  </data>
 </root>

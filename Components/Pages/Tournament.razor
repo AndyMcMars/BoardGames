@@ -76,7 +76,7 @@
                     </AvatarContent>
                 </LumexUser>
 
-                <LumexUser Name="Tournament Status" Description="@(_tournament.IsActive ? "open" : "close")">
+                <LumexUser Name="@SharedResource.Tournament_TournamentStatus" Description="@(_tournament.IsActive ? @SharedResource.Tournament_Open : @SharedResource.Tournament_Close)">
                     <AvatarContent>
                         @if (_tournament.IsActive)
                         {
@@ -107,7 +107,7 @@
         <LumexCardFooter>
             <div class="flex h-10 justify-evenly gap-4 w-full">
                 
-                <LumexUser Name="First match" Description="@FirstMatchDate?.ToString("dd.MM.yyyy")">
+                <LumexUser Name="@SharedResource.Tournament_FirstMatch" Description="@FirstMatchDate?.ToString("dd.MM.yyyy")">
                     <AvatarContent>
                         <CalendarClockIcon />
                     </AvatarContent>
@@ -115,7 +115,7 @@
 
                 <LumexDivider Orientation="Orientation.Vertical" />
 
-                <LumexUser Name="Total duration" Description="@TotalDuration.ToString(@"h\h\ mm\m")">
+                <LumexUser Name="@SharedResource.Tournament_TotalDuration" Description="@TotalDuration.ToString(@"h\h\ mm\m")">
                     <AvatarContent>
                         <TimerIcon />
                     </AvatarContent>
@@ -123,7 +123,7 @@
 
                 <LumexDivider Orientation="Orientation.Vertical"/>
 
-                <LumexUser Name="Last match" Description="@LastMatchDate?.ToString("dd.MM.yyyy")">
+                <LumexUser Name="@SharedResource.Tournament_LastMatch" Description="@LastMatchDate?.ToString("dd.MM.yyyy")">
                     <AvatarContent>
                         <CalendarClockIcon />
                     </AvatarContent>
@@ -135,7 +135,7 @@
     <LumexDivider />
 
     <LumexAccordion ItemClasses="_itemClasses">
-        <LumexAccordionItem Id="1" Title="@($"{@SharedResource.GameMatches_Leaderboards}")">
+        <LumexAccordionItem Id="1" Title="@SharedResource.GameMatches_Leaderboards">
             <StartContent>
                 <MedalIcon />
             </StartContent>
@@ -152,7 +152,7 @@
 
     <LumexDivider Class="mb-4" />
 
-    <p class="text-xl font-bold">Matches</p>
+    <p class="text-xl font-bold">@SharedResource.Tournament_TournamentMatches</p>
 
     <LumexAccordion>
         @foreach (var match in _tournament.Matches ?? Enumerable.Empty<mdMatch>())
@@ -162,7 +162,7 @@
                     <div class="w-full justify-between flex">
                         @($"{match.Date.ToString("dd.MM.yyyy")} - Winner: {match?.Winner?.Player?.Name}")
                         <LumexButton Color="@ThemeColor.Default" Variant="Variant.Ghost" OnClick="@(() => Nav.NavigateTo($"/{game_slug}/{match?.PublicId}"))">
-                            <ChildContent>Open match details</ChildContent>
+                            <ChildContent>@SharedResource.Tournament_OpenDetails</ChildContent>
                             <EndContent>
                                 <FolderOpenIcon />
                             </EndContent>
