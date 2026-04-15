@@ -10,6 +10,11 @@
 
 <HeadContent>
     <title>@_tournament?.Name</title>
+
+    <meta property="og:title" content="@_tournament?.Name" />
+    <meta property="og:description" content="1°: @_tournament?.Winner?.Player.Name (@_tournament?.Winner?.TotalPoints)" />
+    <meta property="og:image" content="@_tournament?.Game?.Image" />
+    <meta property="og:url" content="@Nav.Uri" />
 </HeadContent>
 
 <div class="flex justify-between">
@@ -157,60 +162,53 @@
     <LumexAccordion>
         @foreach (var match in _tournament.Matches ?? Enumerable.Empty<mdMatch>())
         {
-            <LumexAccordionItem Id="@match.PublicId">
-                <TitleContent>
-                    <div class="w-full justify-between flex">
-                        @($"{match.Date.ToString("dd.MM.yyyy")} - Winner: {match?.Winner?.Player?.Name}")
-                        <LumexButton Color="@ThemeColor.Default" Variant="Variant.Ghost" OnClick="@(() => Nav.NavigateTo($"/{game_slug}/{match?.PublicId}"))">
-                            <ChildContent>@SharedResource.Tournament_OpenDetails</ChildContent>
-                            <EndContent>
-                                <FolderOpenIcon />
-                            </EndContent>
-                        </LumexButton>
-                    </div>
-                </TitleContent>
-                <ChildContent>
-                    <LumexDataGrid T=mdResult Data="@match?.Results.AsQueryable()">
-                        <ToolbarContent>
-                            <div class="flex justify-around gap-4">
-                                <LumexUser Name="@SharedResource.Match_Location" Description="@match?.Location?.Description">
+            <LumexAccordionItem Id="@match.PublicId" Title="@($"{match.Date.ToString("dd.MM.yyyy")} - {@SharedResource.GameMatches_Winner}: {match?.Winner?.Player?.Name}")">
+                <LumexDataGrid T=mdResult Data="@match?.Results.AsQueryable()">
+                    <ToolbarContent>
+                        <div class="flex justify-around gap-4">
+                            <LumexUser Name="@SharedResource.Match_Location" Description="@match?.Location?.Description">
+                                <AvatarContent>
+                                    <MapPinIcon />
+                                </AvatarContent>
+                            </LumexUser>
+
+                            <LumexUser Name="@SharedResource.Match_Duration" Description="@match?.Duration?.ToString(@"h\h\ mm\m")">
+                                <AvatarContent>
+                                    <TimerIcon />
+                                </AvatarContent>
+                            </LumexUser>
+
+                            <LumexButton Color="@ThemeColor.Default" Variant="Variant.Ghost" OnClick="@(() => Nav.NavigateTo($"/{game_slug}/{match?.PublicId}"))">
+                                <ChildContent>@SharedResource.Tournament_OpenDetails</ChildContent>
+                                <EndContent>
+                                    <FolderOpenIcon />
+                                </EndContent>
+                            </LumexButton>
+                        </div>
+                    </ToolbarContent>
+                    <ChildContent>
+                        <TemplateColumn Title="Nr." Class="w-10">
+                            @{
+                                var index = match?.Results
+                                    .OrderByDescending(r => r.Points)
+                                    .ToList()
+                                    .IndexOf(context) + 1;
+                            }
+                            <p>@($"{@index}°")</p>
+                        </TemplateColumn>
+                        <PropertyColumn Property="@(p => p.Player.Name)" Title="@SharedResource.Match_Player" />
+                        <PropertyColumn Property="@(p => p.Faction != null ? p.Faction.Name : "")" Title="@SharedResource.SettingsFactions_Faction">
+                            <Content>
+                                <LumexUser Name="@context?.Faction?.Name">
                                     <AvatarContent>
-                                        <MapPinIcon />
+                                        <div style="width:15px;height:15px;background:@context?.Faction?.Color;border-radius:50%;" />
                                     </AvatarContent>
                                 </LumexUser>
-
-                                <LumexUser Name="@SharedResource.Match_Duration" Description="@match?.Duration?.ToString(@"h\h\ mm\m")">
-                                    <AvatarContent>
-                                        <TimerIcon />
-                                    </AvatarContent>
-                                </LumexUser>
-                            </div>
-                        </ToolbarContent>
-                        <ChildContent>
-                            <TemplateColumn Title="Nr." Class="w-10">
-                                @{
-                                    var index = match?.Results
-                                        .OrderByDescending(r => r.Points)
-                                        .ToList()
-                                        .IndexOf(context) + 1;
-                                }
-                                <p>@($"{@index}°")</p>
-                            </TemplateColumn>
-                            <PropertyColumn Property="@(p => p.Player.Name)" Title="@SharedResource.Match_Player" />
-                            <PropertyColumn Property="@(p => p.Faction != null ? p.Faction.Name : "")" Title="@SharedResource.SettingsFactions_Faction">
-                                <Content>
-                                    <LumexUser Name="@context?.Faction?.Name">
-                                        <AvatarContent>
-                                            <div style="width:15px;height:15px;background:@context?.Faction?.Color;border-radius:50%;" />
-                                        </AvatarContent>
-                                    </LumexUser>
-                                </Content>
-                            </PropertyColumn>
-                            <PropertyColumn Property="@(p => p.Points)" Sortable="true" Title="@SharedResource.Match_Points" Class="w-10"/>
-                        </ChildContent>
-                    </LumexDataGrid>
-                </ChildContent>
-
+                            </Content>
+                        </PropertyColumn>
+                        <PropertyColumn Property="@(p => p.Points)" Sortable="true" Title="@SharedResource.Match_Points" Class="w-10"/>
+                    </ChildContent>
+                </LumexDataGrid>
             </LumexAccordionItem>
         }
     </LumexAccordion>

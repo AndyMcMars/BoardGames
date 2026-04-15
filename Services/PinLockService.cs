@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+using System.Security.Cryptography;
 
 namespace BoardGames.Services
 {
@@ -17,8 +18,17 @@ namespace BoardGames.Services
 
         public async Task InitializeAsync()
         {
-            var result = await _storage.GetAsync<bool>(StorageKey);
-            IsUnlocked = result.Success && result.Value;
+            try
+            {
+                var result = await _storage.GetAsync<bool>(StorageKey);
+                IsUnlocked = result.Success && result.Value;
+            }
+            catch (CryptographicException)
+            {
+                // Old/invalid data → clear it
+                await _storage.DeleteAsync(StorageKey);
+                IsUnlocked = false;
+            }
         }
 
         public async Task<bool> TryUnlockAsync(string pin)

@@ -301,16 +301,16 @@
     <value>Partite</value>
   </data>
   <data name="GameMatches_Wins" xml:space="preserve">
-    <value>Vince</value>
+    <value>Vinte</value>
   </data>
   <data name="GameMatches_Win" xml:space="preserve">
     <value>Vincita %</value>
   </data>
   <data name="Tournament_Open" xml:space="preserve">
-    <value>Aprire</value>
+    <value>Aperto</value>
   </data>
   <data name="Tournament_Close" xml:space="preserve">
-    <value>Vicino</value>
+    <value>Chiuso</value>
   </data>
   <data name="MainLayout_NewMatch" xml:space="preserve">
     <value>Nuova partita</value>
