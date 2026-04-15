@@ -7,8 +7,7 @@
 @inject NavigationManager Nav
 @inject ToastService Toast
 
-@if (_newMatch.GameId != 0)
-{
+
     <LumexCard>
         <LumexCardHeader Class="flex gap-4 items-start">
     
@@ -19,6 +18,10 @@
             @if (game != null)
             {
                 <img src="@game.Image" width="100" />
+            }
+            else
+            {
+                <DicesIcon />
             }
 
             <!-- Right: Two rows -->
@@ -151,8 +154,6 @@
     </LumexDataGrid>
 
     <LumexButton OnClick="Savematch" Disabled="@(_results.Count() < 1)" Color="@ThemeColor.Success" Class="mt-4">@SharedResource.NewMatch_Save</LumexButton>
-
-}
 
 
 @code {

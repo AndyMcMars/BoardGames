@@ -6,6 +6,13 @@
 
 @inject AppDbContext Db
 @inject NavigationManager Nav
+@inject PinLockService PinLock
+
+
+@if (!PinLock.IsUnlocked)
+{
+    return;
+}
 
 <LumexLink Href="/settings">Settings</LumexLink>
 
@@ -37,6 +44,16 @@
     private ICollection<mdPlayer> _selectedPlayers = [];
     private int _refreshKey;
     private bool _showDeleteModal = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await PinLock.InitializeAsync();
+
+        if (!PinLock.IsUnlocked)
+        {
+            Nav.NavigateTo("/pin");
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {

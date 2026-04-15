@@ -18,11 +18,11 @@
         </LumexModalHeader>
 
         <LumexModalBody>
-
-            <LumexSelect TValue="mdGame" Label="Select a Game" @bind-Value="_model.Game" Required Disabled="@(_model.Id != 0)">
+                        
+            <LumexSelect TValue="int" Label="Select a Game" @bind-Value="_model.GameId" Required Disabled="@(_model.Id != 0 || GameId != 0)">
                 @foreach (var game in _games)
                 {
-                    <LumexSelectItem @key="@game" Value="game" TextValue="@game.Name">@game.Name</LumexSelectItem>
+                    <LumexSelectItem @key="@game.Id" Value="game.Id" TextValue="@game.Name">@game.Name</LumexSelectItem>
                 }
             </LumexSelect>
 
@@ -74,6 +74,8 @@
     private static readonly Random _random = new();
     private string? _alertContent;
 
+
+
     protected override void OnParametersSet()
     {
         if (Tournament is null)
@@ -90,6 +92,11 @@
             {
                 Id = Tournament.Id,
                 Name = Tournament.Name
+            };
+
+            if (GameId != 0)
+            {
+                _model.GameId = GameId;
             };
         }
     }
