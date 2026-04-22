@@ -7,9 +7,8 @@
 @inject NavigationManager Nav
 @inject ToastService Toast
 
-@if (_newMatch.GameId != 0)
-{
-    <LumexCard Class="max-w-sm">
+
+    <LumexCard>
         <LumexCardHeader Class="flex gap-4 items-start">
     
             <!-- Left: Image -->
@@ -19,6 +18,10 @@
             @if (game != null)
             {
                 <img src="@game.Image" width="100" />
+            }
+            else
+            {
+                <DicesIcon />
             }
 
             <!-- Right: Two rows -->
@@ -65,6 +68,43 @@
                 </LumexSelect>
             </div>
         </LumexCardBody>
+        <LumexCardFooter>
+            <LumexAccordion>
+                <LumexAccordionItem Id="1" Expanded="_addToTournament">
+                    <StartContent>
+                        <LumexCheckbox @bind-Value="_addToTournament">@SharedResource.NewMatch_AddToTournament</LumexCheckbox>
+                    </StartContent>
+                    <ChildContent>
+                        @if (_addToTournament)
+                        {
+                            <div class="flex gap-4 w-full">
+                                <LumexSelect TValue="int"
+                                             Label="@SharedResource.NewMatch_SelectTournament"
+                                             Value="_tournamentID"
+                                             ValueChanged="UpdateTournaments"
+                                             class="w-2/4">
+                                    <LumexSelectItem @key="-1"
+                                                     Value="-1"
+                                                     TextValue="@SharedResource.NewMatch_NoTournamentSelected">
+                                        @SharedResource.NewMatch_NoTournamentSelected
+                                    </LumexSelectItem>
+                                    @foreach (var tournament in _tournaments)
+                                    {
+                                        <LumexSelectItem @key="@tournament.Id"
+                                                            Value="@tournament.Id"
+                                                            TextValue="@($"{tournament.Name} - [{tournament.Matches.Count}]")">
+                                            @($"{tournament.Name} - [{tournament.Matches.Count}]")
+                                        </LumexSelectItem>
+                                    }
+                                </LumexSelect>
+
+                                <ModalTournament ButtonColor="ThemeColor.Primary" GameId="_newMatch.GameId" ButtonText="@SharedResource.NewMatch_AddTournament" OnSaved="UpdateTournaments" />
+                            </div>
+                        }
+                    </ChildContent>
+                </LumexAccordionItem>
+            </LumexAccordion>
+        </LumexCardFooter>
     </LumexCard>
 
     <div class="text-2xl mt-4 mb-4">@SharedResource.Match_Points</div>
@@ -113,9 +153,7 @@
         </ChildContent>
     </LumexDataGrid>
 
-    <LumexButton OnClick="Savematch" Disabled="@(_results.Count() < 1)" Color="@ThemeColor.Success" Class="mt-4">@SharedResource.NewMatch_Save</LumexButton>
-
-}
+    <LumexButton OnClick="Savematch" Disabled="@(_results.Count() < 1)" Color="@ThemeColor.Success" Class="mt-4 mb-4">@SharedResource.NewMatch_Save</LumexButton>
 
 
 @code {
@@ -123,6 +161,7 @@
     private mdMatch _newMatch = new();
     private IQueryable<mdGame> _games => Db.Games;
     private IQueryable<mdLocation> _locations => Db.Locations;
+    private IQueryable<mdTournament> _tournaments => Db.Tournaments.Where(t => t.GameId == _newMatch.GameId && t.IsActive == true);
     private IQueryable<mdPlayer> _players => Db.Players;
     private IQueryable<mdFaction> _factions => Db.Factions.Where(f => f.GameId == _newMatch.GameId);
     private ICollection<mdPlayer>? _selectedPlayers
@@ -136,12 +175,14 @@
     }
 
     private ICollection<mdPlayer>? _selectedPlayersBacking;
+    private int _tournamentID;
+    private bool _addToTournament;
 
     private List<mdResult> _results = new();
 
     private int? duration;
     private Action<ToastModel> _toasterId = t => t.ToasterId = "toaster-rich-colors";
-    
+
     private DataGridSlots _classes = new()
     {
         Thead = "[&_th]:nth-1:w-20 [&_th]:nth-3:w-80"
@@ -178,18 +219,6 @@
             .OrderByDescending(m => m.Date)
             .FirstOrDefaultAsync();
 
-        if (lastGame != null)
-        {
-            _newMatch.GameId = lastGame.GameId;
-            _newMatch.LocationId = lastGame.LocationId;
-        }
-        else
-        {
-            _newMatch.GameId = await Db.Games.Select(g => g.Id).FirstOrDefaultAsync();
-            _newMatch.LocationId = await Db.Locations.Select(l => l.Id).FirstOrDefaultAsync();
-        }
-
-
         _newMatch.Date = DateTime.Now;
     }
 
@@ -218,6 +247,18 @@
 
     }
 
+    private async Task UpdateTournaments(int tournamentId)
+    {
+        if(tournamentId == 0)
+        {
+            _tournamentID = -1;
+            return;
+        }
+
+        await Task.Yield();
+        _tournamentID = tournamentId;
+    }
+
     private async Task Savematch()
     {
         if (_newMatch.GameId == 0)
@@ -229,6 +270,12 @@
         {
             Toast.Error("Please select a location.");
             return;
+        }
+
+        //Add tournament
+        if(_addToTournament && _tournamentID > 0)
+        {
+            _newMatch.TournamentId = _tournamentID;
         }
 
         foreach (var r in _results)

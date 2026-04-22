@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.ViewEngines;
-
-public class mdMatch
+﻿public class mdMatch
 {
     public int Id { get; set; }
     public string PublicId { get; set; } = null!;

@@ -1,12 +1,24 @@
-﻿@using LumexUI.Common
+﻿@page "/settings/locations"
+
+@using LumexUI.Common
 @using LumexUI.Shared.Icons
 @using Microsoft.EntityFrameworkCore
 
 @inject AppDbContext Db
 @inject NavigationManager Nav
+@inject PinLockService PinLock
 
 
-<LumexDataGrid Data="@_locations" SelectionMode="@SelectionMode.Multiple" @bind-SelectedItems="_selectedLocations" @key="_refreshKey">
+@if (!PinLock.IsUnlocked)
+{
+    return;
+}
+
+<LumexLink Href="/settings">@SharedResource.Settings_Settings</LumexLink>
+
+<LumexDivider Class="my-4" />
+
+<LumexDataGrid Data="@_locations.AsQueryable()" SelectionMode="@SelectionMode.Multiple" @bind-SelectedItems="_selectedLocations" @key="_refreshKey">
     <ToolbarContent>
         <div class="flex justify-between">
             <ModalLocation ButtonText="@(_selectedLocations.Count == 1 ? @SharedResource.SettingsLocations_EditLocation :@SharedResource.SettingsLocations_AddLocation)" Location="@(_selectedLocations.Count == 1 ? _selectedLocations.FirstOrDefault() : null)" OnSaved="UpdateData" ButtonColor="@(_selectedLocations.Count == 1 ? ThemeColor.Warning : ThemeColor.Success)" />
@@ -27,10 +39,20 @@
 }
 
 @code {
-    private IQueryable<mdLocation> _locations => Db.Locations;
+    private List<mdLocation> _locations = new();
     private ICollection<mdLocation> _selectedLocations = [];
     private int _refreshKey;
     private bool _showDeleteModal = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await PinLock.InitializeAsync();
+
+        if (!PinLock.IsUnlocked)
+        {
+            Nav.NavigateTo("/pin");
+        }
+    }
     
     protected override async Task OnInitializedAsync()
     {
@@ -39,6 +61,7 @@
 
     private async Task UpdateData()
     {
+        _locations = await Db.Locations.OrderBy(l => l.Description).ToListAsync();
         _refreshKey++;
         _selectedLocations = [];
         StateHasChanged();

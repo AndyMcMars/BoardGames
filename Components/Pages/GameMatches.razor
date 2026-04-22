@@ -19,45 +19,87 @@ else
     <LumexCard Class="mb-4">
         <LumexCardHeader Class="flex gap-4 items-start">
             <img src="@_game.Image" width="100" />
-            <div class="flex flex-col gap-3 w-full text-xl">
-               <h2>@_game.Name</h2>
+            <div class="flex flex-col gap-3 w-full">
+                <p class="text-xl font-bold">@_game.Name</p>
+                <div class="flex w-full">
+                    <LumexChip Variant="ChipVariant.Light">
+                        <StartContent>
+                            @_matches.Count()
+                        </StartContent>
+                        <ChildContent>
+                            <SwordsIcon />
+                        </ChildContent>
+                    </LumexChip>
+                    <LumexChip Variant="ChipVariant.Light">
+                        <StartContent>
+                            @totalDuration
+                        </StartContent>
+                        <ChildContent>
+                            <TimerIcon />
+                        </ChildContent>
+                    </LumexChip>
+                </div>
             </div>
         </LumexCardHeader>
-        <LumexCardFooter>
-            <div class="flex justify-between w-full">
-                <LumexChip Variant="ChipVariant.Light">
-                    <StartContent>
-                        @_matches.Count()
-                    </StartContent>
-                    <ChildContent>
-                        <SwordsIcon/>
-                    </ChildContent>
-                </LumexChip>
-                <LumexChip Variant="ChipVariant.Light">
-                    <StartContent>
-                        @totalDuration
-                    </StartContent>
-                    <ChildContent>
-                        <TimerIcon />
-                    </ChildContent>
-                </LumexChip>
-            </div>
-        </LumexCardFooter>
     </LumexCard>
 
 
-
-    @if(_matches.Count() > 0)
+    @if (_matches.Any() || _tournaments.Any())
     {
-        <LumexDataGrid Data="@_matches" T=mdMatch Layout="Layout.Fixed" OnRowClick="@GoToMatch">
-            <PropertyColumn Title="@SharedResource.GameMatches_Date" Property="@(p => p.Date)" Format="dd-MM-yyyy" Sortable="true" />
-            <TemplateColumn Title="@SharedResource.Settings_Players" Context="p" Sortable="true">
-                @(p.Results.Count())
-            </TemplateColumn>
-            <TemplateColumn Title="@SharedResource.GameMatches_Winner" Context="p" Sortable="true">
-                @($"{p.Winner?.Player?.Name} ({p.Winner?.Points})" ?? "")
-            </TemplateColumn>
-        </LumexDataGrid>
+        <LumexDivider />
+
+        <LumexAccordion ItemClasses="_itemClasses" >
+            <LumexAccordionItem Id="1" Title="@($"{@SharedResource.GameMatches_Leaderboards} - {DateTime.Now.Year}")">
+                <StartContent>
+                    <MedalIcon />
+                </StartContent> 
+                <ChildContent>
+                    <LumexDataGrid T="PlayerStats" Data="_leaderboard.AsQueryable()" Color="ThemeColor.Primary" Shadow="0">
+                        <PropertyColumn Property="@(p => p.Rank)" Title="@SharedResource.GameMatches_Nr" />
+                        <PropertyColumn Property="@(p => p.PlayerName)" Title="@SharedResource.Match_Player" />
+                        <PropertyColumn Property="@(p => p.MatchesPlayed)" Title="@SharedResource.GameMatches_Matches" />
+                        <PropertyColumn Property="@(p => p.Wins)" Title="@SharedResource.GameMatches_Wins" />
+                        <PropertyColumn Property="@(p => p.WinRate)" Title="@SharedResource.GameMatches_Win" />
+                    </LumexDataGrid>
+                </ChildContent>
+            </LumexAccordionItem>
+        </LumexAccordion>
+
+        <LumexDivider Class="mb-4" />
+
+        <LumexTabs>
+            <LumexTab Title="@SharedResource.GameMatches_Matches">
+                <LumexDataGrid Data="@_matches.AsQueryable()" T=mdMatch Layout="Layout.Fixed" OnRowClick="@GoToMatch" Classes="_classes" Hoverable>
+                    <PropertyColumn Title="@SharedResource.GameMatches_Date" Property="@(p => p.Date)" Format="dd-MM-yyyy" Sortable="true" />
+                    <TemplateColumn Title="@SharedResource.Settings_Players" Context="p" Sortable="true">
+                        @(p.Results.Count())
+                    </TemplateColumn>
+                    <TemplateColumn Title="@SharedResource.GameMatches_Winner" Context="p" Sortable="true">
+                        @($"{p.Winner?.Player?.Name} ({p.Winner?.Points})" ?? "")
+                    </TemplateColumn>
+                </LumexDataGrid>
+            </LumexTab>
+            <LumexTab Title="@SharedResource.GameMatches_Tournaments">
+                <LumexDataGrid Data="@_tournaments.AsQueryable()" T="mdTournament" Layout="Layout.Fixed" OnRowClick="@GoToTournement" Hoverable Classes="_classes">
+                    <PropertyColumn Property="@(p=>p.Name)" />
+                    <PropertyColumn Property="@(p => p.Matches.Count)" Title="@SharedResource.GameMatches_Matches" />
+                    <TemplateColumn Title="@SharedResource.GameMatches_Winner" Context="p" Sortable="true">
+                        @($"{p.Winner?.Player?.Name} ({p.Winner?.TotalPoints})" ?? "")
+                    </TemplateColumn>
+                    <TemplateColumn Title="@SharedResource.GameMatches_Status" Context="p">
+                        @if (p.IsActive)
+                        {
+                            <LockOpen />
+                        }
+                        else
+                        {
+                            <Lock/>
+                        }
+                    </TemplateColumn>
+                </LumexDataGrid>
+            </LumexTab>
+        </LumexTabs>
+
     }
     else
     {
@@ -75,15 +117,21 @@ else
 
     private mdGame? _game;
 
-    private IQueryable<mdMatch> _matches =>
-        _game == null
-            ? Enumerable.Empty<mdMatch>().AsQueryable()
-            : Db.Matches
-                .Where(m => m.GameId == _game.Id)
-                .Include(m => m.Location)
-                .Include(m => m.Results)
-                    .ThenInclude(r => r.Player)
-                .OrderByDescending(m => m.Date);
+
+    private DataGridSlots _classes = new()
+    {
+        Tr = "cursor-pointer"
+    };
+
+    private AccordionItemSlots _itemClasses = new()
+    {
+        Title = "text-xl font-bold",
+    };
+
+    private List<mdMatch> _matches = new();
+    private List<mdTournament> _tournaments = new();
+
+    private List<PlayerStats> _leaderboard = new();
 
     private TimeSpan totalDuration => TimeSpan.FromTicks(
         _matches
@@ -96,11 +144,83 @@ else
     {
         _game = await Db.Games
             .FirstOrDefaultAsync(g => g.Slug == game_slug);
-    }
 
+        if (_game == null) return;
+
+        
+        _matches = await Db.Matches
+            .Where(m => m.GameId == _game.Id && m.TournamentId == null)
+            .Include(m => m.Location)
+            .Include(m => m.Results)
+                .ThenInclude(r => r.Player)
+            .OrderByDescending(m => m.Date)
+            .ToListAsync();
+
+        _tournaments = await Db.Tournaments
+            .Where(t => t.GameId == _game.Id && t.Matches.Count > 0)
+            .Include(t => t.Matches)
+                .ThenInclude(m => m.Results)
+                    .ThenInclude(r => r.Player)
+            .ToListAsync();
+
+        var matches = await Db.Matches
+            .Where(m => m.GameId == _game.Id && m.Date.Year == DateTime.Now.Year)
+            .Include(m => m.Results)
+                .ThenInclude(r => r.Player)
+            .ToListAsync();
+
+        _leaderboard = matches
+            .Select(m => new
+            {
+                m.Results,
+                WinnerPlayerId = m.Results
+                    .OrderByDescending(r => r.Points)
+                    .Select(r => r.PlayerId)
+                    .FirstOrDefault()
+            })
+            .SelectMany(m => m.Results, (m, r) => new
+            {
+                r.PlayerId,
+                PlayerName = r.Player.Name,
+                IsWin = r.PlayerId == m.WinnerPlayerId
+            })
+            .GroupBy(x => new { x.PlayerId, x.PlayerName })
+            .Select(g => new
+            {
+                PlayerName = g.Key.PlayerName,
+                MatchesPlayed = g.Count(),
+                Wins = g.Count(x => x.IsWin),
+                WinRate = g.Count(x => x.IsWin) / (double)g.Count()
+            })
+            .OrderByDescending(x => x.WinRate)
+            .ThenByDescending(x => x.Wins)
+            .Select((x, i) => new PlayerStats
+            {
+                Rank = i + 1,
+                PlayerName = x.PlayerName,
+                MatchesPlayed = x.MatchesPlayed,
+                Wins = x.Wins,
+                WinRate = Math.Round(x.WinRate * 100, 1)
+            })
+            .ToList();
+    }
 
     private void GoToMatch(DataGridRowClickEventArgs<mdMatch> match)
     {
         Nav.NavigateTo($"/{game_slug}/{match.Item.PublicId}");
+    }
+
+    private void GoToTournement(DataGridRowClickEventArgs<mdTournament> tournament)
+    {
+        Nav.NavigateTo($"/{game_slug}/tournament/{tournament.Item.PublicId}");
+    }
+
+    public class PlayerStats
+    {
+        public int Rank { get; set; }
+        public string PlayerName { get; set; } = "";
+        public int MatchesPlayed { get; set; }
+        public int Wins { get; set; }
+        public double WinRate { get; set; }
     }
 }

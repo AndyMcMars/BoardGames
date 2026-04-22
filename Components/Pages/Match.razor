@@ -22,6 +22,11 @@
         <LumexLink Href="/">@SharedResource.Settings_Games</LumexLink>
         <p>></p>
         <LumexLink Href="@($"/{game_slug}")">@_match?.Game?.Name</LumexLink>
+        @if (_match?.Tournament != null)
+        {
+            <p>></p>
+            <LumexLink Href="@($"/{game_slug}/tournament/{_match.Tournament.PublicId}")">@_match?.Tournament.Name</LumexLink>
+        }
     </div>
     <LumexDropdown Classes="@_classes">
         <LumexDropdownTrigger>
@@ -30,6 +35,18 @@
             </LumexButton>
         </LumexDropdownTrigger>
         <LumexDropdownMenu>
+            <LumexDropdownItem  OnClick="() => _showAddToTournament = true" Disabled="@(_match?.TournamentId == null ? false : true)">
+                <StartContent>
+                    <TrophyIcon />
+                </StartContent>
+                <ChildContent>Add to tournament</ChildContent>
+            </LumexDropdownItem>
+            <LumexDropdownItem  OnClick="() => _showAddReviewModal = true">
+                <StartContent>
+                    <StarIcon />
+                </StartContent>
+                <ChildContent>@SharedResource.Match_AddReview</ChildContent>
+            </LumexDropdownItem>
             <LumexDropdownItem ShowDivider OnClick="Share">
                 <StartContent>
                     <ShareIcon />
@@ -48,6 +65,10 @@
     @if (_showDeleteModal){
         <ModalDelete OnResult="@DeleteMatch" _open="_showDeleteModal" Header="@SharedResource.Match_DeleteMatch" Description="@SharedResource.Match_AreYouSureYouWantToDeleteTheCurrentMatch"/>
     }
+    @if (_showAddReviewModal)
+    {
+        <ModalReview OnSaved="OnReviewSaved" Match="_match" _open="_showAddReviewModal" />
+    }
 
     @if (_showDeleteReviewModal)
     {
@@ -58,22 +79,38 @@
     {
         <ModalEditReview OnResult="EditReview" Review="@_selectedReview" _open="_showEditReviewModal"/>
     }
+    
+    @if (_showAddToTournament)
+    {
+        <ModalTournamentAdd GameId="@_match.GameId" OnResult="SaveTournament" _open="_showAddToTournament" />
+    }
 
 </div>
 @if(_match?.Game != null)
 {
     // Display match details
-    <LumexCard Class="mb-4 max-w-sm">
+    <LumexCard Class="mb-4">
         <LumexCardHeader Class="flex gap-4 items-start">
 
             <img src="@_match.Game.Image" width="200" />
 
             <div class="flex flex-col gap-3 items-start w-full">
+
                 <LumexUser Name="@SharedResource.SettingsFactions_Game" Description="@_match.Game.Name">
                     <AvatarContent>
                         <DiceIcon />
                     </AvatarContent>
                 </LumexUser>
+
+                    
+                @if (_match.Tournament != null)
+                {                   
+                    <LumexUser Name="Tournament" Description="@_match.Tournament.Name">
+                        <AvatarContent>
+                            <TrophyIcon />
+                        </AvatarContent>
+                    </LumexUser>
+                }
 
                 <LumexUser Name="@SharedResource.GameMatches_Date" Description="@_match.Date.ToString("dd-MM-yyyy")">
                     <AvatarContent>
@@ -126,7 +163,7 @@
     </LumexCard>
 
     // Display match results
-    <LumexDataGrid T=mdResult Data="@_match.Results.AsQueryable()" Class="max-w-xl">
+    <LumexDataGrid T=mdResult Data="@_match.Results.AsQueryable()">
         <TemplateColumn Title="Nr." Class="w-10">
             @{
                 var index = _match.Results
@@ -149,43 +186,39 @@
         <PropertyColumn Property="@(p => p.Points)" Sortable="true" Title="@SharedResource.Match_Points" Class="w-10"/>
     </LumexDataGrid>
 
-    // Display match reviews
-    <div class="mt-8 mb-4 flex gap-6 align-middle h-10 max-w-sm">
-        <p class="text-xl m-auto font-bold">Reviews</p>
-        <LumexDivider Orientation="Orientation.Vertical" Class="mx-auto"/>
-        <div class="w-1/3">
-            <ModalReview Match="@_match" OnSaved="UpdateMatchData" ButtonText="@SharedResource.Match_AddReview"/>
-        </div>
-    </div>
- 
-    @foreach (var review in _match.Reviews)
-    {
-        <LumexCard Class="max-w-sm mb-4">
-            <LumexCardHeader Class="justify-between">
-                <LumexUser Name="@review.Player.Name" Description="@($"{@review.Stars.ToString()} stars")">
-                    <AvatarContent>
-                        <UserIcon/>
-                    </AvatarContent>
-                </LumexUser>
-                <LumexDropdown>
-                    <LumexDropdownTrigger>
-                        <LumexButton IconOnly Variant="@Variant.Light">
-                            <EllipsisVerticalIcon />
-                        </LumexButton>
-                    </LumexDropdownTrigger>
-                    <LumexDropdownMenu>
-                        <LumexDropdownItem OnClick="() => OpenEditReviewModal(review)">Edit</LumexDropdownItem>
-                        <LumexDropdownItem Color="ThemeColor.Danger" Class="text-danger" OnClick="() => OpenDeleteReviewModal(review)">Delete</LumexDropdownItem>
-                    </LumexDropdownMenu>
-                </LumexDropdown>
-            </LumexCardHeader>
-            <LumexDivider />
-            <LumexCardBody>
-                @review.Comment
-            </LumexCardBody>
-        </LumexCard>
+    if (_match.Reviews.Count > 0)
+    {        
+        <p class="text-xl m-auto font-bold mt-4 mb-4">@SharedResource.Match_Reviews</p>
+        @foreach (var review in _match.Reviews)
+        {
+            <LumexCard Class="max-w-sm mb-4">
+                <LumexCardHeader Class="justify-between">
+                    <LumexUser Name="@review.Player.Name" Description="@($"{@review.Stars.ToString()} stars")">
+                        <AvatarContent>
+                            <UserIcon/>
+                        </AvatarContent>
+                    </LumexUser>
+                    <LumexDropdown>
+                        <LumexDropdownTrigger>
+                            <LumexButton IconOnly Variant="@Variant.Light">
+                                <EllipsisVerticalIcon />
+                            </LumexButton>
+                        </LumexDropdownTrigger>
+                        <LumexDropdownMenu>
+                            <LumexDropdownItem OnClick="() => OpenEditReviewModal(review)">Edit</LumexDropdownItem>
+                            <LumexDropdownItem Color="ThemeColor.Danger" Class="text-danger" OnClick="() => OpenDeleteReviewModal(review)">Delete</LumexDropdownItem>
+                        </LumexDropdownMenu>
+                    </LumexDropdown>
+                </LumexCardHeader>
+                @if (review.Comment != null){
+                    <LumexDivider />
+                    <LumexCardBody>
+                        @review.Comment
+                    </LumexCardBody>
+                }
+            </LumexCard>
+        }
     }
-
 }
 
 
@@ -205,8 +238,10 @@
     };
 
     private bool _showDeleteModal = false;
+    private bool _showAddReviewModal = false;
     private bool _showDeleteReviewModal = false;
     private bool _showEditReviewModal = false;
+    private bool _showAddToTournament = false;
     private mdReview? _selectedReview;
 
     protected override async Task OnParametersSetAsync()
@@ -224,6 +259,21 @@
     {
         _selectedReview = review;
         _showEditReviewModal = true;
+    }
+
+    private async Task SaveTournament(int tournamentID)
+    {
+        _showAddToTournament = false;
+
+        if (tournamentID == -1)
+            return;
+
+        if(_match != null)
+            _match.TournamentId = tournamentID;
+
+        await Db.SaveChangesAsync();
+        await UpdateMatchData();
+    
     }
 
     private async Task UpdateMatchData()
@@ -264,7 +314,7 @@
             existing.Comment = _selectedReview.Comment;
             await Db.SaveChangesAsync();
             await UpdateMatchData();
-   
+
         }
 
     }
@@ -286,11 +336,12 @@
 
         await UpdateMatchData();
     }
-    
+
 
     private async Task OnReviewSaved()
     {
         _showEditReviewModal = false;
+        _showAddReviewModal = false;
         _selectedReview = null;
 
         await UpdateMatchData();
@@ -307,11 +358,9 @@
         {
             Db.Matches.Remove(match);
             await Db.SaveChangesAsync();
-
-            Nav.NavigateTo($"/{_match?.Game.Slug}");
         }
         
-        Nav.NavigateTo($"/{match?.GameId}"); 
+        Nav.NavigateTo($"/{game_slug}"); 
     }
 
     private void CloseDeleteModal()

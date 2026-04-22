@@ -1,10 +1,22 @@
-﻿@using LumexUI.Common
+﻿@page "/settings/factions"
+
+@using LumexUI.Common
 @using LumexUI.Shared.Icons
 @using Microsoft.EntityFrameworkCore
 
 @inject AppDbContext Db
 @inject NavigationManager Nav
+@inject PinLockService PinLock
 
+
+@if (!PinLock.IsUnlocked)
+{
+    return;
+}
+
+<LumexLink Href="/settings">@SharedResource.Settings_Settings</LumexLink>
+
+<LumexDivider Class="my-4" />
 
 <LumexDataGrid Data="@_factions" SelectionMode="@SelectionMode.Multiple" @bind-SelectedItems="_selectedFactions" @key="_refreshKey">
     <ToolbarContent>
@@ -37,6 +49,16 @@
     private ICollection<mdFaction> _selectedFactions = [];
     private int _refreshKey;
     private bool _showDeleteModal = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await PinLock.InitializeAsync();
+
+        if (!PinLock.IsUnlocked)
+        {
+            Nav.NavigateTo("/pin");
+        }
+    }
     
     protected override async Task OnInitializedAsync()
     {

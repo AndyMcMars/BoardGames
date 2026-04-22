@@ -1,0 +1,92 @@
+﻿@using LumexUI.Common
+@using Blazor.Sonner.Services
+@using Microsoft.EntityFrameworkCore
+
+@inject AppDbContext Db
+@inject ToastService Toast
+
+<LumexModal Open="_open" Class="h-100">
+
+    <LumexModalContent Context="modal">
+
+        <LumexModalHeader>
+            Add To Tournament
+        </LumexModalHeader>
+
+        <LumexModalBody>
+
+            <LumexSelect TValue="mdTournament" Label="Select a Tournament" @bind-Value="_model" Required>
+                @foreach (var tournament in _tournaments)
+                {
+                    <LumexSelectItem @key="@tournament" Value="tournament" TextValue="@tournament.Name">@tournament.Name</LumexSelectItem>
+                }
+            </LumexSelect>
+
+            @if (_alertContent is not null)
+            {
+                <LumexAlert Color="ThemeColor.Danger" Title="@_alertContent" />
+            }
+        </LumexModalBody>
+
+
+        <LumexModalFooter>
+
+            <LumexButton Color="@ThemeColor.Danger"
+                         Variant="@Variant.Flat"
+                         OnClick="@OnCloseClicked">
+                Cancel
+            </LumexButton>
+
+            <LumexButton Color="@ThemeColor.Primary"
+                         Variant="@Variant.Solid"
+                         OnClick="async () => await SelectTournament(modal)">
+                Save
+            </LumexButton>
+
+        </LumexModalFooter>
+
+    </LumexModalContent>
+</LumexModal>
+
+@code {
+    
+    [Parameter] public bool _open { get; set; }
+    [Parameter] public EventCallback<int> OnResult { get; set; }
+    [Parameter] public int GameId { get; set; }
+    
+    private IQueryable<mdTournament> _tournaments => Db.Tournaments.Where(t => t.GameId == GameId && t.IsActive == true);
+
+    private mdTournament _model = new();
+    
+    private static readonly Random _random = new();
+    private string? _alertContent;
+
+
+    private void OnOpen()
+    {
+        _alertContent = null;
+        OnParametersSet();
+    }
+    
+    private async Task OnCloseClicked()
+    {
+        await OnResult.InvokeAsync(-1);
+    }
+
+    private async Task SelectTournament(LumexModal modal)
+    {
+        _alertContent = null;
+
+        if(_model.Name is null || _model.Name == "")
+        {
+            _alertContent = "Please select a tournament.";
+            return;
+        }
+
+        var existing = await Db.Tournaments.FindAsync(_model.Id);
+
+        await OnResult.InvokeAsync(_model.Id);
+
+        await modal.CloseAsync();
+    }
+}

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BoardGames.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260409112037_added IsActive to tournament model")]
+    partial class addedIsActivetotournamentmodel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.5");
@@ -179,16 +182,11 @@ namespace BoardGames.Migrations
                     b.Property<int>("Stars")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("mdTournamentId")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("Id");
 
                     b.HasIndex("MatchId");
 
                     b.HasIndex("PlayerId");
-
-                    b.HasIndex("mdTournamentId");
 
                     b.ToTable("Reviews");
                 });
@@ -206,10 +204,6 @@ namespace BoardGames.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("PublicId")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -294,10 +288,6 @@ namespace BoardGames.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("mdTournament", null)
-                        .WithMany("Reviews")
-                        .HasForeignKey("mdTournamentId");
-
                     b.Navigation("Match");
 
                     b.Navigation("Player");
@@ -329,8 +319,6 @@ namespace BoardGames.Migrations
             modelBuilder.Entity("mdTournament", b =>
                 {
                     b.Navigation("Matches");
-
-                    b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618
         }

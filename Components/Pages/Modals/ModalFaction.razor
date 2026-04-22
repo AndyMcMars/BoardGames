@@ -30,27 +30,56 @@
                           Placeholder="Enter faction name"
                           Variant="@InputVariant.Outlined" />
 
-            <LumexSelect TValue="ColorChoice" Label="Select color" @bind-Value="_selectedColor">
-                <ChildContent>
-                    @foreach (var color in _colorChoice)
-                    {
-                        <LumexSelectItem @key="@color" Value="color" TextValue="@color.Name">
-                            <LumexUser Name="@color.Name">
-                                <AvatarContent>
-                                    <div style="width:30px;height:30px;background:@color.hex;border-radius:50%;"/>
-                                </AvatarContent>
-                            </LumexUser>
-                        </LumexSelectItem>
-                    }
-                </ChildContent>
-                <ValueContent>
-                    <LumexUser Name="@context.Name">
-                        <AvatarContent>
-                            <div style="width:15px;height:15px;background:@context.hex;border-radius:50%;" />
-                        </AvatarContent>
-                    </LumexUser>
-                </ValueContent>
-            </LumexSelect>
+            <LumexCheckbox @bind-Value="_defaultColors">
+                Use default colors
+            </LumexCheckbox>
+
+            @if (_defaultColors)
+            {
+                <LumexSelect TValue="ColorChoice" Label="Select color" @bind-Value="_selectedColor">
+                    <ChildContent>
+                        @foreach (var color in _colorChoice)
+                        {
+                            <LumexSelectItem @key="@color" Value="color" TextValue="@color.Name">
+                                <LumexUser Name="@color.Name">
+                                    <AvatarContent>
+                                        <div style="width:30px;height:30px;background:@color.hex;border-radius:50%;"/>
+                                    </AvatarContent>
+                                </LumexUser>
+                            </LumexSelectItem>
+                        }
+                    </ChildContent>
+                    <ValueContent>
+                        <LumexUser Name="@context.Name">
+                            <AvatarContent>
+                                <div style="width:15px;height:15px;background:@context.hex;border-radius:50%;" />
+                            </AvatarContent>
+                        </LumexUser>
+                    </ValueContent>
+                </LumexSelect>
+            }
+            else
+            {
+                <div class="w-full flex items-center gap-4">
+                    <div style="
+                    width:32px;
+                    height:32px;
+                    min-width:32px;
+                    background:@(_defaultColors? _selectedColor?.hex : _customHEX);
+                    border-radius:50%;
+                    border:1px solid #ccc;
+                    "></div>
+
+                    <div class="flex-1">
+                        <LumexTextbox Type="@InputType.Text"
+                                      Label="HEX Color"
+                                      Placeholder="Enter the hex color #000000"
+                                      @bind-Value="_customHEX"
+                                      DebounceDelay="250"
+                                      Behavior="InputBehavior.OnInput" />
+                    </div>
+                </div>
+            }
 
             @if(_alertContent is not null)
             {
@@ -96,6 +125,18 @@
     private ColorChoice? _selectedColor;
 
     private string? _alertContent = null;
+    private bool _defaultColors = true;
+    private string? _customHEXValue;
+
+    private string? _customHEX
+    {
+        get => _customHEXValue;
+        set
+        {
+            _customHEXValue = value;
+            _alertContent = null;
+        }
+    }
 
     private IQueryable<mdGame> _games => Db.Games;
 
@@ -149,12 +190,19 @@
 
             _selectedGame = _games.FirstOrDefault(g => g.Id == Faction.GameId);
             _selectedColor = _colorChoice.FirstOrDefault(c => c.hex == Faction.Color);
+            _customHEX = Faction.Color;
         }
     }
 
     private void OnOpen()
     {
         _alertContent = null;
+    }
+
+    private bool IsValidHex(string? hex)
+    {
+        return !string.IsNullOrWhiteSpace(hex) &&
+               System.Text.RegularExpressions.Regex.IsMatch(hex, "^#([0-9A-Fa-f]{6})$");
     }
 
     private async Task SaveGame(LumexModal modal, bool close)
@@ -173,10 +221,20 @@
             return;
         }
 
+        if (!_defaultColors && !IsValidHex(_customHEX))
+        {
+            _alertContent = "Please enter a valid HEX color (e.g. #FF0000).";
+            return;
+        }
+
         if (_model.Id == 0)
         {
             _model.GameId = _selectedGame.Id;
-            _model.Color = _selectedColor?.hex ?? "#000000";
+
+            _model.Color = _defaultColors
+                ? _selectedColor?.hex ?? "#000000"
+                : _customHEX ?? "#000000";
+
             Db.Factions.Add(_model);
         }
         else
@@ -187,7 +245,10 @@
             {
                 existing.Name = _model.Name;
                 existing.GameId = _selectedGame.Id;
-                existing.Color = _selectedColor.hex;
+
+                existing.Color = _defaultColors
+                    ? _selectedColor?.hex ?? "#000000"
+                    : _customHEX ?? "#000000";
             }
         }
 
