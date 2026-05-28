@@ -1,7 +1,12 @@
 ﻿@using LumexUI.Common
 @using LumexUI.Shared.Icons
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.Security.Claims
+
 @inherits LayoutComponentBase
 @inject PinLockService PinLock
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager Nav
 
 
 <LumexToastProvider />
@@ -32,6 +37,24 @@
                     <SettingsIcon/>
                 </LumexLink>
             </LumexNavbarItem>
+            <AuthorizeView>
+                <Authorized Context="auth">
+                    <LumexNavbarItem>
+                        <LumexDropdown>
+                            <LumexDropdownTrigger>
+                                <LumexAvatar Name="@auth.User.Identity?.Name" />
+                            </LumexDropdownTrigger>
+
+                            <LumexDropdownMenu>
+                                <LumexDropdownItem Color="ThemeColor.Danger"
+                                                   OnClick="Logout">
+                                    Logout
+                                </LumexDropdownItem>
+                            </LumexDropdownMenu>
+                        </LumexDropdown>
+                    </LumexNavbarItem>
+                </Authorized>
+            </AuthorizeView>
 
         </LumexNavbarContent>
     </LumexNavbar>
@@ -43,11 +66,21 @@
 </div>
 
 @code {
+
+    private ClaimsPrincipal _user = new();
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            _user = authState.User;
             await PinLock.InitializeAsync();
         }
+    }
+
+    private void Logout()
+    {
+        Nav.NavigateTo("/auth/logout", forceLoad: true);
     }
 }

@@ -1,0 +1,58 @@
+﻿@page "/login"
+@attribute [AllowAnonymous]
+
+@using Microsoft.EntityFrameworkCore
+
+@inject HttpClient Http
+@inject AppDbContext Db
+@inject NavigationManager Nav
+
+<div class="mt-4 h-screen flex flex-col items-center justify-center gap-4">
+    <LumexSelect TValue="mdPlayer" Label="Select a Player" @bind-Value="_selectedPlayer">
+        <ChildContent>
+            @foreach (var player in _players)
+            {
+                <LumexSelectItem @key="player" Value="player" TextValue="@player.Name">
+                    <div class="flex gap-2 items-center">
+                        <LumexAvatar>
+                            <FallbackContent>
+                                <PawnIcon />
+                            </FallbackContent>
+                        </LumexAvatar>
+                        <span>@player.Name</span>
+                    </div>
+                </LumexSelectItem>
+            }
+        </ChildContent>
+
+    </LumexSelect>
+
+    <LumexButton OnClick="LoginUser">Login</LumexButton>
+</div>
+
+@code {
+
+    private List<mdPlayer> _players = new();
+    private mdPlayer _selectedPlayer = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await UpdateData();
+    }
+
+    private async Task UpdateData()
+    {
+        _players = await Db.Players.OrderBy(p => p.Name).ToListAsync();
+        StateHasChanged();
+    }
+
+
+    private async Task LoginUser()
+    {
+        if (_selectedPlayer.Name is null)
+            return;
+
+        Nav.NavigateTo($"/auth/login?user={_selectedPlayer.Name}", forceLoad: true);
+
+    }
+}
