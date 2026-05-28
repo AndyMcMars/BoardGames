@@ -403,6 +403,15 @@ namespace BoardGames.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Select a Player.
+        /// </summary>
+        public static string SelectAPlayer {
+            get {
+                return ResourceManager.GetString("SelectAPlayer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Dark Mode.
         /// </summary>
         public static string Settings_DarkMode {

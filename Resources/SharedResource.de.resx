@@ -360,4 +360,7 @@
   <data name="SettingsTournament_AddTournament" xml:space="preserve">
     <value>Turnier hinzufügen</value>
   </data>
+  <data name="SelectAPlayer" xml:space="preserve">
+    <value>Wählen Sie einen Spieler aus</value>
+  </data>
 </root>

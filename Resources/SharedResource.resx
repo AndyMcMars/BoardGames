@@ -340,4 +340,7 @@
   <data name="SettingsTournament_AddTournament" xml:space="preserve">
     <value>Add tournament</value>
   </data>
+  <data name="SelectAPlayer" xml:space="preserve">
+    <value>Select a Player</value>
+  </data>
 </root>

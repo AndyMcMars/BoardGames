@@ -8,7 +8,7 @@
 @inject NavigationManager Nav
 
 <div class="mt-4 h-screen flex flex-col items-center justify-center gap-4">
-    <LumexSelect TValue="mdPlayer" Label="Select a Player" @bind-Value="_selectedPlayer">
+    <LumexSelect TValue="mdPlayer" Label="@BoardGames.Resources.SharedResource.SelectAPlayer" @bind-Value="_selectedPlayer">
         <ChildContent>
             @foreach (var player in _players)
             {

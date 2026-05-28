@@ -31,12 +31,6 @@
                     @SharedResource.MainLayout_NewMatch
                 </LumexLink>
             </LumexNavbarItem>
-            <LumexNavbarItem>
-                <LumexLink Href="/settings"
-                            Color="@ThemeColor.None">
-                    <SettingsIcon/>
-                </LumexLink>
-            </LumexNavbarItem>
             <AuthorizeView>
                 <Authorized Context="auth">
                     <LumexNavbarItem>
@@ -46,6 +40,7 @@
                             </LumexDropdownTrigger>
 
                             <LumexDropdownMenu>
+                                <LumexDropdownItem OnClick="@(() => Nav.NavigateTo("/settings"))">@BoardGames.Resources.SharedResource.Settings_Settings</LumexDropdownItem>
                                 <LumexDropdownItem Color="ThemeColor.Danger"
                                                    OnClick="Logout">
                                     Logout
