@@ -99,7 +99,12 @@ app.MapGet("/auth/login", async (HttpContext http, AppDbContext db, string user)
 
     await http.SignInAsync(
         CookieAuthenticationDefaults.AuthenticationScheme,
-        principal);
+        principal, new AuthenticationProperties
+        {
+            IsPersistent = true,
+            ExpiresUtc = DateTimeOffset.UtcNow.AddDays(30),
+            AllowRefresh = true
+        });
 
     return Results.Redirect("/");
 });
@@ -117,6 +122,7 @@ if (!app.Environment.IsDevelopment())
 }
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 
+app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseAntiforgery();
