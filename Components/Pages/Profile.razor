@@ -8,23 +8,22 @@
 @inject IJSRuntime JS
 
 
-<div class="flex items-center gap-2 my-4">
-    <LumexAvatar>
-        <FallbackContent>
-            <PawnIcon />
-        </FallbackContent>
-    </LumexAvatar>
 
-    <h2 class="text-base font-medium">
-        @_user.Identity?.Name
-    </h2>
-</div>
+<LumexUser Name="@_user.Identity?.Name">
+    <AvatarContent>
+        <LumexAvatar>
+            <FallbackContent>
+                <PawnIcon />
+            </FallbackContent>
+        </LumexAvatar>
+    </AvatarContent>
+</LumexUser>
 
-<LumexDivider />
+<LumexDivider Class="my-4"/>
 
-<div class="grid grid-cols-2 sm:grid-cols-5 gap-4 mt-4 justify-items-center mb-4">
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4 justify-items-center">
 
-    <LumexCard Class="w-full max-w-sm">
+    <LumexCard Class="w-full">
         <div class="w-full aspect-square flex flex-col items-start justify-center ml-6">
 
             <p class="text-6xl font-bold">
@@ -38,7 +37,7 @@
         </div>
     </LumexCard>
 
-    <LumexCard Class="w-full max-w-sm">
+    <LumexCard Class="w-full">
         <div class="w-full aspect-square flex flex-col items-start justify-center ml-6">
 
             <p class="text-6xl font-bold">
@@ -52,7 +51,7 @@
         </div>
     </LumexCard>
 
-    <LumexCard Class="w-full max-w-sm">
+    <LumexCard Class="w-full">
         <div class="w-full aspect-square flex flex-col items-start justify-center ml-6">
 
             <p class="text-4xl font-bold">
@@ -66,7 +65,7 @@
         </div>
     </LumexCard>
 
-    <LumexCard Class="w-full max-w-sm">
+    <LumexCard Class="w-full">
         <div class="w-full aspect-square flex flex-col items-start justify-center ml-6">
 
             <p class="text-2xl font-bold">
@@ -86,21 +85,36 @@
     
 </div>
 
-<div>
-    <ApexChart TItem="MatchPerMonth"
-                Options="_chartOptions"
-                Title="Matches per Month">
+<LumexDivider Class="my-4"/>
 
-        <ApexPointSeries TItem="MatchPerMonth"
-                            Items="_matchesPerMonth"
-                            Name="Matches"
-                            XValue="@(e => e.Month)"
-                            Color="@(isDark ? "#000000" : "#ffffff")"
-                            YValue="@(e => e.Count)"
-                            SeriesType="SeriesType.Bar" />
-    </ApexChart>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 w-full">
+    <div class="w-full">
+        <ApexChart TItem="MatchPerMonth"
+                    Options="_chartOptions"
+                    Title="Matches per Month">
+
+            <ApexPointSeries TItem="MatchPerMonth"
+                                Items="_matchesPerMonth"
+                                Name="Matches"
+                                XValue="@(e => e.Month)"
+                             Color="@(isDark ? "#ffffff" : "#000000")"
+                                YValue="@(e => e.Count)"
+                                SeriesType="SeriesType.Bar" />
+        </ApexChart>
+    </div>
+    <div class="w-full">
+        <ApexChart TItem="GameDistribution"
+                   Title="Games Played Distribution"
+                   Options="_donutOptions">
+
+            <ApexPointSeries TItem="GameDistribution"
+                             Items="_gameDistribution"
+                             SeriesType="SeriesType.Donut"
+                             XValue="@(e => e.Game)"
+                             YValue="@(e => e.Count)" />
+        </ApexChart>
+    </div>
 </div>
-
 
 @code {
 
@@ -111,7 +125,22 @@
     private string? _mostPlayedGame;
     private int? _mostPlayedGameTimes;
     private List<MatchPerMonth> _matchesPerMonth = [];
-    bool isDark;
+    private List<GameDistribution> _gameDistribution = [];
+    private ApexChartOptions<GameDistribution>? _donutOptions;
+    private bool isDark;
+
+    private static readonly List<string> LightPalette = new()
+    {
+        "#000000", "#1A1A1A", "#333333", "#4D4D4D",
+        "#666666", "#808080", "#999999", "#B3B3B3"
+    };
+
+    private static readonly List<string> DarkPalette = new()
+    {
+        "#FFFFFF", "#E6E6E6", "#CCCCCC", "#B3B3B3",
+        "#999999", "#808080", "#666666", "#4D4D4D"
+    };
+
 
     private ApexChartOptions<MatchPerMonth> _chartOptions = new()
     {
@@ -127,6 +156,10 @@
         if (!firstRender) return;
 
         isDark = await JS.InvokeAsync<bool>("theme.getDark");
+
+        _donutOptions = GetDonutOptions();
+
+        StateHasChanged();
     }
 
     protected override async Task OnInitializedAsync()
@@ -192,6 +225,17 @@
             })
             .ToList();
 
+
+        _gameDistribution = await Db.Results
+            .Where(r => r.PlayerId == playerId)
+            .GroupBy(r => r.Match.Game.Name)
+            .Select(g => new GameDistribution
+            {
+                Game = g.Key,
+                Count = g.Count()
+            })
+            .OrderByDescending(x => x.Count)
+            .ToListAsync();
         
         }
 
@@ -199,6 +243,45 @@
     {
         public string Month { get; set; } = "";
         public int Count { get; set; }
+    }
+
+    public class GameDistribution
+    {
+        public string Game { get; set; } = "";
+        public int Count { get; set; }
+    }
+
+    private ApexChartOptions<GameDistribution> GetDonutOptions()
+    {
+        return new ApexChartOptions<GameDistribution>
+        {
+            Colors = isDark ? DarkPalette : LightPalette,
+            PlotOptions = new PlotOptions
+            {
+                Pie = new PlotOptionsPie
+                {
+                    StartAngle = -90,
+                    EndAngle = 90,
+                    Donut = new PlotOptionsDonut
+                    {
+                        Labels = new DonutLabels
+                        {
+                            Total = new DonutLabelTotal
+                            {
+                                FontSize = "24px",
+                                Formatter = @"function (w) {
+                                return w.globals.seriesTotals.reduce((a, b) => a + b, 0)
+                            }"
+                            }
+                        }
+                    }
+                }
+            },
+            Legend = new Legend
+            {
+                Position = LegendPosition.Top
+            }
+        };
     }
 
 }

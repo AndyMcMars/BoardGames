@@ -24,15 +24,15 @@
         </LumexNavbarBrand>
 
 
-        <LumexNavbarContent Align="Align.End">
-            <LumexNavbarItem>
-                <LumexLink Href="/new-match"
-                           Color="@ThemeColor.Primary">
-                    @SharedResource.MainLayout_NewMatch
-                </LumexLink>
-            </LumexNavbarItem>
-            <AuthorizeView>
-                <Authorized Context="auth">
+        <AuthorizeView>
+            <Authorized Context="auth">
+                <LumexNavbarContent Align="Align.End">
+                    <LumexNavbarItem>
+                        <LumexLink Href="/new-match"
+                                   Color="@ThemeColor.Primary">
+                            @SharedResource.MainLayout_NewMatch
+                        </LumexLink>
+                    </LumexNavbarItem>
                     <LumexNavbarItem>
                         <LumexDropdown>
                             <LumexDropdownTrigger>
@@ -48,10 +48,9 @@
                             </LumexDropdownMenu>
                         </LumexDropdown>
                     </LumexNavbarItem>
-                </Authorized>
-            </AuthorizeView>
-
-        </LumexNavbarContent>
+                </LumexNavbarContent>
+            </Authorized>
+        </AuthorizeView>
     </LumexNavbar>
 
 
