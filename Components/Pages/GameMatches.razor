@@ -24,7 +24,7 @@ else
                 <div class="flex w-full">
                     <LumexChip Variant="ChipVariant.Light">
                         <StartContent>
-                            @_matches.Count()
+                            @_totalMatches
                         </StartContent>
                         <ChildContent>
                             <SwordsIcon />
@@ -32,7 +32,15 @@ else
                     </LumexChip>
                     <LumexChip Variant="ChipVariant.Light">
                         <StartContent>
-                            @totalDuration
+                            @_tournaments.Count
+                        </StartContent>
+                        <ChildContent>
+                            <TrophyIcon />
+                        </ChildContent>
+                    </LumexChip>
+                    <LumexChip Variant="ChipVariant.Light">
+                        <StartContent>
+                            @_totalDuration
                         </StartContent>
                         <ChildContent>
                             <TimerIcon />
@@ -116,6 +124,7 @@ else
     [Parameter] public string game_slug { get; set; }
 
     private mdGame? _game;
+    private int _totalMatches;
 
 
     private DataGridSlots _classes = new()
@@ -133,12 +142,7 @@ else
 
     private List<PlayerStats> _leaderboard = new();
 
-    private TimeSpan totalDuration => TimeSpan.FromTicks(
-        _matches
-            .Where(m => m.Duration.HasValue)
-            .AsEnumerable()
-            .Sum(m => m.Duration.Value.Ticks)
-    );
+    private TimeSpan _totalDuration;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -147,7 +151,16 @@ else
 
         if (_game == null) return;
 
-        
+        _totalMatches = await Db.Matches
+            .Where(m => m.GameId == _game.Id)
+            .CountAsync();
+
+        _totalDuration = (await Db.Matches
+            .Where(m => m.GameId == _game.Id && m.Duration.HasValue)
+            .Select(m => m.Duration!.Value)
+            .ToListAsync())
+            .Aggregate(TimeSpan.Zero, (a, b) => a + b);
+
         _matches = await Db.Matches
             .Where(m => m.GameId == _game.Id && m.TournamentId == null)
             .Include(m => m.Location)
