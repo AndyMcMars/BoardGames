@@ -219,6 +219,9 @@
             .OrderByDescending(m => m.Date)
             .FirstOrDefaultAsync();
 
+        if(lastGame != null)
+            _newMatch.GameId = lastGame.GameId;
+
         _newMatch.Date = DateTime.Now;
     }
 
