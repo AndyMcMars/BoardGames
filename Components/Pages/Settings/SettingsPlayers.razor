@@ -9,10 +9,12 @@
 @inject PinLockService PinLock
 
 
-@if (!PinLock.IsUnlocked)
+
+@if (!_ready)
 {
     return;
 }
+
 
 <LumexLink Href="/settings">@SharedResource.Settings_Settings</LumexLink>
 
@@ -40,32 +42,38 @@
 
 
 @code {
-    private List<mdPlayer> _players = new();
+    private List<mdPlayer> _players = [];
     private ICollection<mdPlayer> _selectedPlayers = [];
     private int _refreshKey;
     private bool _showDeleteModal = false;
+    private bool _ready;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (!firstRender)
+            return;
+
         await PinLock.InitializeAsync();
 
         if (!PinLock.IsUnlocked)
         {
             Nav.NavigateTo("/pin");
+            return;
         }
+
+        await UpdateData();
+
+        _ready = true;
+
+        StateHasChanged();
     }
 
-    protected override async Task OnInitializedAsync()
-    {
-        await UpdateData();
-    }
 
     private async Task UpdateData()
     {
         _players = await Db.Players.OrderBy(p => p.Name).ToListAsync();
         _refreshKey++;
         _selectedPlayers = [];
-        StateHasChanged();
     }
 
 

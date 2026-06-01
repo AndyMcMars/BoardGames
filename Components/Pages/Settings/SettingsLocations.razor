@@ -9,7 +9,7 @@
 @inject PinLockService PinLock
 
 
-@if (!PinLock.IsUnlocked)
+@if (!_ready)
 {
     return;
 }
@@ -43,20 +43,26 @@
     private ICollection<mdLocation> _selectedLocations = [];
     private int _refreshKey;
     private bool _showDeleteModal = false;
+    private bool _ready;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (!firstRender)
+            return;
+
         await PinLock.InitializeAsync();
 
         if (!PinLock.IsUnlocked)
         {
             Nav.NavigateTo("/pin");
+            return;
         }
-    }
-    
-    protected override async Task OnInitializedAsync()
-    {
+
         await UpdateData();
+
+        _ready = true;
+
+        StateHasChanged();
     }
 
     private async Task UpdateData()
@@ -64,7 +70,6 @@
         _locations = await Db.Locations.OrderBy(l => l.Description).ToListAsync();
         _refreshKey++;
         _selectedLocations = [];
-        StateHasChanged();
     }
 
     private async Task DeleteSelected(bool confirmed)

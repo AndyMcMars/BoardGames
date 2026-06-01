@@ -9,7 +9,7 @@
 @inject PinLockService PinLock
 
 
-@if (!PinLock.IsUnlocked)
+@if (!_ready)
 {
     return;
 }
@@ -18,7 +18,7 @@
 
 <LumexDivider Class="my-4" />
 
-<LumexDataGrid Data="@_factions" SelectionMode="@SelectionMode.Multiple" @bind-SelectedItems="_selectedFactions" @key="_refreshKey">
+<LumexDataGrid Data="@_factions.AsQueryable()" SelectionMode="@SelectionMode.Multiple" @bind-SelectedItems="_selectedFactions" @key="_refreshKey">
     <ToolbarContent>
         <div class="flex justify-between">
             <ModalFaction OnSaved="UpdateData" ButtonText="@(_selectedFactions.Count == 1 ? @SharedResource.SettingsFactions_EditFaction : @SharedResource.SettingsFactions_AddFaction)" Faction="@(_selectedFactions.Count == 1 ? _selectedFactions.FirstOrDefault() : null)" ButtonColor="@(_selectedFactions.Count == 1 ? ThemeColor.Warning : ThemeColor.Success)" />
@@ -45,31 +45,42 @@
 }
 
 @code {
-    private IQueryable<mdFaction> _factions => Db.Factions.OrderBy(f => f.Game.Name);
+    private List<mdFaction> _factions = [];
     private ICollection<mdFaction> _selectedFactions = [];
     private int _refreshKey;
     private bool _showDeleteModal = false;
+    private bool _ready;
 
+    
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (!firstRender)
+            return;
+
         await PinLock.InitializeAsync();
 
         if (!PinLock.IsUnlocked)
         {
             Nav.NavigateTo("/pin");
+            return;
         }
-    }
-    
-    protected override async Task OnInitializedAsync()
-    {
+
         await UpdateData();
+
+        _ready = true;
+
+        StateHasChanged();
     }
 
     private async Task UpdateData()
     {
+        _factions = await Db.Factions
+            .Include(f => f.Game)
+            .OrderBy(f => f.Game.Name)
+            .ToListAsync();
+
         _refreshKey++;
         _selectedFactions = [];
-        StateHasChanged();
     }
 
     private async Task DeleteSelected(bool confirmed)

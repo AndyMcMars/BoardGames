@@ -9,7 +9,7 @@
 @inject PinLockService PinLock
 
 
-@if (!PinLock.IsUnlocked)
+@if (!_ready)
 {
     return;
 }
@@ -59,20 +59,26 @@
     private ICollection<mdTournament> _selectedTournaments = [];
     private int _refreshKey;
     private bool _showDeleteModal = false;
+    private bool _ready;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (!firstRender)
+            return;
+
         await PinLock.InitializeAsync();
 
         if (!PinLock.IsUnlocked)
         {
             Nav.NavigateTo("/pin");
+            return;
         }
-    }
 
-    protected override async Task OnInitializedAsync()
-    {
         await UpdateData();
+
+        _ready = true;
+
+        StateHasChanged();
     }
 
     private async Task UpdateData()
@@ -80,7 +86,6 @@
         _tournaments = await Db.Tournaments.Include(t => t.Game).Include(t => t.Matches).OrderBy(t => t.Name).ToListAsync();
         _refreshKey++;
         _selectedTournaments = [];
-        StateHasChanged();
     }
 
 

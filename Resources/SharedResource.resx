@@ -343,4 +343,7 @@
   <data name="SelectAPlayer" xml:space="preserve">
     <value>Select a Player</value>
   </data>
+  <data name="Profile" xml:space="preserve">
+    <value>Profile</value>
+  </data>
 </root>

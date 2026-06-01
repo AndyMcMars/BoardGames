@@ -40,6 +40,7 @@
                             </LumexDropdownTrigger>
 
                             <LumexDropdownMenu>
+                                <LumexDropdownItem OnClick="@(() => Nav.NavigateTo("/profile"))">@BoardGames.Resources.SharedResource.Profile</LumexDropdownItem>
                                 <LumexDropdownItem OnClick="@(() => Nav.NavigateTo("/settings"))">@BoardGames.Resources.SharedResource.Settings_Settings</LumexDropdownItem>
                                 <LumexDropdownItem Color="ThemeColor.Danger" OnClick="Logout" Class="text-danger">
                                     Logout
@@ -69,7 +70,6 @@
         {
             var authState = await AuthStateProvider.GetAuthenticationStateAsync();
             _user = authState.User;
-            await PinLock.InitializeAsync();
         }
     }
 
