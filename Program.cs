@@ -1,3 +1,4 @@
+using ApexCharts;
 using BoardGames.Components;
 using BoardGames.Services;
 using LumexUI.Extensions;
@@ -28,6 +29,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.Cookie.SameSite = SameSiteMode.Lax;
         options.Cookie.SecurePolicy = CookieSecurePolicy.None;
     });
+
+builder.Services.AddApexCharts();
 
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 

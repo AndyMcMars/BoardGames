@@ -1,8 +1,11 @@
 ﻿@page "/profile"
-@using System.Security.Claims
+@using System.Security.Claims;
 @using Microsoft.EntityFrameworkCore;
+@using LumexUI.Common
+@using ApexCharts;
 @inject AuthenticationStateProvider AuthStateProvider
 @inject AppDbContext Db
+@inject IJSRuntime JS
 
 
 <div class="flex items-center gap-2 my-4">
@@ -83,6 +86,21 @@
     
 </div>
 
+<div>
+    <ApexChart TItem="MatchPerMonth"
+                Options="_chartOptions"
+                Title="Matches per Month">
+
+        <ApexPointSeries TItem="MatchPerMonth"
+                            Items="_matchesPerMonth"
+                            Name="Matches"
+                            XValue="@(e => e.Month)"
+                            Color="@(isDark ? "#000000" : "#ffffff")"
+                            YValue="@(e => e.Count)"
+                            SeriesType="SeriesType.Bar" />
+    </ApexChart>
+</div>
+
 
 @code {
 
@@ -92,11 +110,30 @@
     private int _winCount;
     private string? _mostPlayedGame;
     private int? _mostPlayedGameTimes;
+    private List<MatchPerMonth> _matchesPerMonth = [];
+    bool isDark;
+
+    private ApexChartOptions<MatchPerMonth> _chartOptions = new()
+    {
+        Grid = new Grid
+        {
+            Show = false
+        }
+    };
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+        if (!firstRender) return;
+
+        isDark = await JS.InvokeAsync<bool>("theme.getDark");
+    }
 
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         _user = authState.User;
+
 
         if (_user.Identity?.IsAuthenticated != true)
             return;
@@ -130,6 +167,38 @@
 
         _mostPlayedGame = gameStats?.Game;
         _mostPlayedGameTimes = gameStats?.Count;
+
+        var year = DateTime.Now.Year;
+       
+        var raw = await Db.Results
+            .Where(r => r.PlayerId == playerId)
+            .Select(r => r.Match)
+            .Where(m => m.Date.Year == year)
+            .GroupBy(m => m.Date.Month)
+            .Select(g => new
+            {
+                Month = g.Key,
+                Count = g.Count()
+            })
+            .ToListAsync();
+            
+        var lookup = raw.ToDictionary(x => x.Month, x => x.Count);
+
+        _matchesPerMonth = Enumerable.Range(1, 12)
+            .Select(m => new MatchPerMonth
+            {
+                Month = $"{year}-{m:D2}",
+                Count = lookup.TryGetValue(m, out var count) ? count : 0
+            })
+            .ToList();
+
+        
+        }
+
+    public class MatchPerMonth
+    {
+        public string Month { get; set; } = "";
+        public int Count { get; set; }
     }
 
 }
