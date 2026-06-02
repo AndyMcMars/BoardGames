@@ -1,7 +1,9 @@
-﻿@using LumexUI.Common
+﻿@using System.Security.Claims 
+@using LumexUI.Common
 @using LumexUI.Shared.Icons
 
 @inject AppDbContext Db
+@inject AuthenticationStateProvider AuthStateProvider
 
 <LumexModal Open="_open">
     <LumexModalContent>
@@ -10,14 +12,15 @@
         </LumexModalHeader>
 
         <LumexModalBody>
-            <LumexSelect TValue="int" Label="Player" @bind-Value="_model.PlayerId" Disabled>
-                @foreach (var player in _players)
-                {
-                    <LumexSelectItem Value="@player.Id" TextValue="@player.Name">
-                        @player.Name
-                    </LumexSelectItem>
-                }
-            </LumexSelect>
+            <LumexUser Name="@_user.Identity?.Name" Class="justify-start text-left">
+                <AvatarContent>
+                    <LumexAvatar>
+                        <FallbackContent>
+                            <PawnIcon />
+                        </FallbackContent>
+                    </LumexAvatar>
+                </AvatarContent>
+            </LumexUser>
 
             <h2>Stars:</h2>
             <LumexRadioGroup TValue="int" Orientation="@Orientation.Horizontal" Color="@ThemeColor.Warning" @bind-Value="_model.Stars" Required>
@@ -28,7 +31,7 @@
                 <LumexRadio Value="5">5</LumexRadio>
             </LumexRadioGroup>
 
-            <LumexTextbox Type="@InputType.Text" Label="Review" @bind-Value="_model.Comment" />
+            <InputTextArea class="w-full p-2 border rounded-md h-50" @bind-Value="_model.Comment" />
         </LumexModalBody>
 
         <LumexModalFooter>
@@ -56,6 +59,14 @@
 
     private mdReview _model = new();
     private IQueryable<mdPlayer> _players => Db.Players;
+    private ClaimsPrincipal _user = new();
+
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        _user = authState.User;
+    }
 
     protected override void OnParametersSet()
     {

@@ -1,11 +1,13 @@
 ﻿@page "/{game_slug}/{match_public_id}"
 @using BoardGames.Components.Pages.Icons
+@using System.Security.Claims
 @using LumexUI.Shared.Icons
 @using Microsoft.EntityFrameworkCore;
 @using LumexUI.Common;
 
 @inject AppDbContext Db
 @inject NavigationManager Nav
+@inject AuthenticationStateProvider AuthStateProvider
 @inject IJSRuntime JS
 
 <HeadContent>
@@ -62,7 +64,8 @@
         </LumexDropdownMenu>
     </LumexDropdown>
 
-    @if (_showDeleteModal){
+    @if (_showDeleteModal)
+    {
         <ModalDelete OnResult="@DeleteMatch" _open="_showDeleteModal" Header="@SharedResource.Match_DeleteMatch" Description="@SharedResource.Match_AreYouSureYouWantToDeleteTheCurrentMatch"/>
     }
     @if (_showAddReviewModal)
@@ -198,22 +201,27 @@
                             <UserIcon/>
                         </AvatarContent>
                     </LumexUser>
-                    <LumexDropdown>
-                        <LumexDropdownTrigger>
-                            <LumexButton IconOnly Variant="@Variant.Light">
-                                <EllipsisVerticalIcon />
-                            </LumexButton>
-                        </LumexDropdownTrigger>
-                        <LumexDropdownMenu>
-                            <LumexDropdownItem OnClick="() => OpenEditReviewModal(review)">Edit</LumexDropdownItem>
-                            <LumexDropdownItem Color="ThemeColor.Danger" Class="text-danger" OnClick="() => OpenDeleteReviewModal(review)">Delete</LumexDropdownItem>
-                        </LumexDropdownMenu>
-                    </LumexDropdown>
+                    @if (_user.Identity?.Name == review.Player.Name)
+                    {                        
+                        <LumexDropdown>
+                            <LumexDropdownTrigger>
+                                <LumexButton IconOnly Variant="@Variant.Light">
+                                    <EllipsisVerticalIcon />
+                                </LumexButton>
+                            </LumexDropdownTrigger>
+                            <LumexDropdownMenu>
+                                <LumexDropdownItem OnClick="() => OpenEditReviewModal(review)">Edit</LumexDropdownItem>
+                                <LumexDropdownItem Color="ThemeColor.Danger" Class="text-danger" OnClick="() => OpenDeleteReviewModal(review)">Delete</LumexDropdownItem>
+                            </LumexDropdownMenu>
+                        </LumexDropdown>
+                    }
                 </LumexCardHeader>
                 @if (review.Comment != null){
                     <LumexDivider />
                     <LumexCardBody>
-                        @review.Comment
+                        <p class="whitespace-pre-line">
+                            @review.Comment
+                        </p>
                     </LumexCardBody>
                 }
             </LumexCard>
@@ -243,6 +251,14 @@
     private bool _showEditReviewModal = false;
     private bool _showAddToTournament = false;
     private mdReview? _selectedReview;
+    private ClaimsPrincipal _user = new();
+
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        _user = authState.User;
+    }
 
     protected override async Task OnParametersSetAsync()
     {
