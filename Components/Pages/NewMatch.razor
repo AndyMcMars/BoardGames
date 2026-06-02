@@ -131,7 +131,7 @@
                         <ChildContent>
                             @foreach (var faction in _factions)
                             {
-                                <LumexSelectItem @key="@faction" Value="@faction" TextValue="@faction.Name">
+                                <LumexSelectItem @key="@faction" Value="@faction" TextValue="@faction.Name" Disabled="@(!IsFactionAvailable(faction, context))">
                                     <LumexUser Name="@faction.Name">
                                         <AvatarContent>
                                             <div style="width:30px;height:30px;background:@faction.Color;border-radius:50%;" />
@@ -159,7 +159,7 @@
 @code {
 
     private mdMatch _newMatch = new();
-    private IQueryable<mdGame> _games => Db.Games;
+    private IQueryable<mdGame> _games => Db.Games.OrderBy(g => g.Name);
     private IQueryable<mdLocation> _locations => Db.Locations;
     private IQueryable<mdTournament> _tournaments => Db.Tournaments.Where(t => t.GameId == _newMatch.GameId && t.IsActive == true);
     private IQueryable<mdPlayer> _players => Db.Players;
@@ -219,8 +219,10 @@
             .OrderByDescending(m => m.Date)
             .FirstOrDefaultAsync();
 
-        if(lastGame != null)
+        if(lastGame != null){
             _newMatch.GameId = lastGame.GameId;
+            _newMatch.LocationId = lastGame.LocationId;
+        }
 
         _newMatch.Date = DateTime.Now;
     }
@@ -303,5 +305,12 @@
 
         
         Nav.NavigateTo($"/{_newMatch.Game.Slug}/{_newMatch.PublicId}");
+    }
+
+    private bool IsFactionAvailable(mdFaction faction, mdResult currentResult)
+    {
+        return !_results.Any(r =>
+            r != currentResult &&
+            r.Faction?.Id == faction.Id);
     }
 }

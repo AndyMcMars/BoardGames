@@ -70,7 +70,7 @@
 
     private mdTournament _model = new();
     
-    private IQueryable<mdGame> _games => Db.Games;
+    private IQueryable<mdGame> _games => Db.Games.OrderBy(g => g.Name);
     private static readonly Random _random = new();
     private string? _alertContent;
 
