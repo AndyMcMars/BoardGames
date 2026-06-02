@@ -1,4 +1,5 @@
 ﻿@page "/settings/locations"
+@attribute [Authorize(Roles = "Admin")]
 
 @using LumexUI.Common
 @using LumexUI.Shared.Icons
@@ -6,7 +7,6 @@
 
 @inject AppDbContext Db
 @inject NavigationManager Nav
-@inject PinLockService PinLock
 
 
 @if (!_ready)
@@ -49,14 +49,6 @@
     {
         if (!firstRender)
             return;
-
-        await PinLock.InitializeAsync();
-
-        if (!PinLock.IsUnlocked)
-        {
-            Nav.NavigateTo("/pin");
-            return;
-        }
 
         await UpdateData();
 

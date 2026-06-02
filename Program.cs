@@ -1,11 +1,9 @@
 using ApexCharts;
 using BoardGames.Components;
-using BoardGames.Services;
 using LumexUI.Extensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Localization;
@@ -23,7 +21,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     .AddCookie(options =>
     {
         options.LoginPath = "/login";
-        options.AccessDeniedPath = "/login";
+        options.AccessDeniedPath = "/access-denied";
         options.ExpireTimeSpan = TimeSpan.FromDays(30);
         options.SlidingExpiration = true;
         options.Cookie.SameSite = SameSiteMode.Lax;
@@ -67,7 +65,6 @@ builder.Services.AddScoped(sp =>
     };
 });
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<PinLockService>();
 builder.Services.AddScoped<ProtectedLocalStorage>();
 builder.Services.AddDataProtection()
     .PersistKeysToFileSystem(new DirectoryInfo(keysDir));
@@ -82,6 +79,20 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
     db.Database.Migrate();
+
+    // ADD ADMIN IF NO ADMIN EXISTS
+
+    if (!db.Players.Any(p => p.IsAdmin))
+    {
+        db.Players.Add(new mdPlayer
+        {
+            Name = "admin",
+            IsAdmin = true,
+            CreatedAt = DateTime.UtcNow
+        });
+
+        db.SaveChanges();
+    }
 }
 
 app.MapGet("/auth/login", async (HttpContext http, AppDbContext db, string user) =>
@@ -111,6 +122,7 @@ app.MapGet("/auth/login", async (HttpContext http, AppDbContext db, string user)
 
     return Results.Redirect("/");
 });
+
 app.MapGet("/auth/logout", async (HttpContext http) =>
 {
     await http.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);

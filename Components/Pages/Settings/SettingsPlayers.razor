@@ -1,12 +1,14 @@
 ﻿@page "/settings/players"
+@attribute [Authorize(Roles = "Admin")]
 
 @using LumexUI.Common
 @using LumexUI.Shared.Icons
 @using Microsoft.EntityFrameworkCore
+@using Blazor.Sonner.Common
 
 @inject AppDbContext Db
 @inject NavigationManager Nav
-@inject PinLockService PinLock
+@inject ToastService Toast
 
 
 
@@ -15,6 +17,9 @@
     return;
 }
 
+<div class="fixed z-100">
+    <LumexToastProvider Id="toaster" RichColors="@true" />
+</div>
 
 <LumexLink Href="/settings">@SharedResource.Settings_Settings</LumexLink>
 
@@ -32,8 +37,16 @@
     </ToolbarContent>
     <ChildContent>
         <PropertyColumn Property="@(p => p.Name)" Title="@SharedResource.SettingsGames_Name" />
+        <PropertyColumn Property="@(p => p.IsAdmin)" Context="ctx" Title="Admin">
+            <Content>
+                <LumexSwitch @bind-Value="@ctx.IsAdmin"/>
+            </Content>
+        </PropertyColumn>
     </ChildContent>
 </LumexDataGrid>
+
+<LumexButton OnClick="Savesettings" Color="@ThemeColor.Success" Class="mt-4 mb-16">@SharedResource.NewMatch_Save</LumexButton>
+
 
 @if (_showDeleteModal)
 {
@@ -47,19 +60,12 @@
     private int _refreshKey;
     private bool _showDeleteModal = false;
     private bool _ready;
+    private Action<ToastModel> _toasterId = t => t.ToasterId = "toaster";
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender)
             return;
-
-        await PinLock.InitializeAsync();
-
-        if (!PinLock.IsUnlocked)
-        {
-            Nav.NavigateTo("/pin");
-            return;
-        }
 
         await UpdateData();
 
@@ -85,6 +91,19 @@
         Db.Players.RemoveRange(_selectedPlayers);
         await Db.SaveChangesAsync();
         _selectedPlayers = [];
+        await UpdateData();
+    }
+
+    
+    private async Task Savesettings(){
+
+        if (!_players.Any(p => p.IsAdmin))
+        {
+            Toast.Error("At least one player must be admin!", _toasterId);
+            return;
+        }
+
+        await Db.SaveChangesAsync();
         await UpdateData();
     }
 

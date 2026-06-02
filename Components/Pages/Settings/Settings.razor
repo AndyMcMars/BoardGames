@@ -33,15 +33,19 @@
     </LumexSwitch>
 </div>
 
-<p class="text-xl mb-4 mt-4">@SharedResource.Settings_Entities</p>
+<AuthorizeView Roles="Admin">
+    <Authorized>
+        <p class="text-xl mb-4 mt-4">@SharedResource.Settings_Entities</p>
 
-<div class="flex flex-col">
-    <LumexLink Href="/settings/games">@SharedResource.Settings_Games</LumexLink>
-    <LumexLink Href="/settings/factions">@SharedResource.Settings_Factions</LumexLink>
-    <LumexLink Href="/settings/players">@SharedResource.Settings_Players</LumexLink>
-    <LumexLink Href="/settings/locations">@SharedResource.Settings_Locations</LumexLink>
-    <LumexLink Href="/settings/tournaments">@SharedResource.GameMatches_Tournaments</LumexLink>
-</div>
+        <div class="flex flex-col">
+            <LumexLink Href="/settings/games">@SharedResource.Settings_Games</LumexLink>
+            <LumexLink Href="/settings/factions">@SharedResource.Settings_Factions</LumexLink>
+            <LumexLink Href="/settings/players">@SharedResource.Settings_Players</LumexLink>
+            <LumexLink Href="/settings/locations">@SharedResource.Settings_Locations</LumexLink>
+            <LumexLink Href="/settings/tournaments">@SharedResource.GameMatches_Tournaments</LumexLink>
+        </div>
+    </Authorized>
+</AuthorizeView>
 
 
 @code {
