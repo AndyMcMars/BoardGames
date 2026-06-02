@@ -1,0 +1,447 @@
+﻿@page "/profile"
+@using System.Security.Claims;
+@using Microsoft.EntityFrameworkCore;
+@using LumexUI.Common
+@using ApexCharts;
+@inject AuthenticationStateProvider AuthStateProvider
+@inject AppDbContext Db
+@inject IJSRuntime JS
+
+
+
+<LumexUser Name="@_user.Identity?.Name">
+    <AvatarContent>
+        <LumexAvatar>
+            <FallbackContent>
+                <PawnIcon />
+            </FallbackContent>
+        </LumexAvatar>
+    </AvatarContent>
+</LumexUser>
+
+<LumexDivider Class="my-4"/>
+
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4 justify-items-center">
+
+    <LumexCard Class="w-full">
+        <div class="w-full aspect-square flex flex-col items-start justify-center ml-6">
+
+            <p class="text-6xl font-bold">
+                @_matchCount
+            </p>
+
+            <p class="text-sm text-gray-500">
+                match count
+            </p>
+
+        </div>
+    </LumexCard>
+
+    <LumexCard Class="w-full">
+        <div class="w-full aspect-square flex flex-col items-start justify-center ml-6">
+
+            <p class="text-6xl font-bold">
+                @_winCount
+            </p>
+
+            <p class="text-sm text-gray-500">
+                matches won
+            </p>
+
+        </div>
+    </LumexCard>
+
+    <LumexCard Class="w-full">
+        <div class="w-full aspect-square flex flex-col items-start justify-center ml-6">
+
+            <p class="text-4xl font-bold">
+                @(_matchCount == 0 ? 0 : Math.Round((_winCount * 100.0) / _matchCount, 1)) %
+            </p>
+
+            <p class="text-sm text-gray-500">
+                win rate
+            </p>
+
+        </div>
+    </LumexCard>
+
+    <LumexCard Class="w-full">
+        <div class="w-full aspect-square flex flex-col items-start justify-center ml-6">
+
+            <p class="text-2xl font-bold">
+                @_mostPlayedGame
+            </p>
+
+            <p class="text-2xl">
+                (@_mostPlayedGameTimes)
+            </p>
+
+            <p class="text-sm text-gray-500">
+                most played game
+            </p>
+
+        </div>
+    </LumexCard>
+    
+</div>
+
+<LumexDivider Class="my-4"/>
+
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-4 w-full">
+    <div class="w-full h-64 sm:h-72 lg:h-80">
+        <ApexChart TItem="MatchPerMonth"
+                    Options="_barOptions"
+                    Title="Matches per Month">
+
+            <ApexPointSeries TItem="MatchPerMonth"
+                                Items="_matchesPerMonth"
+                                Name="Matches"
+                                XValue="@(e => e.Month)"
+                                Color="@(isDark ? "#ffffff" : "#000000")"
+                                YValue="@(e => e.Count)"
+                                SeriesType="SeriesType.Bar" />
+        </ApexChart>
+    </div>
+    <div class="w-full h-64 sm:h-72 lg:h-80">
+        <ApexChart TItem="GameDistribution"
+                   Title="Games Played Distribution"
+                   Options="_donutOptions">
+
+            <ApexPointSeries TItem="GameDistribution"
+                             Items="_gameDistribution"
+                             SeriesType="SeriesType.Donut"
+                             XValue="@(e => e.Game)"
+                             YValue="@(e => e.Count)" />
+        </ApexChart>
+    </div>
+    <div class="w-full h-64 sm:h-72 lg:h-80">
+        <ApexChart TItem="WinDistribution"
+                   Title="Win Rate per Game"
+                   Options="_radialOptions">
+
+            <ApexPointSeries TItem="WinDistribution"
+                             Items="_winDistribution"
+                             SeriesType="SeriesType.RadialBar"
+                             Name="Win Rate"
+                             XValue="e => e.Game"
+                             YValue="e => e.WinRate" />
+        </ApexChart>
+    </div>
+</div>
+
+@code {
+
+    private List<mdMatch> _matches = [];
+    private ClaimsPrincipal _user = new();
+    private int _matchCount;
+    private int _winCount;
+    private string? _mostPlayedGame;
+    private int? _mostPlayedGameTimes;
+
+    //charts
+    private List<mdResult> _results = [];
+    private List<MatchPerMonth> _matchesPerMonth = [];
+    private List<GameDistribution> _gameDistribution = [];
+    private List<WinDistribution> _winDistribution = [];
+
+    private ApexChartOptions<MatchPerMonth>? _barOptions;
+    private ApexChartOptions<WinDistribution>? _radialOptions;
+    private ApexChartOptions<GameDistribution>? _donutOptions;
+    private bool isDark;
+
+    public class MatchPerMonth
+    {
+        public string Month { get; set; } = "";
+        public int Count { get; set; }
+    }
+
+    public class GameDistribution
+    {
+        public string Game { get; set; } = "";
+        public int Count { get; set; }
+    }
+
+    public class WinDistribution
+    {
+        public string Game { get; set; } = "";
+        public decimal WinRate { get; set; }
+    }
+
+    private static readonly List<string> LightPalette = new()
+    {
+        "#000000", // black (strong anchor)
+        "#2B2B2B",
+        "#555555",
+        "#808080",
+        "#A6A6A6",
+        "#C2C2C2",
+        "#D9D9D9",
+        "#F2F2F2"  // near white
+    };
+
+    private static readonly List<string> DarkPalette = new()
+    {
+        "#FFFFFF", // strong anchor
+        "#D6D6D6",
+        "#AFAFAF",
+        "#8A8A8A",
+        "#6A6A6A",
+        "#4A4A4A",
+        "#2F2F2F",
+        "#1A1A1A"
+    };
+
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+        if (!firstRender) return;
+
+        isDark = await JS.InvokeAsync<bool>("theme.getDark");
+
+        _donutOptions = GetDonutOptions();
+        _radialOptions = GetRadialOptions();
+        _barOptions = GetBarOptions();
+
+        StateHasChanged();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        _user = authState.User;
+
+        if (_user.Identity?.IsAuthenticated != true)
+            return;
+
+        var playerId = await Db.Players
+            .Where(p => p.Name == _user.Identity!.Name)
+            .Select(p => p.Id)
+            .FirstOrDefaultAsync();
+
+        // =========================
+        // ALL results for matches the player participated in
+        // (IMPORTANT: includes opponents)
+        // =========================
+        var matchIds = await Db.Results
+            .Where(r => r.PlayerId == playerId)
+            .Select(r => r.MatchId)
+            .Distinct()
+            .ToListAsync();
+
+        _results = await Db.Results
+            .Where(r => matchIds.Contains(r.MatchId))
+            .Include(r => r.Match)
+                .ThenInclude(m => m.Game)
+            .ToListAsync();
+
+        // =========================
+        // match count
+        // =========================
+        _matchCount = matchIds.Count;
+
+        // =========================
+        // win count (correct + consistent with logic below)
+        // =========================
+        _winCount = _results
+            .GroupBy(r => r.MatchId)
+            .Count(g =>
+                g.OrderByDescending(x => x.Points)
+                 .FirstOrDefault()?.PlayerId == playerId
+            );
+
+        // =========================
+        // most played game
+        // =========================
+        var gameStats = _results
+            .GroupBy(r => r.Match.Game.Name)
+            .Select(g => new
+            {
+                Game = g.Key,
+                Count = g.Count()
+            })
+            .OrderByDescending(g => g.Count)
+            .FirstOrDefault();
+
+        _mostPlayedGame = gameStats?.Game;
+        _mostPlayedGameTimes = gameStats?.Count;
+
+        // =========================
+        // matches per month
+        // =========================
+        var year = DateTime.Now.Year;
+
+        var raw = _results
+            .Where(r => r.Match.Date.Year == year)
+            .GroupBy(r => r.Match.Date.Month)
+            .Select(g => new
+            {
+                Month = g.Key,
+                Count = g.Select(x => x.MatchId).Distinct().Count()
+            })
+            .ToList();
+
+        var lookup = raw.ToDictionary(x => x.Month, x => x.Count);
+
+        _matchesPerMonth = Enumerable.Range(1, 12)
+            .Select(m => new MatchPerMonth
+            {
+                Month = $"{year}-{m:D2}",
+                Count = lookup.TryGetValue(m, out var count) ? count : 0
+            })
+            .ToList();
+
+        // =========================
+        // game distribution
+        // =========================
+        _gameDistribution = _results
+            .GroupBy(r => r.Match.Game.Name)
+            .Select(g => new GameDistribution
+            {
+                Game = g.Key,
+                Count = g.Count()
+            })
+            .OrderByDescending(x => x.Count)
+            .ToList();
+
+        // =========================
+        // win distribution (FIXED + CORRECT)
+        // =========================
+        var matchResults = _results
+            .GroupBy(r => r.MatchId)
+            .Select(g =>
+            {
+                var game = g.First().Match.Game.Name;
+
+                var winnerId = g
+                    .OrderByDescending(x => x.Points)
+                    .FirstOrDefault()?.PlayerId;
+
+                return new
+                {
+                    Game = game,
+                    Won = winnerId == playerId
+                };
+            })
+            .ToList();
+
+        _winDistribution = matchResults
+            .GroupBy(x => x.Game)
+            .Select(g =>
+            {
+                var played = g.Count();
+                var wins = g.Count(x => x.Won);
+
+                var winRate = played == 0
+                    ? 0m
+                    : Math.Round((decimal)wins * 100m / played, 1);
+
+                return new WinDistribution
+                {
+                    Game = g.Key,
+                    WinRate = winRate
+                };
+            })
+            .OrderByDescending(x => x.WinRate)
+            .ToList();
+    }
+
+    private ApexChartOptions<MatchPerMonth> GetBarOptions()
+    {
+        return new ApexChartOptions<MatchPerMonth>
+            {
+
+                Chart = new Chart
+                {
+                    ForeColor = isDark ? "#DEDEDE" : "#000000"
+                },
+                Grid = new Grid
+                {
+                    Show = false
+                }
+            };
+    }
+
+    private ApexChartOptions<GameDistribution> GetDonutOptions()
+    {
+        return new ApexChartOptions<GameDistribution>
+        {
+            Chart = new Chart
+            {
+                ForeColor = isDark ? "#DEDEDE" : "#000000"
+            },
+            Colors = isDark ? DarkPalette : LightPalette,
+            PlotOptions = new PlotOptions
+            {
+                Pie = new PlotOptionsPie
+                {
+                    StartAngle = -90,
+                    EndAngle = 90,
+                    Donut = new PlotOptionsDonut
+                    {
+                        Labels = new DonutLabels
+                        {
+                            Total = new DonutLabelTotal
+                            {
+                                FontSize = "24px",
+                                Formatter = @"function (w) {
+                                return w.globals.seriesTotals.reduce((a, b) => a + b, 0)
+                            }"
+                            }
+                        }
+                    }
+                }
+            },
+            Legend = new Legend
+            {
+                Position = LegendPosition.Top
+            }
+        };
+    }
+
+    private ApexChartOptions<WinDistribution> GetRadialOptions()
+    {
+        return new ApexChartOptions<WinDistribution>
+        {
+            Chart = new Chart
+            {
+                ForeColor = isDark ? "#DEDEDE" : "#000000"
+            },
+            Colors = isDark ? DarkPalette : LightPalette,
+            PlotOptions = new PlotOptions
+            {
+                RadialBar = new PlotOptionsRadialBar
+                {
+                    OffsetY = 0,
+                    StartAngle = 0,
+                    EndAngle = 270,
+                    BarLabels = new RadialBarBarLabels
+                    {
+                        Enabled = true,
+                        OffsetX = -12,
+                        UseSeriesColors = true,
+                        Formatter = @"function(seriesName, opts) {
+						return seriesName + ': ' + opts.w.globals.series[opts.seriesIndex] + '%';
+						}"
+                    },
+                    DataLabels = new RadialBarDataLabels
+                    {
+                        Total = new RadialBarDataLabelsTotal
+                        {
+                            Show = true,
+                            Label = "Win rate",
+                            FontSize = "24",
+                            Formatter = @"function (w) {
+                                return '[' + w.globals.seriesTotals.reduce((a, b) => {
+                                  return a + b
+                                }, 0) / w.globals.series.length + '%' + ']'
+                              }"
+                        }
+                    }
+                }
+            }
+        };
+    }
+
+}

@@ -727,6 +727,9 @@
   .h-50 {
     height: calc(var(--spacing) * 50);
   }
+  .h-64 {
+    height: calc(var(--spacing) * 64);
+  }
   .h-100 {
     height: calc(var(--spacing) * 100);
   }
@@ -5080,6 +5083,11 @@
       top: calc(1 / 2 * 100%);
     }
   }
+  .sm\:h-72 {
+    @media (width >= 40rem) {
+      height: calc(var(--spacing) * 72);
+    }
+  }
   .sm\:max-w-lg {
     @media (width >= 40rem) {
       max-width: var(--container-lg);
@@ -5120,6 +5128,11 @@
   .sm\:grid-cols-5 {
     @media (width >= 40rem) {
       grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+  }
+  .lg\:h-80 {
+    @media (width >= 64rem) {
+      height: calc(var(--spacing) * 80);
     }
   }
   .rtl\:space-x-reverse {
