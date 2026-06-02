@@ -97,7 +97,7 @@
                                 Items="_matchesPerMonth"
                                 Name="Matches"
                                 XValue="@(e => e.Month)"
-                                Color="@(isDark ? "#ffffff" : "#000000")"
+                                Color="#003f5c"
                                 YValue="@(e => e.Count)"
                                 SeriesType="SeriesType.Bar" />
         </ApexChart>
@@ -114,7 +114,7 @@
                              YValue="@(e => e.Count)" />
         </ApexChart>
     </div>
-    <div class="w-full h-64 sm:h-72 lg:h-80">
+    <div class="w-full">
         <ApexChart TItem="WinDistribution"
                    Title="Win Rate per Game"
                    Options="_radialOptions">
@@ -167,31 +167,17 @@
         public decimal WinRate { get; set; }
     }
 
-    private static readonly List<string> LightPalette = new()
+    private static readonly List<string> Palette = new()
     {
-        "#000000", // black (strong anchor)
-        "#2B2B2B",
-        "#555555",
-        "#808080",
-        "#A6A6A6",
-        "#C2C2C2",
-        "#D9D9D9",
-        "#F2F2F2"  // near white
+        "#003d5c",
+        "#31497e",
+        "#674f95",
+        "#a14e9a",
+        "#d44c8d",
+        "#f9596f",
+        "#ff7a47",
+        "#ffa600"
     };
-
-    private static readonly List<string> DarkPalette = new()
-    {
-        "#FFFFFF", // strong anchor
-        "#D6D6D6",
-        "#AFAFAF",
-        "#8A8A8A",
-        "#6A6A6A",
-        "#4A4A4A",
-        "#2F2F2F",
-        "#1A1A1A"
-    };
-
-
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -371,7 +357,7 @@
             {
                 ForeColor = isDark ? "#DEDEDE" : "#000000"
             },
-            Colors = isDark ? DarkPalette : LightPalette,
+            Colors = Palette,
             PlotOptions = new PlotOptions
             {
                 Pie = new PlotOptionsPie
@@ -408,7 +394,7 @@
             {
                 ForeColor = isDark ? "#DEDEDE" : "#000000"
             },
-            Colors = isDark ? DarkPalette : LightPalette,
+            Colors = Palette,
             PlotOptions = new PlotOptions
             {
                 RadialBar = new PlotOptionsRadialBar
