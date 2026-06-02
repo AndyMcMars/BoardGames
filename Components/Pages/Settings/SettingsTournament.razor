@@ -20,7 +20,7 @@
 
 @if (_tournaments != null)
 {
-    <LumexDataGrid Data="@_tournaments.AsQueryable()" SelectionMode="@SelectionMode.Multiple" @bind-SelectedItems="_selectedTournaments" @key="_refreshKey">
+    <LumexDataGrid Class="max-h-[calc(100dvh-8rem)] overflow-auto" StickyHeader Data="@_tournaments.AsQueryable()" SelectionMode="@SelectionMode.Multiple" @bind-SelectedItems="_selectedTournaments" @key="_refreshKey">
         <ToolbarContent>
             <div class="flex justify-between">
                 <ModalTournament ButtonText="@(_selectedTournaments.Count == 1 ? @SharedResource.SettingsTournament_EditTournament : @SharedResource.SettingsTournament_AddTournament)" Tournament="_selectedTournaments.FirstOrDefault()" OnSaved="UpdateData" ButtonColor="@(_selectedTournaments.Count == 1 ? ThemeColor.Warning : ThemeColor.Success)" />

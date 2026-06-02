@@ -25,7 +25,7 @@
 
 <LumexDivider Class="my-4" />
 
-<LumexDataGrid Data="@_players.AsQueryable()" SelectionMode="@SelectionMode.Multiple" @bind-SelectedItems="_selectedPlayers" @key="_refreshKey">
+<LumexDataGrid Class="max-h-[calc(100dvh-8rem)] overflow-auto" StickyHeader Data="@_players.AsQueryable()" SelectionMode="@SelectionMode.Multiple" @bind-SelectedItems="_selectedPlayers" @key="_refreshKey">
     <ToolbarContent>
         <div class="flex justify-between">
             <ModalPlayer ButtonText="@(_selectedPlayers.Count == 1 ? @SharedResource.SettingsPlayers_EditPlayer : @SharedResource.SettingsPlayers_AddPlayer)" Player="@(_selectedPlayers.Count == 1 ? _selectedPlayers.FirstOrDefault() : null)" OnSaved="UpdateData" ButtonColor="@(_selectedPlayers.Count == 1 ? ThemeColor.Warning : ThemeColor.Success)" />

@@ -19,7 +19,7 @@
 
 <LumexDivider Class="my-4"/>
 
-<LumexDataGrid Data="@_games.AsQueryable()" SelectionMode="@SelectionMode.Multiple" @bind-SelectedItems="_selectedGames" @key="_refreshKey">
+<LumexDataGrid Class="max-h-[calc(100dvh-8rem)] overflow-auto" StickyHeader Data="@_games.AsQueryable()" SelectionMode="@SelectionMode.Multiple" @bind-SelectedItems="_selectedGames" @key="_refreshKey">
     <ToolbarContent>
         <div class="flex justify-between">
             <ModalGame ButtonText="@(_selectedGames.Count == 1 ? @SharedResource.SettingsGames_EditGame : @SharedResource.SettingsGames_AddGame)" Game="_selectedGames.FirstOrDefault()" OnSaved="UpdateData" ButtonColor="@(_selectedGames.Count == 1 ? ThemeColor.Warning : ThemeColor.Success)" />
