@@ -7,17 +7,7 @@
 @inject AppDbContext Db
 @inject IJSRuntime JS
 
-
-
-<LumexUser Name="@_user.Identity?.Name">
-    <AvatarContent>
-        <LumexAvatar>
-            <FallbackContent>
-                <PawnIcon />
-            </FallbackContent>
-        </LumexAvatar>
-    </AvatarContent>
-</LumexUser>
+<p class="text-2xl font-bold">My Analytics</p>
 
 <LumexDivider Class="my-4"/>
 
@@ -89,43 +79,49 @@
 
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-4 w-full">
     <div class="w-full h-64 sm:h-72 lg:h-80">
-        <ApexChart TItem="MatchPerMonth"
-                    Options="_barOptions"
-                    Title="Matches per Month">
+        <LumexCard Shadow="Shadow.Small">
+            <ApexChart TItem="MatchPerMonth"
+                        Options="_barOptions"
+                        Title="Matches per Month">
 
-            <ApexPointSeries TItem="MatchPerMonth"
-                                Items="_matchesPerMonth"
-                                Name="Matches"
-                                XValue="@(e => e.Month)"
-                                Color="#003f5c"
-                                YValue="@(e => e.Count)"
-                                SeriesType="SeriesType.Bar" />
-        </ApexChart>
+                <ApexPointSeries TItem="MatchPerMonth"
+                                    Items="_matchesPerMonth"
+                                    Name="Matches"
+                                    XValue="@(e => e.Month)"
+                                    Color="#003f5c"
+                                    YValue="@(e => e.Count)"
+                                    SeriesType="SeriesType.Bar" />
+            </ApexChart>
+        </LumexCard>
     </div>
     <div class="w-full h-64 sm:h-72 lg:h-80">
-        <ApexChart TItem="GameDistribution"
-                   Title="Games Played Distribution"
-                   Options="_donutOptions">
+        <LumexCard Shadow="Shadow.Small">
+            <ApexChart TItem="GameDistribution"
+                       Title="Games Played Distribution"
+                       Options="_donutOptions">
 
-            <ApexPointSeries TItem="GameDistribution"
-                             Items="_gameDistribution"
-                             SeriesType="SeriesType.Donut"
-                             XValue="@(e => e.Game)"
-                             YValue="@(e => e.Count)" />
-        </ApexChart>
+                <ApexPointSeries TItem="GameDistribution"
+                                 Items="_gameDistribution"
+                                 SeriesType="SeriesType.Donut"
+                                 XValue="@(e => e.Game)"
+                                 YValue="@(e => e.Count)" />
+            </ApexChart>
+        </LumexCard>
     </div>
     <div class="w-full">
-        <ApexChart TItem="WinDistribution"
-                   Title="Win Rate per Game"
-                   Options="_radialOptions">
+        <LumexCard Shadow="Shadow.Small">
+            <ApexChart TItem="WinDistribution"
+                       Title="Win Rate per Game"
+                       Options="_radialOptions">
 
-            <ApexPointSeries TItem="WinDistribution"
-                             Items="_winDistribution"
-                             SeriesType="SeriesType.RadialBar"
-                             Name="Win Rate"
-                             XValue="e => e.Game"
-                             YValue="e => e.WinRate" />
-        </ApexChart>
+                <ApexPointSeries TItem="WinDistribution"
+                                 Items="_winDistribution"
+                                 SeriesType="SeriesType.RadialBar"
+                                 Name="Win Rate"
+                                 XValue="e => e.Game"
+                                 YValue="e => e.WinRate" />
+            </ApexChart>
+        </LumexCard>
     </div>
 </div>
 
@@ -245,7 +241,9 @@
             .Select(g => new
             {
                 Game = g.Key,
-                Count = g.Count()
+                Count = g.Select(x => x.MatchId)
+                         .Distinct()
+                         .Count()
             })
             .OrderByDescending(g => g.Count)
             .FirstOrDefault();
@@ -286,7 +284,9 @@
             .Select(g => new GameDistribution
             {
                 Game = g.Key,
-                Count = g.Count()
+                Count = g.Select(x => x.MatchId)
+                         .Distinct()
+                         .Count()
             })
             .OrderByDescending(x => x.Count)
             .ToList();
@@ -419,10 +419,11 @@
                             Label = "Win rate",
                             FontSize = "24",
                             Formatter = @"function (w) {
-                                return '[' + w.globals.seriesTotals.reduce((a, b) => {
-                                  return a + b
-                                }, 0) / w.globals.series.length + '%' + ']'
-                              }"
+                                return '[' + (
+                                    w.globals.seriesTotals.reduce((a, b) => a + b, 0) /
+                                    w.globals.series.length
+                                ).toFixed(0) + '%' + ']';
+                            }"
                         }
                     }
                 }
