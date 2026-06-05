@@ -346,4 +346,34 @@
   <data name="Profile" xml:space="preserve">
     <value>Profile</value>
   </data>
+  <data name="AddAI" xml:space="preserve">
+    <value>Add Artificial Intelligence</value>
+  </data>
+  <data name="RemoveSelected" xml:space="preserve">
+    <value>Remove Selected</value>
+  </data>
+  <data name="MyAnalytics" xml:space="preserve">
+    <value>Personal statistics</value>
+  </data>
+  <data name="MatchCount" xml:space="preserve">
+    <value>match count</value>
+  </data>
+  <data name="MatchesWon" xml:space="preserve">
+    <value>matches won</value>
+  </data>
+  <data name="WinRate" xml:space="preserve">
+    <value>win rate</value>
+  </data>
+  <data name="MostPlayedGame" xml:space="preserve">
+    <value>most played game</value>
+  </data>
+  <data name="MatchesPerMonth" xml:space="preserve">
+    <value>Matches per month</value>
+  </data>
+  <data name="GamesDistribution" xml:space="preserve">
+    <value>Games distribution</value>
+  </data>
+  <data name="WinRatioPerGame" xml:space="preserve">
+    <value>Win ratio per game</value>
+  </data>
 </root>

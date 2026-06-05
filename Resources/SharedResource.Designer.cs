@@ -61,6 +61,15 @@ namespace BoardGames.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add Artificial Intelligence.
+        /// </summary>
+        public static string AddAI {
+            get {
+                return ResourceManager.GetString("AddAI", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Date.
         /// </summary>
         public static string GameMatches_Date {
@@ -183,6 +192,15 @@ namespace BoardGames.Resources {
         public static string Games_SearchByName {
             get {
                 return ResourceManager.GetString("Games_SearchByName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Games distribution.
+        /// </summary>
+        public static string GamesDistribution {
+            get {
+                return ResourceManager.GetString("GamesDistribution", resourceCulture);
             }
         }
         
@@ -313,6 +331,51 @@ namespace BoardGames.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to match count.
+        /// </summary>
+        public static string MatchCount {
+            get {
+                return ResourceManager.GetString("MatchCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Matches per month.
+        /// </summary>
+        public static string MatchesPerMonth {
+            get {
+                return ResourceManager.GetString("MatchesPerMonth", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to matches won.
+        /// </summary>
+        public static string MatchesWon {
+            get {
+                return ResourceManager.GetString("MatchesWon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to most played game.
+        /// </summary>
+        public static string MostPlayedGame {
+            get {
+                return ResourceManager.GetString("MostPlayedGame", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Personal statistics.
+        /// </summary>
+        public static string MyAnalytics {
+            get {
+                return ResourceManager.GetString("MyAnalytics", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add to tournament.
         /// </summary>
         public static string NewMatch_AddToTournament {
@@ -408,6 +471,15 @@ namespace BoardGames.Resources {
         public static string Profile {
             get {
                 return ResourceManager.GetString("Profile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove Selected.
+        /// </summary>
+        public static string RemoveSelected {
+            get {
+                return ResourceManager.GetString("RemoveSelected", resourceCulture);
             }
         }
         
@@ -804,6 +876,24 @@ namespace BoardGames.Resources {
         public static string Tournament_TournamentStatus {
             get {
                 return ResourceManager.GetString("Tournament_TournamentStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to win rate.
+        /// </summary>
+        public static string WinRate {
+            get {
+                return ResourceManager.GetString("WinRate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Win ratio per game.
+        /// </summary>
+        public static string WinRatioPerGame {
+            get {
+                return ResourceManager.GetString("WinRatioPerGame", resourceCulture);
             }
         }
     }

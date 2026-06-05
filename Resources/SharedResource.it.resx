@@ -363,4 +363,37 @@
   <data name="SelectAPlayer" xml:space="preserve">
     <value>Seleziona un giocatore</value>
   </data>
+  <data name="Profile" xml:space="preserve">
+    <value>Profilo</value>
+  </data>
+  <data name="AddAI" xml:space="preserve">
+    <value>Aggiungi l'intelligenza artificiale</value>
+  </data>
+  <data name="RemoveSelected" xml:space="preserve">
+    <value>Rimuovi selezionato</value>
+  </data>
+  <data name="MyAnalytics" xml:space="preserve">
+    <value>Statistiche personali</value>
+  </data>
+  <data name="MatchCount" xml:space="preserve">
+    <value>conteggio delle partite</value>
+  </data>
+  <data name="MatchesWon" xml:space="preserve">
+    <value>partite vinte</value>
+  </data>
+  <data name="WinRate" xml:space="preserve">
+    <value>tasso di vincita</value>
+  </data>
+  <data name="MostPlayedGame" xml:space="preserve">
+    <value>gioco più giocato</value>
+  </data>
+  <data name="MatchesPerMonth" xml:space="preserve">
+    <value>Partite al mese</value>
+  </data>
+  <data name="GamesDistribution" xml:space="preserve">
+    <value>Distribuzione giochi</value>
+  </data>
+  <data name="WinRatioPerGame" xml:space="preserve">
+    <value>Rapporto vittorie per partita</value>
+  </data>
 </root>
