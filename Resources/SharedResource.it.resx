@@ -367,7 +367,7 @@
     <value>Profilo</value>
   </data>
   <data name="AddAI" xml:space="preserve">
-    <value>Aggiungi l'intelligenza artificiale</value>
+    <value>Aggiungi automa</value>
   </data>
   <data name="RemoveSelected" xml:space="preserve">
     <value>Rimuovi selezionato</value>
@@ -395,5 +395,8 @@
   </data>
   <data name="WinRatioPerGame" xml:space="preserve">
     <value>Rapporto vittorie per partita</value>
+  </data>
+  <data name="AI" xml:space="preserve">
+    <value>🤖 </value>
   </data>
 </root>

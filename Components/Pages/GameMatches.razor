@@ -78,12 +78,19 @@ else
         <LumexTabs>
             <LumexTab Title="@SharedResource.GameMatches_Matches">
                 <LumexDataGrid Data="@_matches.AsQueryable()" T=mdMatch Layout="Layout.Fixed" OnRowClick="@GoToMatch" Classes="_classes" Hoverable>
-                    <PropertyColumn Title="@SharedResource.GameMatches_Date" Property="@(p => p.Date)" Format="dd-MM-yyyy" Sortable="true" />
-                    <TemplateColumn Title="@SharedResource.Settings_Players" Context="p" Sortable="true">
+                    <PropertyColumn Title="@SharedResource.GameMatches_Date" Property="@(p => p.Date)" Format="dd.MM.yyyy" Sortable="true" />
+                    <TemplateColumn HeaderContent="HeaderContent" Context="p" Sortable="true">
                         @(p.Results.Count())
                     </TemplateColumn>
                     <TemplateColumn Title="@SharedResource.GameMatches_Winner" Context="p" Sortable="true">
                         @($"{p.Winner?.Player?.Name} ({p.Winner?.Points})" ?? "")
+                    </TemplateColumn>
+                    <TemplateColumn Title="Winner faction" Context="p" Sortable="true">
+                        <LumexUser Name="@p.WinnerFaction?.Name">
+                            <AvatarContent>
+                                <div style="width:15px;height:15px;background:@p.WinnerFaction?.Color;border-radius:50%;" />
+                            </AvatarContent>
+                        </LumexUser>
                     </TemplateColumn>
                 </LumexDataGrid>
             </LumexTab>
@@ -126,11 +133,15 @@ else
     private mdGame? _game;
     private int _totalMatches;
 
-
     private DataGridSlots _classes = new()
     {
         Tr = "cursor-pointer"
     };
+
+    private RenderFragment<LumexColumnBase<mdMatch>> HeaderContent => context =>
+    @<div class="flex items-center gap-2">
+        <UserIcon/>
+    </div>;
 
     private AccordionItemSlots _itemClasses = new()
     {
@@ -166,6 +177,8 @@ else
             .Include(m => m.Location)
             .Include(m => m.Results)
                 .ThenInclude(r => r.Player)
+            .Include(m => m.Results)
+                .ThenInclude(r => r.Faction)
             .OrderByDescending(m => m.Date)
             .ToListAsync();
 
@@ -197,6 +210,7 @@ else
                 PlayerName = r.Player.Name,
                 IsWin = r.PlayerId == m.WinnerPlayerId
             })
+            .Where(p => p.PlayerId != -1)
             .GroupBy(x => new { x.PlayerId, x.PlayerName })
             .Select(g => new
             {

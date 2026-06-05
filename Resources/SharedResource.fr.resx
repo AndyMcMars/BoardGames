@@ -396,4 +396,7 @@
   <data name="WinRatioPerGame" xml:space="preserve">
     <value>Taux de victoire par partie</value>
   </data>
+  <data name="AI" xml:space="preserve">
+    <value>🤖 </value>
+  </data>
 </root>

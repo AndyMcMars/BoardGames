@@ -20,6 +20,10 @@
 
     public mdResult? Winner =>
         Results.OrderByDescending(r => r.Points).FirstOrDefault();
+
+    public mdFaction? WinnerFaction =>
+        Winner?.Faction;
+
     public double? Stars =>
         Reviews.Any()
             ? Math.Round(Reviews.Average(r => r.Stars), 1)

@@ -189,7 +189,7 @@
     private IQueryable<mdGame> _games => Db.Games.OrderBy(g => g.Name);
     private IQueryable<mdLocation> _locations => Db.Locations;
     private IQueryable<mdTournament> _tournaments => Db.Tournaments.Where(t => t.GameId == _newMatch.GameId && t.IsActive == true);
-    private IQueryable<mdPlayer> _players => Db.Players;
+    private IQueryable<mdPlayer> _players => Db.Players.Where(p=>p.Id != -1);
     private IQueryable<mdFaction> _factions => Db.Factions.Where(f => f.GameId == _newMatch.GameId);
     private ICollection<mdPlayer>? _selectedPlayers
     {
@@ -254,17 +254,21 @@
         _newMatch.Date = DateTime.Now;
     }
 
-    private async Task addAI()
+    private async void addAI()
     {
+        mdPlayer _aiPlayer = await Db.Players.FirstOrDefaultAsync(p => p.Id == -1);
+
+        
+        if (_aiPlayer == null)
+            return;
+
         _results.Add(new mdResult
         {
-            PlayerId = -1,
-            Player = new mdPlayer()
-            {
-                Name = "AI"
-            },
+            PlayerId = _aiPlayer.Id,
+            Player = _aiPlayer,
             Points = 0
         });
+
     }
 
 
@@ -328,6 +332,7 @@
 
         foreach (var r in _results)
         {
+
             if (r.Faction != null)
             {
                 r.FactionId = r.Faction.Id;

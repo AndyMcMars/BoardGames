@@ -93,6 +93,18 @@ using (var scope = app.Services.CreateScope())
 
         db.SaveChanges();
     }
+
+    if (!db.Players.Any(p => p.Id == -1))
+    {
+        db.Players.Add(new mdPlayer
+        {
+            Id = -1,
+            Name = "AI",
+            CreatedAt = DateTime.UtcNow
+        });
+
+        db.SaveChanges();
+    }
 }
 
 app.MapGet("/auth/login", async (HttpContext http, AppDbContext db, string user) =>

@@ -94,9 +94,9 @@
                 Name = Tournament.Name
             };
 
-            if (GameId != 0)
+            if (Tournament.GameId != 0)
             {
-                _model.GameId = GameId;
+                _model.GameId = Tournament.GameId;
             };
         }
     }
@@ -135,7 +135,7 @@
     {
         _alertContent = null;
 
-        if(_model.Game is null)
+        if(_model.GameId == 0)
         {
             _alertContent = "Please select a game.";
             return;

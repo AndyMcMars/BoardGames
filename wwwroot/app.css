@@ -86,6 +86,7 @@
     --breakpoint-lg: 64rem;
     --breakpoint-xl: 80rem;
     --breakpoint-2xl: 96rem;
+    --container-3xs: 16rem;
     --container-xs: 20rem;
     --container-sm: 24rem;
     --container-md: 28rem;
@@ -487,23 +488,8 @@
   .top-\[var\(--navbar-height\)\] {
     top: var(--navbar-height);
   }
-  .right-0 {
-    right: calc(var(--spacing) * 0);
-  }
-  .right-10 {
-    right: calc(var(--spacing) * 10);
-  }
-  .right-\[-10\] {
-    right: -10;
-  }
-  .right-\[-10px\] {
-    right: -10px;
-  }
   .right-\[-15px\] {
     right: -15px;
-  }
-  .right-\[-20\] {
-    right: -20;
   }
   .right-\[10\%\] {
     right: 10%;
@@ -817,9 +803,6 @@
   .min-h-\[100dvh\] {
     min-height: 100dvh;
   }
-  .w-1 {
-    width: calc(var(--spacing) * 1);
-  }
   .w-1\.5 {
     width: calc(var(--spacing) * 1.5);
   }
@@ -858,6 +841,9 @@
   }
   .w-14 {
     width: calc(var(--spacing) * 14);
+  }
+  .w-\[5px\] {
+    width: 5px;
   }
   .w-\[25\%\] {
     width: 25%;
@@ -5570,6 +5556,13 @@
       }
     }
   }
+  .\[\&_th\]\:nth-1\:w-10 {
+    & th {
+      &:nth-child(1) {
+        width: calc(var(--spacing) * 10);
+      }
+    }
+  }
   .\[\&_th\]\:nth-1\:w-20 {
     & th {
       &:nth-child(1) {
@@ -5577,44 +5570,16 @@
       }
     }
   }
-  .\[\&_th\]\:nth-2\:w-1 {
+  .\[\&_th\]\:nth-2\:w-10 {
     & th {
       &:nth-child(2) {
-        width: calc(var(--spacing) * 1);
-      }
-    }
-  }
-  .\[\&_th\]\:nth-2\:w-3 {
-    & th {
-      &:nth-child(2) {
-        width: calc(var(--spacing) * 3);
-      }
-    }
-  }
-  .\[\&_th\]\:nth-2\:w-5 {
-    & th {
-      &:nth-child(2) {
-        width: calc(var(--spacing) * 5);
-      }
-    }
-  }
-  .\[\&_th\]\:nth-2\:w-20 {
-    & th {
-      &:nth-child(2) {
-        width: calc(var(--spacing) * 20);
+        width: calc(var(--spacing) * 10);
       }
     }
   }
   .\[\&_th\]\:nth-3\:w-80 {
     & th {
       &:nth-child(3) {
-        width: calc(var(--spacing) * 80);
-      }
-    }
-  }
-  .\[\&_th\]\:nth-4\:w-80 {
-    & th {
-      &:nth-child(4) {
         width: calc(var(--spacing) * 80);
       }
     }
