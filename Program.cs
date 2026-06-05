@@ -99,7 +99,7 @@ using (var scope = app.Services.CreateScope())
         db.Players.Add(new mdPlayer
         {
             Id = -1,
-            Name = "AI",
+            Name = "\U0001F916",
             CreatedAt = DateTime.UtcNow
         });
 

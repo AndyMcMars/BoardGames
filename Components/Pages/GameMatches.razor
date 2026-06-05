@@ -18,35 +18,33 @@ else
 {
     <LumexCard Class="mb-4">
         <LumexCardHeader Class="flex gap-4 items-start">
-            <img src="@_game.Image" width="100" />
-            <div class="flex flex-col gap-3 w-full">
+            <img src="@_game.Image" width="200" />
+            <div class="flex flex-col gap-3 items-start w-full">
                 <p class="text-xl font-bold">@_game.Name</p>
-                <div class="flex w-full">
-                    <LumexChip Variant="ChipVariant.Light">
-                        <StartContent>
-                            @_totalMatches
-                        </StartContent>
-                        <ChildContent>
-                            <SwordsIcon />
-                        </ChildContent>
-                    </LumexChip>
-                    <LumexChip Variant="ChipVariant.Light">
-                        <StartContent>
-                            @_tournaments.Count
-                        </StartContent>
-                        <ChildContent>
-                            <TrophyIcon />
-                        </ChildContent>
-                    </LumexChip>
-                    <LumexChip Variant="ChipVariant.Light">
-                        <StartContent>
-                            @_totalDuration
-                        </StartContent>
-                        <ChildContent>
-                            <TimerIcon />
-                        </ChildContent>
-                    </LumexChip>
-                </div>
+                <LumexChip Variant="ChipVariant.Light">
+                    <EndContent>
+                        @_totalMatches
+                    </EndContent>
+                    <ChildContent>
+                        <SwordsIcon />
+                    </ChildContent>
+                </LumexChip>
+                <LumexChip Variant="ChipVariant.Light">
+                    <EndContent>
+                        @_tournaments.Count
+                    </EndContent>
+                    <ChildContent>
+                        <TrophyIcon />
+                    </ChildContent>
+                </LumexChip>
+                <LumexChip Variant="ChipVariant.Light">
+                    <EndContent>
+                        @_totalDuration.ToString(@"hh\:mm")
+                    </EndContent>
+                    <ChildContent>
+                        <TimerIcon />
+                    </ChildContent>
+                </LumexChip>
             </div>
         </LumexCardHeader>
     </LumexCard>
@@ -78,7 +76,7 @@ else
         <LumexTabs>
             <LumexTab Title="@SharedResource.GameMatches_Matches">
                 <LumexDataGrid Data="@_matches.AsQueryable()" T=mdMatch Layout="Layout.Fixed" OnRowClick="@GoToMatch" Classes="_classes" Hoverable>
-                    <PropertyColumn Title="@SharedResource.GameMatches_Date" Property="@(p => p.Date)" Format="dd.MM.yyyy" Sortable="true" />
+                    <PropertyColumn Title="@SharedResource.GameMatches_Date" Property="@(p => p.Date)" Format="dd.MM.yy" Sortable="true" />
                     <TemplateColumn HeaderContent="HeaderContent" Context="p" Sortable="true">
                         @(p.Results.Count())
                     </TemplateColumn>
@@ -136,11 +134,12 @@ else
     private DataGridSlots _classes = new()
     {
         Tr = "cursor-pointer"
+        
     };
 
     private RenderFragment<LumexColumnBase<mdMatch>> HeaderContent => context =>
     @<div class="flex items-center gap-2">
-        <UserIcon/>
+        <UsersIcon class="w-3 h-3" />
     </div>;
 
     private AccordionItemSlots _itemClasses = new()

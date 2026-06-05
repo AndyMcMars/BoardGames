@@ -77,7 +77,7 @@
 
     private async Task UpdateData()
     {
-        _players = await Db.Players.OrderBy(p => p.Name).Where(p => p.Id != -1).ToListAsync();
+        _players = await Db.Players.OrderBy(p => p.Name).ToListAsync();
         _refreshKey++;
         _selectedPlayers = [];
     }
