@@ -80,7 +80,12 @@
 
         if(Review is null)
         {
-            _model = new mdReview { MatchId = Match.Id, Stars = 3 };
+            var playerId = Db.Players
+                .Where(p => p.Name == _user.Identity!.Name)
+                .Select(p => p.Id)
+                .FirstOrDefault();
+
+            _model = new mdReview { MatchId = Match.Id, Stars = 3, PlayerId = playerId };
         }
         else
         {
