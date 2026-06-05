@@ -109,7 +109,7 @@
 
     <div class="text-2xl mt-4 mb-4">@SharedResource.Match_Points</div>
 
-<LumexDataGrid Data="@_results.AsQueryable()" Layout="Layout.Fixed" Classes="_classes" SelectionMode="SelectionMode.Multiple" @bind-SelectedItems="_selectedResults">
+<LumexDataGrid Data="@_results.AsQueryable()" Layout="Layout.Fixed" Classes="_classes">
         <ToolbarContent>
             <LumexSelect Label="@SharedResource.NewMatch_SelectPlayers"
                          @bind-Values="@_selectedPlayers">
@@ -121,15 +121,35 @@
                     </LumexSelectItem>
                 }
             </LumexSelect>
-            <div class="flex gap-4">
-                <LumexButton OnClick="addAI" Color="ThemeColor.Warning">@BoardGames.Resources.SharedResource.AddAI</LumexButton>
-                <LumexButton OnClick="RemoveSelected" Color="ThemeColor.Danger" Disabled="@(_selectedResults.Count == 0)">
-                    @BoardGames.Resources.SharedResource.RemoveSelected
-                </LumexButton>
-            </div>
+        <div class="grid grid-cols-2 gap-4">
+            <LumexButton OnClick="addAI">@BoardGames.Resources.SharedResource.AddAI</LumexButton>
+        </div>
         </ToolbarContent>
         <ChildContent>
-            <PropertyColumn Property="@(p => p.Player.Name)" Title="@SharedResource.SettingsGames_Name"/>
+            <PropertyColumn Property="@(p => p.Player.Name)" Title="@SharedResource.SettingsGames_Name">
+                <Content>
+                @if(context.PlayerId == -1)
+                {
+                    <LumexBadge OneChar="@true"
+                                Class="right-[-15px]"
+                                Placement="@BadgePlacement.BottomEnd">
+                        <Content>
+                            <LumexButton Class="appearance-none bg-transparent border-0 p-0 m-0 shadow-none text-inherit leading-none cursor-pointer -translate-y-[2px]"
+                                    OnClick="@(() => RemoveResult(context))">
+                                x
+                            </LumexButton>
+                        </Content>
+                        <ChildContent>
+                            <p>@context.Player.Name</p>
+                        </ChildContent>
+                    </LumexBadge>
+                }
+                else
+                {
+                    <p>@context.Player.Name</p>
+                }
+                </Content>
+            </PropertyColumn>
             <EditColumn Property="@(p => p.Points)" Title="@SharedResource.Match_Points" />
             <PropertyColumn Property="@(p => p.Faction)" Title="@SharedResource.SettingsFactions_Faction">
                 <Content>
@@ -162,6 +182,7 @@
     <LumexButton OnClick="Savematch" Disabled="@(_results.Count() < 1)" Color="@ThemeColor.Success" Class="mt-4 mb-16">@SharedResource.NewMatch_Save</LumexButton>
 
 
+
 @code {
 
     private mdMatch _newMatch = new();
@@ -185,7 +206,6 @@
     private bool _addToTournament;
 
     private List<mdResult> _results = new();
-    private ICollection<mdResult> _selectedResults = [];
 
     private int? duration;
     private Action<ToastModel> _toasterId = t => t.ToasterId = "toaster-rich-colors";
@@ -337,12 +357,9 @@
             r.Faction?.Id == faction.Id);
     }
 
-    private void RemoveSelected()
+    private void RemoveResult(mdResult result)
     {
-        _results.RemoveAll(r => _selectedResults.Contains(r));
-
-        _selectedResults.Clear();
-
-        StateHasChanged();
+        _results.Remove(result);
     }
+
 }
