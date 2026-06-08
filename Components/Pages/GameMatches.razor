@@ -209,10 +209,10 @@ else
                 PlayerName = r.Player.Name,
                 IsWin = r.PlayerId == m.WinnerPlayerId
             })
-            .Where(p => p.PlayerId != -1)
             .GroupBy(x => new { x.PlayerId, x.PlayerName })
             .Select(g => new
             {
+                PlayerId = g.Key.PlayerId,
                 PlayerName = g.Key.PlayerName,
                 MatchesPlayed = g.Count(),
                 Wins = g.Count(x => x.IsWin),
@@ -223,11 +223,13 @@ else
             .Select((x, i) => new PlayerStats
             {
                 Rank = i + 1,
+                PlayerId = x.PlayerId,
                 PlayerName = x.PlayerName,
                 MatchesPlayed = x.MatchesPlayed,
                 Wins = x.Wins,
                 WinRate = Math.Round(x.WinRate * 100, 1)
             })
+            .Where(x => x.PlayerId != -1)
             .ToList();
     }
 
@@ -245,6 +247,7 @@ else
     {
         public int Rank { get; set; }
         public string PlayerName { get; set; } = "";
+        public int PlayerId { get; set; }
         public int MatchesPlayed { get; set; }
         public int Wins { get; set; }
         public double WinRate { get; set; }
