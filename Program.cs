@@ -74,6 +74,8 @@ builder.Services.AddCascadingAuthenticationState();
 
 var app = builder.Build();
 
+app.UseStaticFiles();
+
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();

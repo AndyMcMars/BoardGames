@@ -11,6 +11,9 @@
   <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   <DockerfileContext>.</DockerfileContext>
 </PropertyGroup>
+<ItemGroup>
+  <None Include="wwwroot\js\pwa.js" />
+</ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Blazor-ApexCharts" Version="6.1.0" />
