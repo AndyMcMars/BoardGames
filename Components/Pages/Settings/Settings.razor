@@ -63,7 +63,7 @@
 
         _pwaModule = await JS.InvokeAsync<IJSObjectReference>(
             "import",
-            "./js/pwa.js");
+            "/js/pwa.js");
 
         isDark = await JS.InvokeAsync<bool>("theme.getDark");
 
@@ -93,17 +93,11 @@
 
     async Task InstallPWA()
     {
-        await JS.InvokeVoidAsync(
-                "import",
-                "./js/pwa.js");
-
-        var module = await JS.InvokeAsync<IJSObjectReference>(
-            "import",
-            "./js/pwa.js");
-
-        await module.InvokeVoidAsync("registerServiceWorker");
+        await _pwaModule!.InvokeVoidAsync("registerServiceWorker");
 
         var installed = await _pwaModule!
-                .InvokeAsync<bool>("installPWA");
+            .InvokeAsync<bool>("installPWA");
+
+        Console.WriteLine($"Installed: {installed}");
     }
 }
