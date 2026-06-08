@@ -91,7 +91,6 @@
     --breakpoint-lg: 64rem;
     --breakpoint-xl: 80rem;
     --breakpoint-2xl: 96rem;
-    --container-3xs: 16rem;
     --container-xs: 20rem;
     --container-sm: 24rem;
     --container-md: 28rem;
@@ -846,9 +845,6 @@
   }
   .w-14 {
     width: calc(var(--spacing) * 14);
-  }
-  .w-\[5px\] {
-    width: 5px;
   }
   .w-\[25\%\] {
     width: 25%;
@@ -1658,9 +1654,6 @@
   .p-2 {
     padding: calc(var(--spacing) * 2);
   }
-  .p-3 {
-    padding: calc(var(--spacing) * 3);
-  }
   .p-4 {
     padding: calc(var(--spacing) * 4);
   }
@@ -1926,9 +1919,6 @@
   }
   .text-white {
     color: var(--color-white);
-  }
-  .text-yellow-400 {
-    color: var(--color-yellow-400);
   }
   .no-underline {
     text-decoration-line: none;
@@ -4084,38 +4074,10 @@
       }
     }
   }
-  .hover\:bg-gray-50 {
-    &:hover {
-      @media (hover: hover) {
-        background-color: var(--color-gray-50);
-      }
-    }
-  }
-  .hover\:bg-gray-100 {
-    &:hover {
-      @media (hover: hover) {
-        background-color: var(--color-gray-100);
-      }
-    }
-  }
   .hover\:bg-gray-200 {
     &:hover {
       @media (hover: hover) {
         background-color: var(--color-gray-200);
-      }
-    }
-  }
-  .hover\:bg-gray-300 {
-    &:hover {
-      @media (hover: hover) {
-        background-color: var(--color-gray-300);
-      }
-    }
-  }
-  .hover\:bg-gray-500 {
-    &:hover {
-      @media (hover: hover) {
-        background-color: var(--color-gray-500);
       }
     }
   }
@@ -5602,24 +5564,10 @@
       }
     }
   }
-  .\[\&_th\]\:nth-1\:w-10 {
-    & th {
-      &:nth-child(1) {
-        width: calc(var(--spacing) * 10);
-      }
-    }
-  }
   .\[\&_th\]\:nth-1\:w-20 {
     & th {
       &:nth-child(1) {
         width: calc(var(--spacing) * 20);
-      }
-    }
-  }
-  .\[\&_th\]\:nth-2\:w-10 {
-    & th {
-      &:nth-child(2) {
-        width: calc(var(--spacing) * 10);
       }
     }
   }
@@ -6624,6 +6572,11 @@ html[dir='rtl'], [data-sonner-toaster][dir='rtl'] {
     background-color: var(--lumex-background);
     color: var(--lumex-foreground);
   }
+}
+.no-select, .no-select * {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 @property --tw-translate-x {
   syntax: "*";

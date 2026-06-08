@@ -31,8 +31,6 @@
             <MoonIcon />
         </EndContent>
     </LumexSwitch>
-
-    <LumexButton OnClick="InstallPWA">install PWA</LumexButton>
 </div>
 
 <AuthorizeView Roles="Admin">
@@ -54,16 +52,10 @@
     bool isDark;
     string selectedCulture;
 
-    private IJSObjectReference? _pwaModule;
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
 
         if (!firstRender) return;
-
-        _pwaModule = await JS.InvokeAsync<IJSObjectReference>(
-            "import",
-            "/js/pwa.js");
 
         isDark = await JS.InvokeAsync<bool>("theme.getDark");
 
@@ -91,13 +83,4 @@
         await JS.InvokeVoidAsync("culture.set", value);
     }
 
-    async Task InstallPWA()
-    {
-        await _pwaModule!.InvokeVoidAsync("registerServiceWorker");
-
-        var installed = await _pwaModule!
-            .InvokeAsync<bool>("installPWA");
-
-        Console.WriteLine($"Installed: {installed}");
-    }
 }
